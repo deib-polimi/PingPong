@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Inserisci mac address dell&apos;altro GO"
+        android:id="@+id/label"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialog_mac_address_edittext"
+        android:hint="11:11:11:11:11:11"
+        android:layout_below="@+id/label"
+        android:layout_centerHorizontal="true" />
+
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/dialog_mac_address_edittext"
+        android:layout_alignParentStart="true">
+
+
+            <Button
+                android:id="@+id/dialog_no"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.70"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="6dp"
+                android:textSize="16sp"
+                android:text="No" />
+
+            <Button
+                android:id="@+id/dialog_yes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.30"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="6dp"
+                android:textSize="16sp"
+                android:text="Yes" />
+        </LinearLayout>
+</RelativeLayout>

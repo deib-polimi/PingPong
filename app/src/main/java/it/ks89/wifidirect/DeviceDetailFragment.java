@@ -16,6 +16,7 @@
 
 package it.ks89.wifidirect;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -55,10 +56,17 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     private WifiP2pDevice device;
     private WifiP2pInfo info;
     ProgressDialog progressDialog = null;
+    private Fragment fragment = this;
+    private static final int PINGPONG = 5;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
     }
 
     @Override
@@ -86,12 +94,13 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 //                            public void onCancel(DialogInterface dialog) {
 //                                ((DeviceActionListener) getActivity()).cancelDisconnect();
 //                            }
-//                        } 
+//                        }
                         );
                 ((DeviceListFragment.DeviceActionListener) getActivity()).connect(config);
 
             }
         });
+
 
         mContentView.findViewById(R.id.btn_disconnect).setOnClickListener(
                 new View.OnClickListener() {
@@ -115,25 +124,86 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     }
                 });
 
+
+        //clicco sul pulsante connect
+        mContentView.findViewById(R.id.btn_start_ping_pong).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                PingPongDialog pingPongDialog = (PingPongDialog) getFragmentManager().findFragmentByTag("pingPongDialog");
+
+                if (pingPongDialog == null) {
+                    pingPongDialog = PingPongDialog.newInstance();
+
+                    pingPongDialog.setTargetFragment(fragment, PINGPONG); //numero a caso costante
+
+                    pingPongDialog.show(getFragmentManager(), "pingPongDialog");
+                    getFragmentManager().executePendingTransactions();
+                }
+
+//                WifiP2pConfig config = new WifiP2pConfig();
+//                config.deviceAddress = device.deviceAddress;
+//                config.wps.setup = WpsInfo.PBC;
+//                if (progressDialog != null && progressDialog.isShowing()) {
+//                    progressDialog.dismiss();
+//                }
+//                progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel",
+//                        "Connecting to :" + device.deviceAddress, true, true
+////                        new DialogInterface.OnCancelListener() {
+////
+////                            @Override
+////                            public void onCancel(DialogInterface dialog) {
+////                                ((DeviceActionListener) getActivity()).cancelDisconnect();
+////                            }
+////                        }
+//                );
+//                ((DeviceListFragment.DeviceActionListener) getActivity()).connect(config);
+
+            }
+        });
+
+
         return mContentView;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        // User has picked an image. Transfer it to group owner i.e peer using
-        // FileTransferService.
-        Uri uri = data.getData();
-        TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
-        statusText.setText("Sending: " + uri);
-        Log.d(WiFiDirectActivity.TAG, "Intent----------- " + uri);
-        Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
-        serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-        serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
-        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
-                info.groupOwnerAddress.getHostAddress());
-        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
-        getActivity().startService(serviceIntent);
+        switch(requestCode) {
+            case PINGPONG:
+
+                if (resultCode == Activity.RESULT_OK) {
+                    // After Ok code.
+                    Bundle bundle=data.getExtras();
+                    String macaddress_dialog=bundle.getString("macaddress_text");
+
+                    Log.d("DeviceDetailFragment_PingPong_yes","Ho premuto Yes e il mac address passato e' : " + macaddress_dialog);
+                } else if (resultCode == Activity.RESULT_CANCELED){
+                    // After Cancel code.
+                    Log.d("DeviceDetailFragment_PingPong_no","Ho premuto NO");
+                }
+
+                break;
+            default:
+                //standard dal codice google
+                // User has picked an image. Transfer it to group owner i.e peer using
+                // FileTransferService.
+                Uri uri = data.getData();
+                TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
+                statusText.setText("Sending: " + uri);
+                Log.d(WiFiDirectActivity.TAG, "Intent----------- " + uri);
+                Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
+                serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
+                serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
+                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+                        info.groupOwnerAddress.getHostAddress());
+                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+                getActivity().startService(serviceIntent);
+                break;
+
+        }
+
+
     }
 
     @Override
@@ -292,5 +362,4 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         }
         return true;
     }
-
 }
