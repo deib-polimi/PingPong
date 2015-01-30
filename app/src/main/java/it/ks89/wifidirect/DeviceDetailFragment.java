@@ -86,7 +86,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 //                            public void onCancel(DialogInterface dialog) {
 //                                ((DeviceActionListener) getActivity()).cancelDisconnect();
 //                            }
-//                        }
+//                        } 
                         );
                 ((DeviceListFragment.DeviceActionListener) getActivity()).connect(config);
 
