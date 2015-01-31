@@ -189,6 +189,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
 
 
+    //metodo modificato per fare una disconnect silenziosa quando avvio pingpong
     @Override
     public void disconnectPingPong() {
 //        final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
@@ -212,6 +213,8 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         });
     }
 
+
+    //metodo modificato per fare una discovery silenziosa quando avvio pingpong
     @Override
     public void discoveryPingPong() {
         manager.discoverPeers(channel, new ActionListener() {

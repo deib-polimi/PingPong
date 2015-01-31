@@ -44,6 +44,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import it.polimi.wifidirect.dialog.PingPongDialog;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroup;
@@ -221,7 +222,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     class PingPongAsyncTask extends AsyncTask<Context, Void, Void> {
         @Override
-        protected Void doInBackground(Context... params) {
+        protected Void doInBackground(Context... context) {
 
             P2PDevice destinationDevice = PeerList.getInstance().getDeviceByMacAddress(pingpong_macaddress);
             WifiP2pConfig config = new WifiP2pConfig();
@@ -231,7 +232,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
             for(int i=0; i<10; i++) {
 
-                ((WiFiDirectActivity) params[0]).connect(config);
+                ((WiFiDirectActivity) context[0]).connect(config);
                 Log.d("ping-pong", "1");
                 try {
                     Thread.sleep(3000);
@@ -239,9 +240,9 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     e.printStackTrace();
                 }
 
-                ((WiFiDirectActivity) params[0]).disconnectPingPong();
+                ((WiFiDirectActivity) context[0]).disconnectPingPong();
 
-                ((WiFiDirectActivity) params[0]).discoveryPingPong();
+                ((WiFiDirectActivity) context[0]).discoveryPingPong();
 
                 Log.d("ping-pong", "2");
                 try {
@@ -252,7 +253,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             }
 
             //e finisci come connesso
-            ((WiFiDirectActivity) params[0]).connect(config);
+            ((WiFiDirectActivity) context[0]).connect(config);
 
             return null;
         }
@@ -273,9 +274,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 //            }
 //            progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel",
 //                    "Connecting to :" + device.getP2pDevice().deviceAddress, true, true);
-
-
-
 
             new PingPongAsyncTask().execute(this.getActivity());
 

@@ -1,4 +1,4 @@
-package it.polimi.wifidirect;
+package it.polimi.wifidirect.dialog;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -10,11 +10,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+
+import it.polimi.wifidirect.R;
+import it.polimi.wifidirect.spinner.CustomSpinnerAdapter;
+import it.polimi.wifidirect.spinner.SpinnerRow;
 
 public class PingPongDialog extends DialogFragment {
 
     static private Button ok, no;
     static private EditText macAddress;
+    static private Spinner mac_spinner;
 
     static public PingPongDialog newInstance() {
         return new PingPongDialog();
@@ -45,6 +53,17 @@ public class PingPongDialog extends DialogFragment {
         ok = (Button) v.findViewById(R.id.dialog_yes);
         no = (Button) v.findViewById(R.id.dialog_no);
         macAddress = (EditText) v.findViewById(R.id.dialog_mac_address_edittext);
+
+        ArrayList<SpinnerRow> ListDevicePingPong = new ArrayList<>();
+        ListDevicePingPong.add(new SpinnerRow("sha1"));
+        ListDevicePingPong.add(new SpinnerRow("sha256"));
+        ListDevicePingPong.add(new SpinnerRow("sha384"));
+        ListDevicePingPong.add(new SpinnerRow("sha512"));
+        ListDevicePingPong.add(new SpinnerRow("md5"));
+        CustomSpinnerAdapter customAdapterShaAlgorithm = new CustomSpinnerAdapter(this.getActivity(), android.R.layout.simple_spinner_item,ListDevicePingPong);
+
+        mac_spinner = (Spinner) v.findViewById(R.id.device_spinner);
+        mac_spinner.setAdapter(customAdapterShaAlgorithm);
 
         this.setListener();
 
