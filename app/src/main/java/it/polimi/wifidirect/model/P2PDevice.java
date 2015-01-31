@@ -7,6 +7,12 @@ import lombok.Setter;
 
 /**
  * Created by Stefano Cappa on 31/01/15.
+ *
+ * Classe che rappresenta un dispositivo P2P incapsulando il concetto di WifiP2pDevice
+ * ed aggiungendo il parametro groupOwner.
+ * Questa classe e' utile soprattutto per permettere l'estensione delle funzionalita' di WifiP2pDevice,
+ * in quanto ne rappresenta gia' una astrazione.
+ *
  */
 public class P2PDevice {
 

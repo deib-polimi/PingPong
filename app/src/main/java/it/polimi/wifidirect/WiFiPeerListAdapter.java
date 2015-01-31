@@ -1,9 +1,5 @@
 package it.polimi.wifidirect;
 
-/**
- * Created by Ks89 on 31/01/15.
- */
-
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.util.Log;
@@ -17,16 +13,13 @@ import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
 
 /**
- * Array adapter for ListFragment that maintains WifiP2pDevice list.
+ * Created by Ks89 on 31/01/15.
+ * ListAdapter di P2PDevice, per mantenere la lista dei Peers.
  */
 public class WiFiPeerListAdapter extends ArrayAdapter<P2PDevice> {
 
     private Context context;
 
-    /**
-     * @param context
-     * @param textViewResourceId
-     */
     public WiFiPeerListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId, PeerList.getInstance().getList());
         this.context = context;
@@ -40,10 +33,8 @@ public class WiFiPeerListAdapter extends ArrayAdapter<P2PDevice> {
             LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = vi.inflate(R.layout.row_devices, null);
         }
+
         P2PDevice device = PeerList.getInstance().getList().get(position);
-        Log.d("device_adapter" , device.toString());
-//        WifiP2pDevice device = PeerList.getInstance().getList().get(position).getP2pDevice();
-//        WifiP2pDevice device = items.get(position);
         if (device != null) {
             TextView name = (TextView) v.findViewById(R.id.device_name);
             TextView status = (TextView) v.findViewById(R.id.device_status);
