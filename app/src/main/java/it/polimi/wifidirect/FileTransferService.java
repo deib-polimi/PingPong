@@ -1,6 +1,6 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
 
-package it.ks89.wifidirect;
+package it.polimi.wifidirect;
 
 import android.app.IntentService;
 import android.content.ContentResolver;

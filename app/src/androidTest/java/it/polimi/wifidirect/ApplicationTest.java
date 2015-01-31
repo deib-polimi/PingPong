@@ -1,4 +1,4 @@
-package it.ks89.wifidirect;
+package it.polimi.wifidirect;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

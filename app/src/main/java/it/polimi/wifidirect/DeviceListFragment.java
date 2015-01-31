@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package it.ks89.wifidirect;
+package it.polimi.wifidirect;
 
 import android.app.ListFragment;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -29,12 +28,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import it.polimi.wifidirect.model.LocalP2PDevice;
+import it.polimi.wifidirect.model.P2PDevice;
+import it.polimi.wifidirect.model.PeerList;
 
 /**
  * A ListFragment that displays available peers on discovery and requests the
@@ -42,30 +43,36 @@ import java.util.List;
  */
 public class DeviceListFragment extends ListFragment implements PeerListListener {
 
-    private List<WifiP2pDevice> peers = new ArrayList<>();
+//    private List<WifiP2pDevice> peers = new ArrayList<>();
+//    private WifiP2pDevice device;
+//    @Getter private P2PDevice thisLocalDevice;
+
     ProgressDialog progressDialog = null;
     View mContentView = null;
-    private WifiP2pDevice device;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        this.setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
+        this.setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices));
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContentView = inflater.inflate(R.layout.device_list, null);
+
+        final CheckBox pingpong_checkbox = (CheckBox) mContentView.findViewById(R.id.pingpong_checkbox);
+        pingpong_checkbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LocalP2PDevice.getInstance().setPing_pong_mode(pingpong_checkbox.isChecked());
+                Log.d("pingpong_checkbox", "Stato pingpongmode: " + LocalP2PDevice.getInstance().isPing_pong_mode());
+            }
+        });
+
         return mContentView;
     }
 
-    /**
-     * @return this device
-     */
-    public WifiP2pDevice getDevice() {
-        return device;
-    }
 
     private static String getDeviceStatus(int deviceStatus) {
         Log.d(WiFiDirectActivity.TAG, "Peer status :" + deviceStatus);
@@ -91,71 +98,27 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
      */
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        WifiP2pDevice device = (WifiP2pDevice) getListAdapter().getItem(position);
+        P2PDevice device = (P2PDevice) getListAdapter().getItem(position);
+//        WifiP2pDevice device = (WifiP2pDevice) getListAdapter().getItem(position);
         ((DeviceActionListener) getActivity()).showDetails(device);
     }
 
-    /**
-     * Array adapter for ListFragment that maintains WifiP2pDevice list.
-     */
-    private class WiFiPeerListAdapter extends ArrayAdapter<WifiP2pDevice> {
 
-        private List<WifiP2pDevice> items;
-
-        /**
-         * @param context
-         * @param textViewResourceId
-         * @param objects
-         */
-        public WiFiPeerListAdapter(Context context, int textViewResourceId,
-                List<WifiP2pDevice> objects) {
-            super(context, textViewResourceId, objects);
-            items = objects;
-
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-            if (v == null) {
-                LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
-                v = vi.inflate(R.layout.row_devices, null);
-            }
-            WifiP2pDevice device = items.get(position);
-            if (device != null) {
-                TextView name = (TextView) v.findViewById(R.id.device_name);
-                TextView status = (TextView) v.findViewById(R.id.device_status);
-                TextView macaddress = (TextView) v.findViewById(R.id.device_mac_address);
-                if (name != null) {
-                    name.setText(device.deviceName);
-                }
-                if (status != null) {
-                    status.setText(getDeviceStatus(device.status));
-                }
-                if (macaddress != null) {
-                    macaddress.setText(device.deviceAddress);
-                }
-            }
-
-            return v;
-
-        }
-    }
 
     /**
      * Update UI for this device.
      * 
      * @param device WifiP2pDevice object
      */
-    public void updateThisDevice(WifiP2pDevice device) {
-        this.device = device;
+    public void updateThisDevice(P2PDevice device) {
+        LocalP2PDevice.getInstance().setLocalDevice(device);
+//        this.thisLocalDevice = device;
         TextView view = (TextView) mContentView.findViewById(R.id.my_name);
-        view.setText(device.deviceName);
+        view.setText(device.getP2pDevice().deviceName);
         view = (TextView) mContentView.findViewById(R.id.my_status);
-        view.setText(getDeviceStatus(device.status));
+        view.setText(getDeviceStatus(device.getP2pDevice().status));
         view = (TextView) mContentView.findViewById(R.id.my_mac_address);
-        view.setText(device.deviceAddress);
+        view.setText(device.getP2pDevice().deviceAddress);
     }
 
     @Override
@@ -163,10 +126,18 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
-        peers.clear();
-        peers.addAll(peerList.getDeviceList());
+
+        for(WifiP2pDevice device1 : peerList.getDeviceList()) {
+            Log.d("peerlist" , device1.deviceAddress);
+        }
+
+        PeerList.getInstance().getList().clear();
+        PeerList.getInstance().addAllElements(peerList.getDeviceList());
+//        peers.clear();
+//        peers.addAll(peerList.getDeviceList());
+
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
-        if (peers.size() == 0) {
+        if (PeerList.getInstance().getList().size() == 0) {
             Log.d(WiFiDirectActivity.TAG, "No devices found");
             return;
         }
@@ -174,7 +145,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     }
 
     public void clearPeers() {
-        peers.clear();
+        PeerList.getInstance().getList().clear();
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
@@ -201,13 +172,17 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
      */
     public interface DeviceActionListener {
 
-        void showDetails(WifiP2pDevice device);
+        void showDetails(P2PDevice device);
 
         void cancelDisconnect();
 
         void connect(WifiP2pConfig config);
 
         void disconnect();
+
+        void disconnectPingPong();
+
+        void discoveryPingPong();
     }
 
 }

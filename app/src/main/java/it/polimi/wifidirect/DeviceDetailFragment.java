@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package it.ks89.wifidirect;
+package it.polimi.wifidirect;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WpsInfo;
@@ -45,6 +44,11 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import it.polimi.wifidirect.model.LocalP2PDevice;
+import it.polimi.wifidirect.model.P2PDevice;
+import it.polimi.wifidirect.model.P2PGroup;
+import it.polimi.wifidirect.model.PeerList;
+
 /**
  * A fragment that manages a particular peer and allows interaction with device
  * i.e. setting up network connection and transferring data.
@@ -53,8 +57,12 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     protected static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
-    private WifiP2pDevice device;
+
+    //    private WifiP2pDevice device;
+    private String pingpong_macaddress;
+    private P2PDevice device;
     private WifiP2pInfo info;
+
     ProgressDialog progressDialog = null;
     private Fragment fragment = this;
     private static final int PINGPONG = 5;
@@ -81,13 +89,13 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             @Override
             public void onClick(View v) {
                 WifiP2pConfig config = new WifiP2pConfig();
-                config.deviceAddress = device.deviceAddress;
+                config.deviceAddress = device.getP2pDevice().deviceAddress;
                 config.wps.setup = WpsInfo.PBC;
                 if (progressDialog != null && progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
                 progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel",
-                        "Connecting to :" + device.deviceAddress, true, true
+                        "Connecting to :" + device.getP2pDevice().deviceAddress, true, true
 //                        new DialogInterface.OnCancelListener() {
 //
 //                            @Override
@@ -95,8 +103,9 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 //                                ((DeviceActionListener) getActivity()).cancelDisconnect();
 //                            }
 //                        }
-                        );
+                );
                 ((DeviceListFragment.DeviceActionListener) getActivity()).connect(config);
+
 
             }
         });
@@ -169,18 +178,21 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        switch(requestCode) {
+        switch (requestCode) {
             case PINGPONG:
 
                 if (resultCode == Activity.RESULT_OK) {
                     // After Ok code.
-                    Bundle bundle=data.getExtras();
-                    String macaddress_dialog=bundle.getString("macaddress_text");
+                    Bundle bundle = data.getExtras();
+                    this.pingpong_macaddress = bundle.getString("macaddress_text");
 
-                    Log.d("DeviceDetailFragment_PingPong_yes","Ho premuto Yes e il mac address passato e' : " + macaddress_dialog);
-                } else if (resultCode == Activity.RESULT_CANCELED){
+                    Log.d("DeviceDetailFragment_PingPong_yes", "Ho premuto Yes e il mac address passato e' : " + pingpong_macaddress);
+
+                    this.pingPongConnect();
+
+                } else if (resultCode == Activity.RESULT_CANCELED) {
                     // After Cancel code.
-                    Log.d("DeviceDetailFragment_PingPong_no","Ho premuto NO");
+                    Log.d("DeviceDetailFragment_PingPong_no", "Ho premuto NO");
                 }
 
                 break;
@@ -206,6 +218,74 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     }
 
+
+    class PingPongAsyncTask extends AsyncTask<Context, Void, Void> {
+        @Override
+        protected Void doInBackground(Context... params) {
+
+            P2PDevice destinationDevice = PeerList.getInstance().getDeviceByMacAddress(pingpong_macaddress);
+            WifiP2pConfig config = new WifiP2pConfig();
+            config.deviceAddress = destinationDevice.getP2pDevice().deviceAddress;
+            config.wps.setup = WpsInfo.PBC;
+            config.groupOwnerIntent = 0; //per poter diventare client
+
+            for(int i=0; i<10; i++) {
+
+                ((WiFiDirectActivity) params[0]).connect(config);
+                Log.d("ping-pong", "1");
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                ((WiFiDirectActivity) params[0]).disconnectPingPong();
+
+                ((WiFiDirectActivity) params[0]).discoveryPingPong();
+
+                Log.d("ping-pong", "2");
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //e finisci come connesso
+            ((WiFiDirectActivity) params[0]).connect(config);
+
+            return null;
+        }
+    }
+
+    private void pingPongConnect() {
+        P2PDevice destinationDevice = PeerList.getInstance().getDeviceByMacAddress(pingpong_macaddress);
+
+        if (destinationDevice != null) {
+            Log.d("pingpong_destination", "PingPong con : " + destinationDevice.getP2pDevice().deviceAddress);
+            WifiP2pConfig config = new WifiP2pConfig();
+            config.deviceAddress = destinationDevice.getP2pDevice().deviceAddress;
+            config.wps.setup = WpsInfo.PBC;
+            config.groupOwnerIntent = 0; //per poter diventare client
+
+//            if (progressDialog != null && progressDialog.isShowing()) {
+//                progressDialog.dismiss();
+//            }
+//            progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel",
+//                    "Connecting to :" + device.getP2pDevice().deviceAddress, true, true);
+
+
+
+
+            new PingPongAsyncTask().execute(this.getActivity());
+
+
+        } else {
+            Log.d("pingpong_destination", "Impossibile avviare PingPong");
+        }
+    }
+
+
     @Override
     public void onConnectionInfoAvailable(final WifiP2pInfo info) {
         if (progressDialog != null && progressDialog.isShowing()) {
@@ -218,16 +298,44 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         TextView view = (TextView) mContentView.findViewById(R.id.group_owner);
         view.setText(getResources().getString(R.string.group_owner_text)
                 + ((info.isGroupOwner == true) ? getResources().getString(R.string.yes)
-                        : getResources().getString(R.string.no)));
+                : getResources().getString(R.string.no)));
 
         // InetAddress from WifiP2pInfo struct.
         view = (TextView) mContentView.findViewById(R.id.device_info);
-        view.setText("Group Owner IP - " + info.groupOwnerAddress.getHostAddress());
+//        view.setText("Group Owner IP - " + info.groupOwnerAddress.getHostAddress());
 
         // After the group negotiation, we assign the group owner as the file
         // server. The file server is single threaded, single connection server
         // socket.
         if (info.groupFormed && info.isGroupOwner) {
+            //gruppo formato ed e' group owner, allora dico alla lista dei Peer che questo device e' un group owner e creo anche il P2pGroup
+            //mettendoci dentro i client
+
+            LocalP2PDevice.getInstance().getLocalDevice().setGroupOwner(true);
+
+            //prima vedo se il group owner e' gia' in lista
+            boolean result = P2PGroup.getInstance().getList().contains(LocalP2PDevice.getInstance().getLocalDevice());
+
+            if(!result) {
+                //se no lo aggiungo
+                P2PGroup.getInstance().getList().add(LocalP2PDevice.getInstance().getLocalDevice());
+            }
+
+            for(P2PDevice device1 : PeerList.getInstance().getList()) {
+                if(!device1.isGroupOwner() && device1.getP2pDevice().status == WifiP2pDevice.CONNECTED) {
+                    if(!P2PGroup.getInstance().getList().contains(device1)) {
+                        //se questo client e' connesso e non e' in lista lo aggiungo
+                        P2PGroup.getInstance().getList().add(device1);
+                    }
+                }
+            }
+
+
+            for(P2PDevice device1 : P2PGroup.getInstance().getList()) {
+                Log.d("Stampo gruppo" , device1.toString());
+            }
+
+
             new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text))
                     .execute();
         } else if (info.groupFormed) {
@@ -244,16 +352,16 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     /**
      * Updates the UI with device data
-     * 
+     *
      * @param device the device to be displayed
      */
-    public void showDetails(WifiP2pDevice device) {
+    public void showDetails(P2PDevice device) {
         this.device = device;
         this.getView().setVisibility(View.VISIBLE);
         TextView view = (TextView) mContentView.findViewById(R.id.device_address);
-        view.setText(device.deviceAddress);
+        view.setText(device.getP2pDevice().deviceAddress);
         view = (TextView) mContentView.findViewById(R.id.device_info);
-        view.setText(device.toString());
+        view.setText(device.getP2pDevice().toString());
 
     }
 

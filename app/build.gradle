@@ -23,6 +23,12 @@ android {
     }
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = "2.2.1"
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    provided 'org.projectlombok:lombok:1.14.8'
 }

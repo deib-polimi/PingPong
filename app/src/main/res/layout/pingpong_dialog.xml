@@ -6,7 +6,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Inserisci mac address dell&apos;altro GO"
+        android:text="Disabilita la PingPong mode su questo device"
         android:id="@+id/label"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/dialog_mac_address_edittext"
         android:hint="11:11:11:11:11:11"
-        android:layout_below="@+id/label"
+        android:layout_below="@+id/terzaLinea"
         android:layout_centerHorizontal="true" />
 
 
@@ -51,4 +51,19 @@
                 android:textSize="16sp"
                 android:text="Yes" />
         </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Abilita la PingPong mode su tutti gli altri"
+        android:id="@+id/secondaLinea"
+        android:layout_below="@+id/label"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Inserisci mac address dell&apos;altro GO"
+        android:id="@+id/terzaLinea"
+        android:layout_below="@+id/secondaLinea"
+        android:layout_alignStart="@+id/secondaLinea" />
 </RelativeLayout>

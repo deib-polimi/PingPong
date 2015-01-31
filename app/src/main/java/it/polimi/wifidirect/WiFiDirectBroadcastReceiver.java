@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.ks89.wifidirect;
+package it.polimi.wifidirect;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,6 +25,9 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.util.Log;
+
+import it.polimi.wifidirect.model.LocalP2PDevice;
+import it.polimi.wifidirect.model.P2PDevice;
 
 /**
  * A BroadcastReceiver that notifies of important wifi p2p events.
@@ -102,13 +105,29 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 } else {
                     // It's a disconnect
                     activity.resetData();
+
+                    //si diconnette
+                    Log.d("Broadcast received", "non piu connesso");
+
+                    //se la pingpong mode su questo device e' attiva, allora ricomincia subito la discovery in modo forzato e silenzioso
+                    Log.d("disconnect-verifica pingpong", "Stato pingpong: " + LocalP2PDevice.getInstance().isPing_pong_mode());
+                    if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
+                        activity.discoveryPingPong();
+                    }
+
                 }
                 break;
 
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
 
                 DeviceListFragment fragment = (DeviceListFragment) activity.getFragmentManager().findFragmentById(R.id.frag_list);
-                fragment.updateThisDevice((WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE));
+                WifiP2pDevice wifiP2pDevice = (WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+
+                fragment.updateThisDevice(
+                        new P2PDevice(
+                                wifiP2pDevice
+                        )
+                );
                 break;
         }
     }

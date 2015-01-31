@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.ks89.wifidirect;
+package it.polimi.wifidirect;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -35,6 +35,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import it.polimi.wifidirect.model.LocalP2PDevice;
+import it.polimi.wifidirect.model.P2PDevice;
+import it.polimi.wifidirect.model.P2PGroup;
 
 /**
  * An activity that uses WiFi Direct APIs to discover and connect with available
@@ -104,6 +108,8 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         if (fragmentDetails != null) {
             fragmentDetails.resetViews();
         }
+
+        P2PGroup.getInstance().getList().clear();
     }
 
     @Override
@@ -159,7 +165,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
     }
 
     @Override
-    public void showDetails(WifiP2pDevice device) {
+    public void showDetails(P2PDevice device) {
         DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
         fragment.showDetails(device);
 
@@ -181,10 +187,55 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         });
     }
 
+
+
+    @Override
+    public void disconnectPingPong() {
+//        final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
+//        fragment.resetViews();
+
+//        P2PGroup.getInstance().getList().clear();
+
+        manager.removeGroup(channel, new ActionListener() {
+
+            @Override
+            public void onFailure(int reasonCode) {
+                Log.d(TAG, "Disconnect failed. Reason :" + reasonCode);
+
+            }
+
+            @Override
+            public void onSuccess() {
+//                fragment.getView().setVisibility(View.GONE);
+            }
+
+        });
+    }
+
+    @Override
+    public void discoveryPingPong() {
+        manager.discoverPeers(channel, new ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                Toast.makeText(WiFiDirectActivity.this, "Discovery Initiated", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int reasonCode) {
+                Toast.makeText(WiFiDirectActivity.this, "Discovery Failed : " + reasonCode, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
     public void disconnect() {
         final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
         fragment.resetViews();
+
+        P2PGroup.getInstance().getList().clear();
+
+
         manager.removeGroup(channel, new ActionListener() {
 
             @Override
@@ -211,6 +262,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             manager.initialize(this, getMainLooper(), this);
         } else {
             Toast.makeText(this, "Severe! Channel is probably lost premanently. Try Disable/Re-Enable P2P.", Toast.LENGTH_LONG).show();
+            P2PGroup.getInstance().getList().clear();
         }
     }
 
@@ -224,9 +276,15 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
          */
         if (manager != null) {
             final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager().findFragmentById(R.id.frag_list);
-            if (fragment.getDevice() == null || fragment.getDevice().status == WifiP2pDevice.CONNECTED) {
+              P2PDevice localDevice = LocalP2PDevice.getInstance().getLocalDevice();
+//            if (fragment.getThisLocalDevice() == null || fragment.getThisLocalDevice().getP2pDevice().status == WifiP2pDevice.CONNECTED) {
+//                disconnect();
+//            } else if (fragment.getThisLocalDevice().getP2pDevice().status == WifiP2pDevice.AVAILABLE || fragment.getThisLocalDevice().getP2pDevice().status == WifiP2pDevice.INVITED) {
+
+
+                if (localDevice == null || localDevice.getP2pDevice().status == WifiP2pDevice.CONNECTED) {
                 disconnect();
-            } else if (fragment.getDevice().status == WifiP2pDevice.AVAILABLE || fragment.getDevice().status == WifiP2pDevice.INVITED) {
+            } else if (localDevice.getP2pDevice().status == WifiP2pDevice.AVAILABLE || localDevice.getP2pDevice().status == WifiP2pDevice.INVITED) {
 
                 manager.cancelConnect(channel, new ActionListener() {
 
