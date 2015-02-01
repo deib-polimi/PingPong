@@ -54,6 +54,7 @@ import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroup;
 import it.polimi.wifidirect.model.P2PGroups;
 import it.polimi.wifidirect.model.PeerList;
+import it.polimi.wifidirect.model.PingPongList;
 
 /**
  * A fragment that manages a particular peer and allows interaction with device
@@ -64,7 +65,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     protected static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
 
-    private String pingpong_macaddress;
     private P2PDevice device;
     private WifiP2pInfo info;
 
@@ -160,9 +160,23 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 if (resultCode == Activity.RESULT_OK) {
                     // After Ok code.
                     Bundle bundle = data.getExtras();
-                    this.pingpong_macaddress = bundle.getString("macaddress_text");
+                    PingPongList.getInstance().setPing_macaddress(bundle.getString("ping_address"));
+                    PingPongList.getInstance().setPong_macaddress(bundle.getString("pong_address"));
+                    PingPongList.getInstance().setTestmode(bundle.getBoolean("testmode_checkbox_status"));
 
-                    Log.d("DDF_PingPong_yes", "Ho premuto Yes e il mac address passato e' : " + pingpong_macaddress);
+                    //abilitato la pingpong mode
+                    PingPongList.getInstance().setPinponging(true);
+
+                    //PeerList.getInstance().toString();
+
+                    P2PDevice pingDevice = PeerList.getInstance().getDeviceByMacAddress(PingPongList.getInstance().getPing_macaddress());
+                    P2PDevice pongDevice = PeerList.getInstance().getDeviceByMacAddress(PingPongList.getInstance().getPong_macaddress());
+
+                    PingPongList.getInstance().setPingDevice(pingDevice);
+                    PingPongList.getInstance().setPongDevice(pongDevice);
+
+                    Log.d("DDF_PingPong_yes", "Ho premuto Yes e i mac address passati sono, ping: " + PingPongList.getInstance().getPing_macaddress()
+                            + " e pong: " + PingPongList.getInstance().getPong_macaddress());
 
                     this.pingPongConnect();
 
@@ -194,75 +208,9 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     }
 
-
-    class PingPongAsyncTask extends AsyncTask<Context, Void, Void> {
-        @Override
-        protected Void doInBackground(Context... context) {
-
-            P2PDevice destinationDevice = PeerList.getInstance().getDeviceByMacAddress(pingpong_macaddress);
-            WifiP2pConfig config = new WifiP2pConfig();
-            config.deviceAddress = destinationDevice.getP2pDevice().deviceAddress;
-            config.wps.setup = WpsInfo.PBC;
-
-            //per poter diventare client (visto che pingpong e' un client che saltella tra due gruppi)
-            //e non iniziare un nuovo gruppo come GO
-            config.groupOwnerIntent = 0;
-
-            for (int i = 0; i < 10; i++) {
-                ((WiFiDirectActivity) context[0]).disconnectPingPong();
-
-                Log.d("ping-pong", "disconnect");
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                ((WiFiDirectActivity) context[0]).discoveryPingPong();
-
-                Log.d("ping-pong", "discovery");
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                ((WiFiDirectActivity) context[0]).connect(config);
-
-                Log.d("ping-pong", "connect");
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return null;
-        }
-    }
-
     private void pingPongConnect() {
-        P2PDevice destinationDevice = PeerList.getInstance().getDeviceByMacAddress(pingpong_macaddress);
+        new PingPongLogic().execute(this.getActivity());
 
-        if (destinationDevice != null) {
-            Log.d("pingpong_destination", "PingPong con : " + destinationDevice.getP2pDevice().deviceAddress);
-            WifiP2pConfig config = new WifiP2pConfig();
-            config.deviceAddress = destinationDevice.getP2pDevice().deviceAddress;
-            config.wps.setup = WpsInfo.PBC;
-            config.groupOwnerIntent = 0; //per poter diventare client
-
-//            if (progressDialog != null && progressDialog.isShowing()) {
-//                progressDialog.dismiss();
-//            }
-//            progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel",
-//                    "Connecting to :" + device.getP2pDevice().deviceAddress, true, true);
-
-            new PingPongAsyncTask().execute(this.getActivity());
-
-
-        } else {
-            Log.d("pingpong_destination", "Impossibile avviare PingPong");
-        }
     }
 
     @Override
@@ -287,6 +235,27 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             client = new P2PDevice(device);
             client.setGroupOwner(false);
             p2pGroup.getList().add(client);
+        }
+
+
+        if(!group.isGroupOwner()) {
+            //se sono un client e' possibile che voglia diventare pingpong in futuro, quindi setto nella lista pingpong
+            //i vari group owner a cui potrei collegarmi in futuro (supponendo che essi abbiano gia' dei gruppi formati).
+            //Non ha senso farlo se si e' group owner tanto non potra' fare ping pong e anche se la sua lista resta vuota,
+            //non ci sono problemi.
+
+            //Per fare la lista, prima metto il mio attuale group owner a cui sono collegato.
+            PingPongList.getInstance().getPingponglist().add(owner);
+
+            //ora dalla lista dei peer rilevati da me stesso in PeerList, devo togliere il mio group owner e i miei fratelli client
+            //connessi al mio stesso group owner, cioe' ai client che fanno parte del mio gruppo. Ovviamente devo far si che qualunque device
+            //nella Pingpong list sia in realta' un group owner.
+            for(P2PDevice dev : PeerList.getInstance().getList()) {
+                if(dev.isGroupOwner() && !p2pGroup.getList().contains(dev) &&
+                        !PingPongList.getInstance().getPingponglist().contains(dev)) {
+                    PingPongList.getInstance().getPingponglist().add(dev);
+                }
+            }
         }
 
         Log.d("Stampo owner", p2pGroup.getGroupOwner().toString());
@@ -329,9 +298,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
             ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
                     .getString(R.string.client_text));
-
-            //se e' il client e' possibile che voglia diventare pingpong in futuro, quindi prima di tutto vado a
-
         }
 
         // hide the connect button

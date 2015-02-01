@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -21,6 +22,7 @@ import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroup;
 import it.polimi.wifidirect.model.P2PGroups;
 import it.polimi.wifidirect.model.PeerList;
+import it.polimi.wifidirect.model.PingPongList;
 import it.polimi.wifidirect.spinner.CustomSpinnerAdapter;
 import it.polimi.wifidirect.spinner.SpinnerRow;
 
@@ -36,8 +38,10 @@ import it.polimi.wifidirect.spinner.SpinnerRow;
 public class PingPongDialog extends DialogFragment {
 
     static private Button ok, no;
-    static private EditText macAddress;
-    static private Spinner mac_spinner;
+    static private Spinner spinner_ping, spinner_pong; //cioe' da dove iniziare pingpong a dove andare, prima di tornare nel gruppo iniziale
+    static private CheckBox testmode_checkbox;
+
+    static ArrayList<SpinnerRow> list_ping, list_pong;
 
     static public PingPongDialog newInstance() {
         return new PingPongDialog();
@@ -57,31 +61,35 @@ public class PingPongDialog extends DialogFragment {
         this.getDialog().setTitle("Ping Pong");
         ok = (Button) v.findViewById(R.id.dialog_yes);
         no = (Button) v.findViewById(R.id.dialog_no);
-        macAddress = (EditText) v.findViewById(R.id.dialog_mac_address_edittext);
+        spinner_ping = (Spinner) v.findViewById(R.id.spinner_ping);
+        spinner_pong = (Spinner) v.findViewById(R.id.spinner_pong);
+        testmode_checkbox = (CheckBox) v.findViewById(R.id.testmode_checkbox);
 
+        list_ping = new ArrayList<>();
+        list_ping.add(new SpinnerRow(P2PGroups.getInstance().getGroupList().get(0).getGroupOwner().getP2pDevice().deviceAddress));
 
-        //parto dalla lista di peer e rimuovo il local device e tutti quelli gia' nel gruppo se sono un group owner
-        //ricorda comunque che la funzione ping pong deve essere fatta da un client e non da un group owner
-        List<P2PDevice> peerList = PeerList.getInstance().getList();
-        peerList.remove(LocalP2PDevice.getInstance().getLocalDevice());
-        for(P2PDevice dev : P2PGroups.getInstance().getGroupList().get(0).getList()) {
-            peerList.remove(dev);
+        list_pong = new ArrayList<>();
+        for(P2PDevice pingpongdevice : PingPongList.getInstance().getPingponglist()) {
+            list_pong.add(new SpinnerRow(pingpongdevice.getP2pDevice().deviceAddress));
         }
 
 
-        ArrayList<SpinnerRow> macaddress = new ArrayList<>();
-        for(P2PDevice device : peerList) {
-            macaddress.add(new SpinnerRow(device.getP2pDevice().deviceAddress));
-        }
+        this.setSpinnerAdapter(spinner_ping,list_ping);
+        this.setSpinnerAdapter(spinner_pong,list_pong);
 
-        CustomSpinnerAdapter customAdapterShaAlgorithm = new CustomSpinnerAdapter(this.getActivity(), android.R.layout.simple_spinner_item,macaddress);
-
-        mac_spinner = (Spinner) v.findViewById(R.id.device_spinner);
-        mac_spinner.setAdapter(customAdapterShaAlgorithm);
+        //visto che il client e' gia' connesso quando avvio questa modalita' faccio si che la scelta di ping sia forzata
+        //e non modificabile.
+        spinner_ping.setEnabled(false);
 
         this.setListener();
 
         return v;
+    }
+
+    public void setSpinnerAdapter(Spinner spinner, ArrayList<SpinnerRow> list) {
+        spinner.setAdapter(new CustomSpinnerAdapter(this.getActivity(),
+                android.R.layout.simple_spinner_item,
+                list));
     }
 
     public void setListener() {
@@ -89,11 +97,15 @@ public class PingPongDialog extends DialogFragment {
             @Override
             public void onClick(View arg0) {
                 Log.d("pingpong_dialog_button", "ok");
+
                 Intent i = new Intent();
                 Bundle extras=new Bundle();
-//                extras.putString("macaddress_text",mac_spinner.getSelectedItem().toString());
-                extras.putString("macaddress_text",macAddress.getText().toString());
+                extras.putString("ping_address",spinner_ping.getSelectedItem().toString());
+                extras.putString("pong_address",spinner_ping.getSelectedItem().toString());
+                extras.putBoolean("testmode_checkbox_status", testmode_checkbox.isChecked());
                 i.putExtras(extras);
+
+                //notifica a DeviceDetailFragment al metodo onActivityResult
                 getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
                 dismiss();
             }
@@ -104,6 +116,23 @@ public class PingPongDialog extends DialogFragment {
                 Log.d("pingpong_dialog_button", "no");
                 getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, getActivity().getIntent());
                 dismiss();
+            }
+        });
+
+        testmode_checkbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("testmode", "cliccato");
+
+                if(testmode_checkbox.isChecked()) {
+                    setSpinnerAdapter(spinner_pong,list_ping);
+
+                    spinner_pong.setEnabled(false);
+                } else {
+                    setSpinnerAdapter(spinner_pong,list_pong);
+
+                    spinner_pong.setEnabled(true);
+                }
             }
         });
     }

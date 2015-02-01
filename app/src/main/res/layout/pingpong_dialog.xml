@@ -6,19 +6,91 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Disabilita la PingPong mode su questo device"
-        android:id="@+id/label"
+        android:text="1) Disabilita la PingPong mode su questo device"
+        android:id="@+id/primalinea"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <EditText
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:textSize="12sp" />
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/dialog_mac_address_edittext"
-        android:hint="11:11:11:11:11:11"
-        android:layout_below="@+id/terzaLinea"
-        android:layout_centerHorizontal="true" />
+        android:text="2) Abilita la PingPong mode su tutti gli altri"
+        android:id="@+id/secondaLinea"
+        android:layout_below="@+id/primalinea"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:textSize="12sp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="3) Il PingPong è dal disp. in Ping a quello il Pong"
+        android:id="@+id/terzaLinea"
+        android:layout_below="@+id/secondaLinea"
+        android:layout_alignStart="@+id/primalinea"
+        android:layout_marginTop="5dp"
+        android:textSize="12sp" />
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Opzionale: Testmode è utile per testing dell&apos;app"
+        android:id="@+id/qualtalinea"
+        android:layout_below="@+id/terzaLinea"
+        android:layout_centerHorizontal="true"
+        android:textSize="10sp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ping"
+        android:id="@+id/textView"
+        android:layout_marginTop="20dp"
+        android:layout_alignTop="@+id/spinner_ping"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pong"
+        android:id="@+id/textView2"
+        android:layout_marginTop="20dp"
+        android:layout_alignTop="@+id/spinner_pong"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="30dp" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner_ping"
+        android:layout_below="@+id/qualtalinea"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/textView" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner_pong"
+        android:layout_below="@+id/spinner_ping"
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/spinner_ping" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Testmode: per pingpong nello stesso gruppo"
+        android:id="@+id/testmode_checkbox"
+        android:checked="false"
+        android:layout_below="@+id/spinner_pong"
+        android:layout_alignStart="@+id/textView2"
+        android:layout_marginTop="15dp"
+        android:textSize="12sp" />
 
 
     <LinearLayout
@@ -26,51 +98,31 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/device_spinner"
-        android:layout_alignParentStart="true">
+        android:layout_below="@+id/testmode_checkbox"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp">
 
 
-            <Button
-                android:id="@+id/dialog_no"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.70"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="4dp"
-                android:layout_marginTop="6dp"
-                android:textSize="16sp"
-                android:text="No" />
+        <Button
+            android:id="@+id/dialog_no"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.70"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="6dp"
+            android:textSize="16sp"
+            android:text="No" />
 
-            <Button
-                android:id="@+id/dialog_yes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.30"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="6dp"
-                android:textSize="16sp"
-                android:text="Yes" />
-        </LinearLayout>
+        <Button
+            android:id="@+id/dialog_yes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.30"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="6dp"
+            android:textSize="16sp"
+            android:text="Yes" />
+    </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Abilita la PingPong mode su tutti gli altri"
-        android:id="@+id/secondaLinea"
-        android:layout_below="@+id/label"
-        android:layout_centerHorizontal="true" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Inserisci mac address dell&apos;altro GO"
-        android:id="@+id/terzaLinea"
-        android:layout_below="@+id/secondaLinea"
-        android:layout_alignStart="@+id/secondaLinea" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/device_spinner"
-        android:layout_below="@+id/dialog_mac_address_edittext"
-        android:layout_centerHorizontal="true"/>
 </RelativeLayout>

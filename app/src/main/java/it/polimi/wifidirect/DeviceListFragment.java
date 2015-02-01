@@ -33,9 +33,12 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
+import it.polimi.wifidirect.model.PingPongList;
 
 /**
  * A ListFragment that displays available peers on discovery and requests the
@@ -104,10 +107,9 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     }
 
 
-
     /**
      * Update UI for this device.
-     * 
+     *
      * @param device WifiP2pDevice object
      */
     public void updateThisDevice(P2PDevice device) {
@@ -123,19 +125,18 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
 
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peerList) {
+        Log.d("onPeersAvailable", "onPeersAvailable");
+
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
 
-        for(WifiP2pDevice device1 : peerList.getDeviceList()) {
-            Log.d("peerlist" , device1.deviceAddress);
+        for (WifiP2pDevice device1 : peerList.getDeviceList()) {
+            Log.d("peerlist", device1.deviceAddress);
         }
 
         PeerList.getInstance().getList().clear();
         PeerList.getInstance().addAllElements(peerList.getDeviceList());
-//        peers.clear();
-//        peers.addAll(peerList.getDeviceList());
-
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
         if (PeerList.getInstance().getList().size() == 0) {
             Log.d(WiFiDirectActivity.TAG, "No devices found");
@@ -143,8 +144,32 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
         }
 
 
-        //ora verifico se il dispositivo settato come da usare per fare ping pong e' stato trovato
+        if (PingPongList.getInstance().isPinponging() && !PingPongList.getInstance().isConnecting()) {
 
+            //PINGPONG
+
+            P2PDevice nextDeviceToConnect = PingPongList.getInstance().getNextDeviceToConnect();
+            boolean found = false;
+
+            for (P2PDevice device : PeerList.getInstance().getList()) {
+                if (device.getP2pDevice()!=null && nextDeviceToConnect!=null
+                        && device.getP2pDevice().deviceAddress.equals(nextDeviceToConnect.getP2pDevice().deviceAddress)) {
+                    found = true;
+                }
+            }
+
+            //ora verifico se il dispositivo settato come da usare per fare ping pong e' stato trovato
+            if (found) {
+
+                PingPongList.getInstance().setConnecting(true);
+
+                ((WiFiDirectActivity) this.getActivity()).connect(new PingPongLogic().getConfigToReconnect());
+
+                new PingPongLogic().execute(this.getActivity());
+
+            }
+
+        }
     }
 
     public void clearPeers() {
@@ -153,7 +178,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     }
 
     /**
-     * 
+     *
      */
     public void onInitiateDiscovery() {
         if (progressDialog != null && progressDialog.isShowing()) {
@@ -164,7 +189,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
 
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        
+
                     }
                 });
     }
