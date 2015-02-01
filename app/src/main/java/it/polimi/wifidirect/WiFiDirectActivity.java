@@ -39,6 +39,7 @@ import android.widget.Toast;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroup;
+import it.polimi.wifidirect.model.P2PGroups;
 
 /**
  * An activity that uses WiFi Direct APIs to discover and connect with available
@@ -109,7 +110,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             fragmentDetails.resetViews();
         }
 
-        P2PGroup.getInstance().getList().clear();
+        P2PGroups.getInstance().getGroupList().clear();
     }
 
     @Override
@@ -118,6 +119,9 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         inflater.inflate(R.menu.action_items, menu);
         return true;
     }
+
+
+
 
     /*
      * (non-Javadoc)
@@ -236,7 +240,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
         fragment.resetViews();
 
-        P2PGroup.getInstance().getList().clear();
+        P2PGroups.getInstance().getGroupList().clear();
 
 
         manager.removeGroup(channel, new ActionListener() {
@@ -265,7 +269,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             manager.initialize(this, getMainLooper(), this);
         } else {
             Toast.makeText(this, "Severe! Channel is probably lost premanently. Try Disable/Re-Enable P2P.", Toast.LENGTH_LONG).show();
-            P2PGroup.getInstance().getList().clear();
+            P2PGroups.getInstance().getGroupList().clear();
         }
     }
 

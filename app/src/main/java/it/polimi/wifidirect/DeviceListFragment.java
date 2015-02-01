@@ -142,6 +142,9 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
             return;
         }
 
+
+        //ora verifico se il dispositivo settato come da usare per fare ping pong e' stato trovato
+
     }
 
     public void clearPeers() {

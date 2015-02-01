@@ -19,6 +19,7 @@ import it.polimi.wifidirect.R;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroup;
+import it.polimi.wifidirect.model.P2PGroups;
 import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.spinner.CustomSpinnerAdapter;
 import it.polimi.wifidirect.spinner.SpinnerRow;
@@ -63,7 +64,7 @@ public class PingPongDialog extends DialogFragment {
         //ricorda comunque che la funzione ping pong deve essere fatta da un client e non da un group owner
         List<P2PDevice> peerList = PeerList.getInstance().getList();
         peerList.remove(LocalP2PDevice.getInstance().getLocalDevice());
-        for(P2PDevice dev : P2PGroup.getInstance().getList()) {
+        for(P2PDevice dev : P2PGroups.getInstance().getGroupList().get(0).getList()) {
             peerList.remove(dev);
         }
 

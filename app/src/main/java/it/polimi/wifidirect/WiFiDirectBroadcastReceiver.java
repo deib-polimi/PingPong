@@ -72,7 +72,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     activity.resetData();
 
                 }
-                Log.d(WiFiDirectActivity.TAG, "P2P state changed - " + state);
+                Log.d("STATE_CHANGED_ACTION", "P2P state changed - " + state);
                 break;
 
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
@@ -83,7 +83,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 if (manager != null) {
                     manager.requestPeers(channel, (PeerListListener) activity.getFragmentManager().findFragmentById(R.id.frag_list));
                 }
-                Log.d(WiFiDirectActivity.TAG, "P2P peers changed");
+                Log.d("PEERS_CHANGED_ACTION", "P2P peers changed");
                 break;
 
             case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
@@ -102,6 +102,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
                     DeviceDetailFragment fragment = (DeviceDetailFragment) activity.getFragmentManager().findFragmentById(R.id.frag_detail);
                     manager.requestConnectionInfo(channel, fragment);
+                    manager.requestGroupInfo(channel, fragment);
                 } else {
                     // It's a disconnect
                     activity.resetData();
@@ -110,7 +111,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     Log.d("Broadcast received", "non piu connesso");
 
                     //se la pingpong mode su questo device e' attiva, allora ricomincia subito la discovery in modo forzato e silenzioso
-                    Log.d("disconnect-verifica pingpong", "Stato pingpong: " + LocalP2PDevice.getInstance().isPing_pong_mode());
+                    Log.d("verifica_pingpong", "Stato pingpong: " + LocalP2PDevice.getInstance().isPing_pong_mode());
                     if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
                         activity.discoveryPingPong();
                     }
@@ -128,6 +129,8 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                                 wifiP2pDevice
                         )
                 );
+
+                Log.d("THIS_DEVICE_CHANGED_ACTION" , "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
                 break;
         }
     }
