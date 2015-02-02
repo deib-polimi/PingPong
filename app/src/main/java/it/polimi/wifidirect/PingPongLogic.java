@@ -27,11 +27,15 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
     @Override
     protected Void doInBackground(final Context... context) {
 
+        Log.d("ping-pong" , System.currentTimeMillis() + " - Prima dell ritardo");
+
         try {
-            Thread.sleep(4000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Log.d("ping-pong" , System.currentTimeMillis() + " - Dopo al ritardo");
 
         P2PDevice pingDevice = PingPongList.getInstance().getPingDevice();
         P2PDevice pongDevice = PingPongList.getInstance().getPongDevice();
@@ -62,14 +66,17 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
                 PingPongList.getInstance().setUse_pongAddress(true);
             }
 
+            Log.d("ping-pong" , System.currentTimeMillis() + " - disconnect");
+
             ((WiFiDirectActivity)activity).runOnUiThread(new Runnable() {
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
+                    Log.d("Pingponglogic" , System.currentTimeMillis() + " - Dopo al ritardo");
                     ((WiFiDirectActivity) context[0]).disconnectPingPong();
                 }
             });
 
-            Log.d("ping-pong", "disconnect");
+
 
 //            try {
 //                Thread.sleep(3000);

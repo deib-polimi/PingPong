@@ -45,8 +45,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 import it.polimi.wifidirect.dialog.PingPongDialog;
 import it.polimi.wifidirect.model.LocalP2PDevice;
@@ -178,7 +176,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     Log.d("DDF_PingPong_yes", "Ho premuto Yes e i mac address passati sono, ping: " + PingPongList.getInstance().getPing_macaddress()
                             + " e pong: " + PingPongList.getInstance().getPong_macaddress());
 
-                    this.pingPongConnect();
+                    this.startPingponging();
 
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     // After Cancel code.
@@ -210,7 +208,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     }
 
-    private void pingPongConnect() {
+    private void startPingponging() {
         new PingPongLogic(this.getActivity()).execute(this.getActivity());
 
     }

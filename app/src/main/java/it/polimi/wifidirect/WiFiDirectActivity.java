@@ -213,6 +213,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
             @Override
             public void onSuccess() {
+
                 fragment.getView().setVisibility(View.GONE);
             }
 
@@ -222,19 +223,26 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
     public void restartDiscoveryPingpongAfterDisconnect() {
 
+        Log.d("ping-pong" , System.currentTimeMillis() + " - Praparo per discovery");
+
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        Log.d("ping-pong", "discovery");
+        Log.d("ping-pong", System.currentTimeMillis() + " - discovery (ora la faccio davvero)");
 
         PingPongList.getInstance().setConnecting(false);
 
         this.discoveryPingPong();
     }
 
+    //dopo che mi sono riconnesso, richiama la logica pingpong che in un altro thread risconnette e rifa tutto da capo
+    public void startNewPingPongCycle() {
+        Log.d("ping-pong", System.currentTimeMillis() + " - Sono riconnesso, quindi ciclo pingpong completato, ma preparo il nuovo ciclo)");
+        new PingPongLogic(this).execute(this);
+    }
 
     //metodo modificato per fare una discovery silenziosa quando avvio pingpong
     @Override

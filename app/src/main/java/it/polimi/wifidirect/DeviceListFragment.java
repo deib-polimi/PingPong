@@ -163,14 +163,17 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
 
                 PingPongList.getInstance().setConnecting(true);
 
+                Log.d("ping-pong" , System.currentTimeMillis() + " - connect");
+
                 ((WiFiDirectActivity) this.getActivity()).connect(new PingPongLogic(this.getActivity()).getConfigToReconnect());
 
-                new PingPongLogic(this.getActivity()).execute(this.getActivity());
+//                new PingPongLogic(this.getActivity()).execute(this.getActivity());
 
             }
 
         }
     }
+
 
     public void clearPeers() {
         PeerList.getInstance().getList().clear();
