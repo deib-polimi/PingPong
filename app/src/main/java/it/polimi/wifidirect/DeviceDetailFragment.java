@@ -122,7 +122,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                         // Allow user to pick an image from Gallery or other
                         // registered apps
                         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.setType("image/*");
+                        intent.setType("video/*, image/*");
                         startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
                     }
                 });
@@ -190,17 +190,19 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 //standard dal codice google
                 // User has picked an image. Transfer it to group owner i.e peer using
                 // FileTransferService.
-                Uri uri = data.getData();
-                TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
-                statusText.setText("Sending: " + uri);
-                Log.d(WiFiDirectActivity.TAG, "Intent----------- " + uri);
-                Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
-                serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-                serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
-                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
-                        info.groupOwnerAddress.getHostAddress());
-                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
-                getActivity().startService(serviceIntent);
+                if(data!=null) {
+                    Uri uri = data.getData();
+                    TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
+                    statusText.setText("Sending: " + uri);
+                    Log.d(WiFiDirectActivity.TAG, "Intent----------- " + uri);
+                    Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
+                    serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
+                    serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
+                    serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+                            P2PGroups.getInstance().getGroupList().get(0).getGroupOwnerIpAddress().getHostAddress());
+                    serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+                    getActivity().startService(serviceIntent);
+                }
                 break;
 
         }
@@ -209,7 +211,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     }
 
     private void pingPongConnect() {
-        new PingPongLogic().execute(this.getActivity());
+        new PingPongLogic(this.getActivity()).execute(this.getActivity());
 
     }
 
@@ -228,6 +230,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
         if(!P2PGroups.getInstance().getGroupList().contains(p2pGroup)) {
             P2PGroups.getInstance().getGroupList().add(p2pGroup);
+            P2PGroups.getInstance().getGroupList().get(0).setGroupOwnerIpAddress(info.groupOwnerAddress);
         }
 
         P2PDevice client;
@@ -269,7 +272,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
-        this.info = info;
+
         this.getView().setVisibility(View.VISIBLE);
 
         // The owner IP is now known.
@@ -286,18 +289,24 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         // server. The file server is single threaded, single connection server
         // socket.
         if (info.groupFormed && info.isGroupOwner) {
+            this.info = info;
 
             //come group owner
             LocalP2PDevice.getInstance().getLocalDevice().setGroupOwner(true);
+//            P2PGroups.getInstance().getGroupList().get(0).setGroupOwnerIpAddress(info.groupOwnerAddress);
 
             new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text))
                     .execute();
         } else if (info.groupFormed) {
+            this.info = info;
+
             // The other device acts as the client. In this case, we enable the
             // get file button.
             mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
             ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
                     .getString(R.string.client_text));
+
+//            P2PGroups.getInstance().getGroupList().get(0).setGroupOwnerIpAddress(info.groupOwnerAddress);
         }
 
         // hide the connect button
@@ -370,14 +379,23 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                         + context.getPackageName() + "/wifip2pshared-" + System.currentTimeMillis()
                         + ".jpg");
 
+                long downloaded = 0;
                 File dirs = new File(f.getParent());
                 if (!dirs.exists())
                     dirs.mkdirs();
-                f.createNewFile();
+
+                if(!f.exists()) {
+                    f.createNewFile();
+                } else {
+                    //continuo il file gia' iniziato
+                    downloaded = f.length();
+                }
 
                 Log.d(WiFiDirectActivity.TAG, "server: copying files " + f.toString());
                 InputStream inputstream = client.getInputStream();
-                copyFile(inputstream, new FileOutputStream(f));
+
+                copyFile(inputstream, new FileOutputStream(f), downloaded);
+
                 serverSocket.close();
                 return f.getAbsolutePath();
             } catch (IOException e) {
@@ -396,7 +414,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 statusText.setText("File copied - " + result);
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+//                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
                 context.startActivity(intent);
             }
 
@@ -413,13 +431,13 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     }
 
-    public static boolean copyFile(InputStream inputStream, OutputStream out) {
+    public static boolean copyFile(InputStream inputStream, OutputStream out, long downloaded) {
         byte buf[] = new byte[1024];
         int len;
         try {
             while ((len = inputStream.read(buf)) != -1) {
-                out.write(buf, 0, len);
-
+                out.write(buf, 0 , len);
+//                downloaded = downloaded + buf.length;
             }
             out.close();
             inputStream.close();
@@ -429,4 +447,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         }
         return true;
     }
+
+
 }

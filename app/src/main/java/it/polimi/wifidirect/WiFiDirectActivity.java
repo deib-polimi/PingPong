@@ -40,6 +40,7 @@ import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroup;
 import it.polimi.wifidirect.model.P2PGroups;
+import it.polimi.wifidirect.model.PingPongList;
 
 /**
  * An activity that uses WiFi Direct APIs to discover and connect with available
@@ -111,6 +112,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         }
 
         P2PGroups.getInstance().getGroupList().clear();
+        fragmentDetails.getView().findViewById(R.id.btn_start_ping_pong).setVisibility(View.GONE);
     }
 
     @Override
@@ -196,8 +198,8 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
     //metodo modificato per fare una disconnect silenziosa quando avvio pingpong
     @Override
     public void disconnectPingPong() {
-//        final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
-//        fragment.resetViews();
+        final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
+        fragment.resetViews();
 
 //        P2PGroup.getInstance().getList().clear();
 
@@ -211,10 +213,26 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
             @Override
             public void onSuccess() {
-//                fragment.getView().setVisibility(View.GONE);
+                fragment.getView().setVisibility(View.GONE);
             }
 
         });
+    }
+
+
+    public void restartDiscoveryPingpongAfterDisconnect() {
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("ping-pong", "discovery");
+
+        PingPongList.getInstance().setConnecting(false);
+
+        this.discoveryPingPong();
     }
 
 
@@ -248,11 +266,12 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             @Override
             public void onFailure(int reasonCode) {
                 Log.d(TAG, "Disconnect failed. Reason :" + reasonCode);
-
+                Toast.makeText(WiFiDirectActivity.this, "Disconnect Failed: " + reasonCode, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess() {
+                Toast.makeText(WiFiDirectActivity.this, "Disconnect Success", Toast.LENGTH_SHORT).show();
                 fragment.getView().setVisibility(View.GONE);
             }
 

@@ -1,10 +1,13 @@
 package it.polimi.wifidirect;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
@@ -15,8 +18,14 @@ import it.polimi.wifidirect.model.PingPongList;
  */
 public class PingPongLogic extends AsyncTask<Context, Void, Void> {
 
+    private Activity activity;
+
+    public PingPongLogic(Activity activity) {
+        this.activity = activity;
+    }
+
     @Override
-    protected Void doInBackground(Context... context) {
+    protected Void doInBackground(final Context... context) {
 
         try {
             Thread.sleep(4000);
@@ -53,21 +62,26 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
                 PingPongList.getInstance().setUse_pongAddress(true);
             }
 
-            ((WiFiDirectActivity) context[0]).disconnectPingPong();
+            ((WiFiDirectActivity)activity).runOnUiThread(new Runnable() {
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    ((WiFiDirectActivity) context[0]).disconnectPingPong();
+                }
+            });
 
             Log.d("ping-pong", "disconnect");
 
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            Log.d("ping-pong", "discovery");
-
-            PingPongList.getInstance().setConnecting(false);
-
-            ((WiFiDirectActivity) context[0]).discoveryPingPong();
+//            try {
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            Log.d("ping-pong", "discovery");
+//
+//            PingPongList.getInstance().setConnecting(false);
+//
+//            ((WiFiDirectActivity) context[0]).discoveryPingPong();
 //
 //                    Log.d("ping-pong", "discovery");
 //                    try {

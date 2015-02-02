@@ -2,6 +2,7 @@ package it.polimi.wifidirect.model;
 
 import android.net.wifi.p2p.WifiP2pGroup;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class P2PGroup {
 
     @Getter private List<P2PDevice> list; //incluso anche il group owner
     @Getter @Setter private P2PDevice groupOwner;
+    @Getter @Setter private InetAddress groupOwnerIpAddress;
     @Getter @Setter private boolean persistent;
 
     @Getter @Setter private WifiP2pGroup group;

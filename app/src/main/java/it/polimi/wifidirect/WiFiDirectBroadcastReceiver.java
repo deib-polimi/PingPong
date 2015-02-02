@@ -28,6 +28,7 @@ import android.util.Log;
 
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
+import it.polimi.wifidirect.model.PingPongList;
 
 /**
  * A BroadcastReceiver that notifies of important wifi p2p events.
@@ -115,7 +116,12 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
                         activity.discoveryPingPong();
                     }
+                    else {
 
+                        if (PingPongList.getInstance().isPinponging()) {
+                            activity.restartDiscoveryPingpongAfterDisconnect();
+                        }
+                    }
                 }
                 break;
 

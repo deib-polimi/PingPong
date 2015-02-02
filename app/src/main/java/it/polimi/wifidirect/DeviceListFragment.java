@@ -163,9 +163,9 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
 
                 PingPongList.getInstance().setConnecting(true);
 
-                ((WiFiDirectActivity) this.getActivity()).connect(new PingPongLogic().getConfigToReconnect());
+                ((WiFiDirectActivity) this.getActivity()).connect(new PingPongLogic(this.getActivity()).getConfigToReconnect());
 
-                new PingPongLogic().execute(this.getActivity());
+                new PingPongLogic(this.getActivity()).execute(this.getActivity());
 
             }
 
