@@ -17,9 +17,11 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
-* A service that process each file transfer request i.e Intent by opening a
-* socket connection with the WiFi Direct Group Owner and writing the file
-*/
+ * A service that process each file transfer request i.e Intent by opening a
+ * socket connection with the WiFi Direct Group Owner and writing the file
+ *
+ * Copyright 2011 Google Inc. All Rights Reserved. Modified by Stefano Cappa (2015).
+ */
 public class FileTransferService extends IntentService {
 
     private static final int SOCKET_TIMEOUT = 5000;
@@ -38,10 +40,6 @@ public class FileTransferService extends IntentService {
         super("FileTransferService");
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.IntentService#onHandleIntent(android.content.Intent)
-     */
     @Override
     protected void onHandleIntent(Intent intent) {
 
@@ -60,14 +58,12 @@ public class FileTransferService extends IntentService {
                 Log.d(WiFiDirectActivity.TAG, "Client socket - " + socket.isConnected());
                 OutputStream stream = socket.getOutputStream();
 
-                Log.d("ora",context.getFilesDir().getAbsolutePath() + "");
+                Log.d("FileTransferService", context.getFilesDir().getAbsolutePath() + "");
 
                 ContentResolver cr = context.getContentResolver();
                 InputStream is = null;
                 try {
                     is = cr.openInputStream(Uri.parse(fileUri));
-                    long pippo = is.skip(10000);
-                    Log.d("skipped", pippo + "");
                 } catch (FileNotFoundException e) {
                     Log.d(WiFiDirectActivity.TAG, e.toString());
                 }
@@ -76,14 +72,11 @@ public class FileTransferService extends IntentService {
             } catch (IOException e) {
                 Log.e(WiFiDirectActivity.TAG, e.getMessage());
             } finally {
-                if (socket != null) {
-                    if (socket.isConnected()) {
-                        try {
-                            socket.close();
-                        } catch (IOException e) {
-                            // Give up
-                            e.printStackTrace();
-                        }
+                if (socket.isConnected()) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        Log.e("FileTransferService", "run",e);
                     }
                 }
             }
@@ -91,21 +84,18 @@ public class FileTransferService extends IntentService {
         }
     }
 
-    private boolean copyFileClientSide(InputStream inputStream, OutputStream out) {
+    private void copyFileClientSide(InputStream inputStream, OutputStream out) {
         byte buf[] = new byte[1024];
         int len;
         try {
             while ((len = inputStream.read(buf)) != -1) {
                 out.write(buf, 0, len);
                 sended = sended + len;
-//                Log.d("len", " -> " + sended);
             }
             out.close();
             inputStream.close();
         } catch (IOException e) {
-            Log.d(WiFiDirectActivity.TAG, e.toString());
-            return false;
+            Log.e("FileTransferService", "copyFileClientSide",e);
         }
-        return true;
     }
 }

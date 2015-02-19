@@ -12,9 +12,7 @@ import lombok.Getter;
 /**
  * Created by Stefano Cappa on 31/01/15.
  *
- * Classe che rappresenta la lista di dispositivi individuati nella fase di Discovery del protocollo
- * Wifi Direct. E' univoca e implementa Singleton.
- *
+ * Class that represents the list of device discovered during the discovery phase.
  */
 public class PeerList {
 
@@ -24,24 +22,26 @@ public class PeerList {
     private static PeerList instance = new PeerList();
 
     /**
-     * Metodo che permette di ottenere l'istanza della classe.
-     * @return istanza della classe.
+     * Method to get the instance of this class.
+     * @return instance of this class.
      */
     public static PeerList getInstance() {
         return instance;
     }
 
-
+    /**
+     * Private constructor, because is a singleton class.
+     */
     private PeerList () {
         this.list = new ArrayList<>();
     }
 
     /**
-     * Aggiunge tutti gli elementi di una Collection di WifiP2pDevice nella lista di P2PDevice
-     * @param collection Collection di WiFiP2pDevice
+     * This method adds all the elements of the collection in the P2pDevice list.
+     * This method requires an empty list.
+     * @param collection Collection of WiFiP2pDevice
      */
     public void addAllElements(Collection<WifiP2pDevice> collection) {
-        //presuppone che la lista di p2pDevice sia vuota.
         P2PDevice device;
         for(WifiP2pDevice element : collection) {
             device = new P2PDevice(element);
@@ -50,9 +50,9 @@ public class PeerList {
     }
 
     /**
-     * Fornisce il P2PDevice dato il macaddress
-     * @param macAddress Striga che rappresenta il mac address del dispositivo cercato
-     * @return P2PDevice con il macaddress specificato, oppure null nel caso l'elemento non sia trovato.
+     * Method to retrieve the P2pDevice using his mac address.
+     * @param macAddress Strig that represents the mac address of the P2pDevice
+     * @return P2PDevice with the specified mac address.
      */
     public P2PDevice getDeviceByMacAddress(String macAddress) {
         for(P2PDevice device : list) {

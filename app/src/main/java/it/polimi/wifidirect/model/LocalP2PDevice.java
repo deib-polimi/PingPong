@@ -7,9 +7,9 @@ import lombok.Setter;
  *
  * Created by Stefano Cappa on 31/01/15.
  *
- * Classe che rappresenta il P2PDevice associato al dispositivo in uso.
- * Essa contiene l'abilitazione della pingpong mode per il dispositivo corrente.
- * L'abilitazione richiesta con la GUI setta a true l'attributo ping_pong_mode.
+ * Class that represents the P2PDevice associated to this device.
+ * It contains the pingpong mode switch for this device.
+ * This switch sets to true the ping_pong_mode's attribute.
  *
 */
 public class LocalP2PDevice {
@@ -18,18 +18,21 @@ public class LocalP2PDevice {
 
     @Getter @Setter private P2PDevice localDevice;
 
-    //fa si che ad ogni disconnect il dispositivo rientri subito in una discovery silenzionsa
-    //per utilizzare la modalita' ping pong, tutti i client e tutti i go dei vari gruppi devono abilitare la modalita' ping pong
+    //this attribute is useful to restart discovery after every "disconnect" command.
+    //If you want to use pingpong mode, you need to activate this attributes in every other device, except this device.
     @Getter @Setter private boolean ping_pong_mode;
 
     /**
-     * Metodo che permette di ottenere l'istanza della classe.
-     * @return istanza della classe.
+     * Method to get the instance of this class.
+     * @return instance of this class.
      */
     public static LocalP2PDevice getInstance() {
         return instance;
     }
 
+    /**
+     * Private constructor, because is a singleton class.
+     */
     private LocalP2PDevice(){
         localDevice = new P2PDevice();
         ping_pong_mode = false;

@@ -6,7 +6,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1) Disabilita la PingPong mode su questo device"
+        android:text="1) Disable PingPong mode on this device"
         android:id="@+id/primalinea"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
@@ -15,28 +15,27 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2) Abilita la PingPong mode su tutti gli altri"
+        android:text="2) Enable PingPong mode on all other devices"
         android:id="@+id/secondaLinea"
+        android:textSize="12sp"
         android:layout_below="@+id/primalinea"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
-        android:textSize="12sp" />
+        android:layout_marginTop="2dp" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="3) Il PingPong è dal disp. in Ping a quello il Pong"
+        android:text="3) PingPong is from &quot;Ping device&quot; to &quot;Pong device&quot;"
         android:id="@+id/terzaLinea"
+        android:textSize="12sp"
         android:layout_below="@+id/secondaLinea"
-        android:layout_alignStart="@+id/primalinea"
-        android:layout_marginTop="5dp"
-        android:textSize="12sp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp" />
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Opzionale: Testmode è utile per testing dell&apos;app"
+        android:text="Optional: Testmode is useful for testing purposes"
         android:id="@+id/qualtalinea"
         android:layout_below="@+id/terzaLinea"
         android:layout_centerHorizontal="true"
@@ -84,7 +83,7 @@
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Testmode: per pingpong nello stesso gruppo"
+        android:text="Testmode: to PingPong in the same group"
         android:id="@+id/testmode_checkbox"
         android:checked="false"
         android:layout_below="@+id/spinner_pong"

@@ -32,6 +32,8 @@ import it.polimi.wifidirect.model.PingPongList;
 
 /**
  * A BroadcastReceiver that notifies of important wifi p2p events.
+ *
+ * Created by Stefano Cappa, based on google code samples.
  */
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
@@ -40,6 +42,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     private WiFiDirectActivity activity;
 
     /**
+     * Constructor of the class.
      * @param manager WifiP2pManager system service
      * @param channel Wifi p2p channel
      * @param activity activity associated with the receiver
@@ -51,11 +54,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         this.activity = activity;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
-     * android.content.Intent)
-     */
     @Override
     public void onReceive(Context context, Intent intent) {
         switch(intent.getAction()) {
@@ -63,7 +61,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             case WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION:
 
                 // UI update to indicate wifi p2p status.
-                //in state ho lo stato del wifi p2p adapter, cioe' se attivo o no
+                //in state i have the adapter's state: enabled or not.
                 int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
                 if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                     // Wifi Direct mode is enabled
@@ -93,7 +91,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     return;
                 }
 
-                //NetworkInfo descrive lo stato della connessione
+                //NetworkInfo describe the connection's state
                 NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
                 if (networkInfo.isConnected()) {
@@ -113,10 +111,9 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     // It's a disconnect
                     activity.resetData();
 
-                    //si diconnette
-                    Log.d("Broadcast received", "non piu connesso");
+                    Log.d("Broadcast received", "Disconnected");
 
-                    //se la pingpong mode su questo device e' attiva, allora ricomincia subito la discovery in modo forzato e silenzioso
+                    //if the Pingpong mode is enabled, restarts the discovery
                     Log.d("verifica_pingpong", "Stato pingpong: " + LocalP2PDevice.getInstance().isPing_pong_mode());
                     if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
                         activity.discoveryPingPong();
@@ -133,7 +130,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
 
                 DeviceListFragment fragment = (DeviceListFragment) activity.getFragmentManager().findFragmentById(R.id.frag_list);
-                WifiP2pDevice wifiP2pDevice = (WifiP2pDevice) intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+                WifiP2pDevice wifiP2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
                 fragment.updateThisDevice(
                         new P2PDevice(

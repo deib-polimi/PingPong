@@ -28,30 +28,26 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.List;
 
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
+import lombok.NonNull;
 
 /**
  * A ListFragment that displays available peers on discovery and requests the
- * parent activity to handle user interaction events
+ * parent activity to handle user interaction events.
+ *
+ * Created by Stefano Cappa, based on google code samples
  */
 public class DeviceListFragment extends ListFragment implements PeerListListener {
 
-//    private List<WifiP2pDevice> peers = new ArrayList<>();
-//    private WifiP2pDevice device;
-//    @Getter private P2PDevice thisLocalDevice;
-
-    ProgressDialog progressDialog = null;
-    View mContentView = null;
+    private ProgressDialog progressDialog = null;
+    private  View mContentView = null;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -61,7 +57,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContentView = inflater.inflate(R.layout.device_list, null);
 
         final CheckBox pingpong_checkbox = (CheckBox) mContentView.findViewById(R.id.pingpong_checkbox);
@@ -102,7 +98,6 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         P2PDevice device = (P2PDevice) getListAdapter().getItem(position);
-//        WifiP2pDevice device = (WifiP2pDevice) getListAdapter().getItem(position);
         ((DeviceActionListener) getActivity()).showDetails(device);
     }
 
@@ -110,11 +105,10 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     /**
      * Update UI for this device.
      *
-     * @param device WifiP2pDevice object
+     * @param device P2PDevice object
      */
     public void updateThisDevice(P2PDevice device) {
         LocalP2PDevice.getInstance().setLocalDevice(device);
-//        this.thisLocalDevice = device;
         TextView view = (TextView) mContentView.findViewById(R.id.my_name);
         view.setText(device.getP2pDevice().deviceName);
         view = (TextView) mContentView.findViewById(R.id.my_status);
@@ -158,7 +152,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
                 }
             }
 
-            //ora verifico se il dispositivo settato come da usare per fare ping pong e' stato trovato
+            //now i verify if the device to use with Pingpong was found
             if (found) {
 
                 PingPongList.getInstance().setConnecting(true);
@@ -167,21 +161,22 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
 
                 ((WiFiDirectActivity) this.getActivity()).connect(new PingPongLogic(this.getActivity()).getConfigToReconnect());
 
-//                new PingPongLogic(this.getActivity()).execute(this.getActivity());
-
             }
 
         }
     }
 
 
+    /**
+     * Method to clear peer's list and to update the UI.
+     */
     public void clearPeers() {
         PeerList.getInstance().getList().clear();
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
     /**
-     *
+     *  Method to manage the ProgressDialog during discovery procedures.
      */
     public void onInitiateDiscovery() {
         if (progressDialog != null && progressDialog.isShowing()) {

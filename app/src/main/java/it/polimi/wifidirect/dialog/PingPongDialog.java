@@ -10,42 +10,49 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import it.polimi.wifidirect.R;
-import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
-import it.polimi.wifidirect.model.P2PGroup;
 import it.polimi.wifidirect.model.P2PGroups;
-import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
 import it.polimi.wifidirect.spinner.CustomSpinnerAdapter;
 import it.polimi.wifidirect.spinner.SpinnerRow;
 
 /**
  *
+ *
+ * Class that represents a DialogFragment used to choose the GO's mac address of the device which you want to do "pingpong".
+ * Be careful, because, before that you can proceed to use this device as a "pingpong device", it must be connected to a GO.
+ * In this Dialog there is the GO's mac address of the other group, where this device is not a peer/client, but he want to do "pingpong".
+ *
  * Created by Stefano Cappa on 30/01/15.
- *
- * Classe che rappresenta il DialogFragment utilizzato per scegliere il mac address del GO del gruppo
- * con cui fare pingpong. Nota che prima di procedere al pingpong il dispositivo client deve appartenere gia' a un gruppo.
- * In questo Dialog viene fornito il mac address del GO dell'altro gruppo, a cui il Client non appartiene, ma vuole fare pingpong.
- *
  */
 public class PingPongDialog extends DialogFragment {
 
     static private Button ok, no;
-    static private Spinner spinner_ping, spinner_pong; //cioe' da dove iniziare pingpong a dove andare, prima di tornare nel gruppo iniziale
+
+    //spinner_ping is the device where this client is already connected, spinner_pong is the other GO.
+    static private Spinner spinner_ping, spinner_pong;
     static private CheckBox testmode_checkbox;
 
-    static ArrayList<SpinnerRow> list_ping, list_pong;
+    static ArrayList<SpinnerRow> list_ping, list_pong; //list_ping: list of starting device, list_pong: list of destinations
 
+    /**
+     * Method to obtain a new Fragment's instance.
+     * @return This Fragment instance.
+     */
     static public PingPongDialog newInstance() {
         return new PingPongDialog();
     }
+
+    /**
+     * Default Fragment constructor.
+     */
+    public PingPongDialog() {}
+
 
     @Override
     public void onDestroyView() {
@@ -69,16 +76,15 @@ public class PingPongDialog extends DialogFragment {
         list_ping.add(new SpinnerRow(P2PGroups.getInstance().getGroupList().get(0).getGroupOwner().getP2pDevice().deviceAddress));
 
         list_pong = new ArrayList<>();
-        for(P2PDevice pingpongdevice : PingPongList.getInstance().getPingponglist()) {
-            list_pong.add(new SpinnerRow(pingpongdevice.getP2pDevice().deviceAddress));
+        for(P2PDevice pingpongDevice : PingPongList.getInstance().getPingponglist()) {
+            list_pong.add(new SpinnerRow(pingpongDevice.getP2pDevice().deviceAddress));
         }
 
 
         this.setSpinnerAdapter(spinner_ping,list_ping);
         this.setSpinnerAdapter(spinner_pong,list_pong);
 
-        //visto che il client e' gia' connesso quando avvio questa modalita' faccio si che la scelta di ping sia forzata
-        //e non modificabile.
+        //the ping device is forced to the actual GO of this client.
         spinner_ping.setEnabled(false);
 
         this.setListener();
@@ -86,12 +92,20 @@ public class PingPongDialog extends DialogFragment {
         return v;
     }
 
+    /**
+     * Method to set the Spinner adapter.
+     * @param spinner The Spinne to set
+     * @param list ArrayList<SpinnerRow> of the element to fill the Spinner.
+     */
     public void setSpinnerAdapter(Spinner spinner, ArrayList<SpinnerRow> list) {
         spinner.setAdapter(new CustomSpinnerAdapter(this.getActivity(),
                 android.R.layout.simple_spinner_item,
                 list));
     }
 
+    /**
+     * Method to set listeners on buttons and checkbox.
+     */
     public void setListener() {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,7 +119,7 @@ public class PingPongDialog extends DialogFragment {
                 extras.putBoolean("testmode_checkbox_status", testmode_checkbox.isChecked());
                 i.putExtras(extras);
 
-                //notifica a DeviceDetailFragment al metodo onActivityResult
+                //notify to DeviceDetailFragment, onActivityResult's method.
                 getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
                 dismiss();
             }
@@ -113,7 +127,6 @@ public class PingPongDialog extends DialogFragment {
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Log.d("pingpong_dialog_button", "no");
                 getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, getActivity().getIntent());
                 dismiss();
             }
@@ -122,8 +135,6 @@ public class PingPongDialog extends DialogFragment {
         testmode_checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("testmode", "cliccato");
-
                 if(testmode_checkbox.isChecked()) {
                     setSpinnerAdapter(spinner_pong,list_ping);
 

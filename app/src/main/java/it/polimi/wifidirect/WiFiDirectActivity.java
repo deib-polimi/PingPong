@@ -38,7 +38,6 @@ import android.widget.Toast;
 
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
-import it.polimi.wifidirect.model.P2PGroup;
 import it.polimi.wifidirect.model.P2PGroups;
 import it.polimi.wifidirect.model.PingPongList;
 
@@ -48,6 +47,8 @@ import it.polimi.wifidirect.model.PingPongList;
  * using interfaces to notify the application of operation success or failure.
  * The application should also register a BroadcastReceiver for notification of
  * WiFi state related events.
+ *
+ * Created by Stefano Cappa, based on google code samples
  */
 public class WiFiDirectActivity extends Activity implements ChannelListener, DeviceListFragment.DeviceActionListener {
 
@@ -61,6 +62,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
     private BroadcastReceiver receiver = null;
 
     /**
+     * Method to set if wifidirect is enabled.
      * @param isWifiP2pEnabled the isWifiP2pEnabled to set
      */
     public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled) {
@@ -73,7 +75,6 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         setContentView(R.layout.main);
 
         // add necessary intent values to be matched.
-
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
@@ -115,6 +116,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         fragmentDetails.getView().findViewById(R.id.btn_start_ping_pong).setVisibility(View.GONE);
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -125,10 +127,6 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
 
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -170,6 +168,10 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         }
     }
 
+    /**
+     * Method to show {@link it.polimi.wifidirect.DeviceDetailFragment}.
+     * @param device P2pDevice to use in the fragment.
+     */
     @Override
     public void showDetails(P2PDevice device) {
         DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
@@ -179,29 +181,29 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
     @Override
     public void connect(WifiP2pConfig config) {
+        Log.d("connect()", "Request connection");
         manager.connect(channel, config, new ActionListener() {
 
             @Override
             public void onSuccess() {
-                // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
+                Log.d("connect","success");
             }
 
             @Override
             public void onFailure(int reason) {
                 Toast.makeText(WiFiDirectActivity.this, "Connect failed. Retry.",Toast.LENGTH_SHORT).show();
+                Log.d("connect","failed");
             }
         });
     }
 
 
 
-    //metodo modificato per fare una disconnect silenziosa quando avvio pingpong
+    //modified method to start a "silent disconnect" during the pingpong
     @Override
     public void disconnectPingPong() {
         final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
         fragment.resetViews();
-
-//        P2PGroup.getInstance().getList().clear();
 
         manager.removeGroup(channel, new ActionListener() {
 
@@ -221,9 +223,12 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
     }
 
 
+    /**
+     * Method to restart discovery after a disconnect.
+     */
     public void restartDiscoveryPingpongAfterDisconnect() {
 
-        Log.d("ping-pong" , System.currentTimeMillis() + " - Praparo per discovery");
+        Log.d("ping-pong" , System.currentTimeMillis() + " - Preparing to discovery");
 
         try {
             Thread.sleep(2000);
@@ -231,20 +236,22 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             e.printStackTrace();
         }
 
-        Log.d("ping-pong", System.currentTimeMillis() + " - discovery (ora la faccio davvero)");
+        Log.d("ping-pong", System.currentTimeMillis() + " - Discovery started");
 
         PingPongList.getInstance().setConnecting(false);
 
         this.discoveryPingPong();
     }
 
-    //dopo che mi sono riconnesso, richiama la logica pingpong che in un altro thread risconnette e rifa tutto da capo
+    /**
+     * Method used by ping pong to start a new pingpong cycle.
+     */
     public void startNewPingPongCycle() {
-        Log.d("ping-pong", System.currentTimeMillis() + " - Sono riconnesso, quindi ciclo pingpong completato, ma preparo il nuovo ciclo)");
+        Log.d("ping-pong", System.currentTimeMillis() + " - Reconnected, pingpong cycle completed, but i'm starting a new cycle.");
         new PingPongLogic(this).execute(this);
     }
 
-    //metodo modificato per fare una discovery silenziosa quando avvio pingpong
+    //modified method to start a "silent discovery" without Progessdialog or something else.
     @Override
     public void discoveryPingPong() {
         manager.discoverPeers(channel, new ActionListener() {

@@ -8,10 +8,9 @@ import lombok.Setter;
 /**
  * Created by Stefano Cappa on 31/01/15.
  *
- * Classe che rappresenta un dispositivo P2P incapsulando il concetto di WifiP2pDevice
- * ed aggiungendo il parametro groupOwner.
- * Questa classe e' utile soprattutto per permettere l'estensione delle funzionalita' di WifiP2pDevice,
- * in quanto ne rappresenta gia' una astrazione.
+ * Class that represents a P2pDevice with inside a WifiP2pDevice and the groupOwner attribute.
+ * This class is usefull because can be used to extends the basic WifiP2pDevice's funcionalities.
+ * It's an abstraction of a WifiP2pDevice.
  *
  */
 public class P2PDevice {
@@ -19,11 +18,19 @@ public class P2PDevice {
     @Getter private WifiP2pDevice p2pDevice;
     @Getter @Setter private boolean groupOwner;
 
+
+    /**
+     * Constructor of the class
+     * @param p2pDevice A WifiP2pDevice
+     */
     public P2PDevice (WifiP2pDevice p2pDevice) {
         this.p2pDevice = p2pDevice;
         groupOwner = false;
     }
 
+    /**
+     * Another constructor of the class without parameters.
+     */
     public P2PDevice() {
         groupOwner = false;
     }

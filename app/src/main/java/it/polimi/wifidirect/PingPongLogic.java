@@ -6,20 +6,23 @@ import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import it.polimi.wifidirect.model.P2PDevice;
-import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
 
 /**
+ * Class that represents the logic/async task of PingPong.
+ *
  * Created by Stefano Cappa on 01/02/15.
  */
 public class PingPongLogic extends AsyncTask<Context, Void, Void> {
 
     private Activity activity;
 
+    /**
+     * Constructor of the class
+     * @param activity Activity
+     */
     public PingPongLogic(Activity activity) {
         this.activity = activity;
     }
@@ -27,7 +30,7 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
     @Override
     protected Void doInBackground(final Context... context) {
 
-        Log.d("ping-pong" , System.currentTimeMillis() + " - Prima dell ritardo");
+        Log.d("ping-pong" , System.currentTimeMillis() + " - Before delay");
 
         try {
             Thread.sleep(3000);
@@ -35,7 +38,7 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
             e.printStackTrace();
         }
 
-        Log.d("ping-pong" , System.currentTimeMillis() + " - Dopo al ritardo");
+        Log.d("ping-pong" , System.currentTimeMillis() + " - After delay");
 
         P2PDevice pingDevice = PingPongList.getInstance().getPingDevice();
         P2PDevice pongDevice = PingPongList.getInstance().getPongDevice();
@@ -53,13 +56,13 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
 
             //stabilisco a quale GO questo client si dovra' connettere
             if (PingPongList.getInstance().isUse_pongAddress()) {
-                Log.d("pingpong_destination", "PingPong con pong : " + pongDevice.getP2pDevice().deviceAddress);
+                Log.d("pingpong_destination", "PingPong with pong : " + pongDevice.getP2pDevice().deviceAddress);
 
                 config.deviceAddress = pongDevice.getP2pDevice().deviceAddress;
 
                 PingPongList.getInstance().setUse_pongAddress(false);
             } else {
-                Log.d("pingpong_destination", "PingPong con ping : " + pingDevice.getP2pDevice().deviceAddress);
+                Log.d("pingpong_destination", "PingPong with ping : " + pingDevice.getP2pDevice().deviceAddress);
 
                 config.deviceAddress = pingDevice.getP2pDevice().deviceAddress;
 
@@ -68,50 +71,24 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
 
             Log.d("ping-pong" , System.currentTimeMillis() + " - disconnect");
 
-            ((WiFiDirectActivity)activity).runOnUiThread(new Runnable() {
+            activity.runOnUiThread(new Runnable() {
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
-                    Log.d("Pingponglogic" , System.currentTimeMillis() + " - Dopo al ritardo");
+                    Log.d("Pingponglogic" , System.currentTimeMillis() + " - After delay");
                     ((WiFiDirectActivity) context[0]).disconnectPingPong();
                 }
             });
-
-
-
-//            try {
-//                Thread.sleep(3000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//
-//            Log.d("ping-pong", "discovery");
-//
-//            PingPongList.getInstance().setConnecting(false);
-//
-//            ((WiFiDirectActivity) context[0]).discoveryPingPong();
-//
-//                    Log.d("ping-pong", "discovery");
-//                    try {
-//                        Thread.sleep(3000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    ((WiFiDirectActivity) context[0]).connect(config);
-//
-//                    Log.d("ping-pong", "connect");
-//                    try {
-//                        Thread.sleep(3000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
         } else {
-            Log.d("pingpong_destination", "Ping Pong disabilitato");
+            Log.d("pingpong_destination", "Ping Pong disabled");
         }
         return null;
     }
 
 
+    /**
+     * Method to get WifiP2pConfig to reconnect.
+     * @return WifiP2pConfig
+     */
     public WifiP2pConfig getConfigToReconnect() {
         Log.d("getConfigToReconnect","getConfigToReconnect");
 
@@ -129,13 +106,13 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
 
             //stabilisco a quale GO questo client si dovra' connettere
             if (PingPongList.getInstance().isUse_pongAddress()) {
-                Log.d("pingpong_destination", "PingPong con pong : " + pongDevice.getP2pDevice().deviceAddress);
+                Log.d("pingpong_destination", "PingPong with pong : " + pongDevice.getP2pDevice().deviceAddress);
 
                 config.deviceAddress = pongDevice.getP2pDevice().deviceAddress;
 
                 PingPongList.getInstance().setUse_pongAddress(false);
             } else {
-                Log.d("pingpong_destination", "PingPong con ping : " + pingDevice.getP2pDevice().deviceAddress);
+                Log.d("pingpong_destination", "PingPong with ping : " + pingDevice.getP2pDevice().deviceAddress);
 
                 config.deviceAddress = pingDevice.getP2pDevice().deviceAddress;
 

@@ -13,13 +13,18 @@ import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
 
 /**
- * Created by Ks89 on 31/01/15.
- * ListAdapter di P2PDevice, per mantenere la lista dei Peers.
+ * ListAdapter of P2PDevice.
+ * Created by Stefano Cappa on 31/01/15.
  */
 public class WiFiPeerListAdapter extends ArrayAdapter<P2PDevice> {
 
     private Context context;
 
+    /**
+     * Constructor of the class
+     * @param context Context
+     * @param textViewResourceId Resource id
+     */
     public WiFiPeerListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId, PeerList.getInstance().getList());
         this.context = context;
