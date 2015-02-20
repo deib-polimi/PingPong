@@ -13,7 +13,7 @@ import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
 
 /**
- * ListAdapter of P2PDevice.
+ * ListAdapter of {@link it.polimi.wifidirect.model.P2PDevice}.
  * Created by Stefano Cappa on 31/01/15.
  */
 public class WiFiPeerListAdapter extends ArrayAdapter<P2PDevice> {
@@ -43,15 +43,15 @@ public class WiFiPeerListAdapter extends ArrayAdapter<P2PDevice> {
         if (device != null) {
             TextView name = (TextView) v.findViewById(R.id.device_name);
             TextView status = (TextView) v.findViewById(R.id.device_status);
-            TextView macaddress = (TextView) v.findViewById(R.id.device_mac_address);
+            TextView macAddress = (TextView) v.findViewById(R.id.device_mac_address);
             if (name != null) {
                 name.setText(device.getP2pDevice().deviceName);
             }
             if (status != null) {
                 status.setText(getDeviceStatus(device.getP2pDevice().status));
             }
-            if (macaddress != null) {
-                macaddress.setText(device.getP2pDevice().deviceAddress);
+            if (macAddress != null) {
+                macAddress.setText(device.getP2pDevice().deviceAddress);
             }
         }
 
@@ -60,8 +60,13 @@ public class WiFiPeerListAdapter extends ArrayAdapter<P2PDevice> {
     }
 
 
+    /**
+     * Method to retrieve the device's status message using his code.
+     * @param deviceStatus int that represents the status code
+     * @return A String that represents the status message
+     */
     private static String getDeviceStatus(int deviceStatus) {
-        Log.d("device_adapter", "Peer status :" + deviceStatus);
+        Log.d("WiFiPeerListAdapter", "Peer status :" + deviceStatus);
         switch (deviceStatus) {
             case WifiP2pDevice.AVAILABLE:
                 return "Available";

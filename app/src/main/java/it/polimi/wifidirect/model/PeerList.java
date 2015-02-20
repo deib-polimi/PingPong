@@ -37,9 +37,9 @@ public class PeerList {
     }
 
     /**
-     * This method adds all the elements of the collection in the P2pDevice list.
+     * This method adds all the elements of the collection in the {@link #list}.
      * This method requires an empty list.
-     * @param collection Collection of WiFiP2pDevice
+     * @param collection {@link java.util.Collection} of {@link android.net.wifi.p2p.WifiP2pDevice}
      */
     public void addAllElements(Collection<WifiP2pDevice> collection) {
         P2PDevice device;
@@ -50,9 +50,10 @@ public class PeerList {
     }
 
     /**
-     * Method to retrieve the P2pDevice using his mac address.
-     * @param macAddress Strig that represents the mac address of the P2pDevice
-     * @return P2PDevice with the specified mac address.
+     * Method to retrieve the {@link it.polimi.wifidirect.model.P2PDevice} using his mac address.
+     * @param macAddress String that represents the mac address of
+     *                   the @link it.polimi.wifidirect.model.P2PDevice}
+     * @return The @link it.polimi.wifidirect.model.P2PDevice} with the specified mac address.
      */
     public P2PDevice getDeviceByMacAddress(String macAddress) {
         for(P2PDevice device : list) {
@@ -65,11 +66,11 @@ public class PeerList {
 
     @Override
     public String toString() {
-        Log.d("p2plist" , "---Inizio lista---");
+        Log.d("p2plist" , "---Begin list---");
         for(P2PDevice device : list) {
             Log.d("p2plist" , device.toString());
         }
-        Log.d("p2plist" , "---Fine lista---");
+        Log.d("p2plist" , "---End list---");
         return null;
     }
 }

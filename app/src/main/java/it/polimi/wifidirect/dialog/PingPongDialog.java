@@ -22,13 +22,13 @@ import it.polimi.wifidirect.spinner.CustomSpinnerAdapter;
 import it.polimi.wifidirect.spinner.SpinnerRow;
 
 /**
- *
+ * Created by Stefano Cappa on 30/01/15.
  *
  * Class that represents a DialogFragment used to choose the GO's mac address of the device which you want to do "pingpong".
  * Be careful, because, before that you can proceed to use this device as a "pingpong device", it must be connected to a GO.
  * In this Dialog there is the GO's mac address of the other group, where this device is not a peer/client, but he want to do "pingpong".
  *
- * Created by Stefano Cappa on 30/01/15.
+ *
  */
 public class PingPongDialog extends DialogFragment {
 
@@ -94,7 +94,7 @@ public class PingPongDialog extends DialogFragment {
 
     /**
      * Method to set the Spinner adapter.
-     * @param spinner The Spinne to set
+     * @param spinner The Spinner to set
      * @param list ArrayList<SpinnerRow> of the element to fill the Spinner.
      */
     public void setSpinnerAdapter(Spinner spinner, ArrayList<SpinnerRow> list) {
@@ -110,8 +110,6 @@ public class PingPongDialog extends DialogFragment {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Log.d("pingpong_dialog_button", "ok");
-
                 Intent i = new Intent();
                 Bundle extras=new Bundle();
                 extras.putString("ping_address",spinner_ping.getSelectedItem().toString());

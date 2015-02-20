@@ -1,7 +1,6 @@
 package it.polimi.wifidirect;
 
 import android.app.Activity;
-import android.content.Context;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.os.AsyncTask;
@@ -11,12 +10,13 @@ import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PingPongList;
 
 /**
- * Class that represents the logic/async task of PingPong.
+ * Class that represents the logic/async to pingpong.
  *
  * Created by Stefano Cappa on 01/02/15.
  */
-public class PingPongLogic extends AsyncTask<Context, Void, Void> {
+public class PingPongLogic extends AsyncTask<Void, Void, Void> {
 
+    private static final String TAG = "ping-pong-logic";
     private Activity activity;
 
     /**
@@ -28,9 +28,9 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(final Context... context) {
+    protected Void doInBackground(Void... params) {
 
-        Log.d("ping-pong" , System.currentTimeMillis() + " - Before delay");
+        Log.d(TAG , System.currentTimeMillis() + " - Before delay");
 
         try {
             Thread.sleep(3000);
@@ -38,88 +38,81 @@ public class PingPongLogic extends AsyncTask<Context, Void, Void> {
             e.printStackTrace();
         }
 
-        Log.d("ping-pong" , System.currentTimeMillis() + " - After delay");
+        Log.d(TAG , System.currentTimeMillis() + " - After delay");
 
         P2PDevice pingDevice = PingPongList.getInstance().getPingDevice();
         P2PDevice pongDevice = PingPongList.getInstance().getPongDevice();
 
-        Log.d("Pingdevice macaddress", "Pingdevice macaddress : " + pingDevice.getP2pDevice().deviceAddress);
-        Log.d("Pongdevice macaddress", "Pongdevice macaddress : " + pongDevice.getP2pDevice().deviceAddress);
+        Log.d(TAG, "Pingdevice macaddress : " + pingDevice.getP2pDevice().deviceAddress);
+        Log.d(TAG, "Pongdevice macaddress : " + pongDevice.getP2pDevice().deviceAddress);
 
-        if (PingPongList.getInstance().isPinponging()) {
-            WifiP2pConfig config = new WifiP2pConfig();
+        if (PingPongList.getInstance().isPingponging()) {
 
-            config.wps.setup = WpsInfo.PBC;
-            //per poter diventare client (visto che pingpong e' un client che saltella tra due gruppi)
-            //e non iniziare un nuovo gruppo come GO
-            config.groupOwnerIntent = 0;
+            this.chooseGroupOwner(pingDevice, pongDevice);
 
-            //stabilisco a quale GO questo client si dovra' connettere
-            if (PingPongList.getInstance().isUse_pongAddress()) {
-                Log.d("pingpong_destination", "PingPong with pong : " + pongDevice.getP2pDevice().deviceAddress);
-
-                config.deviceAddress = pongDevice.getP2pDevice().deviceAddress;
-
-                PingPongList.getInstance().setUse_pongAddress(false);
-            } else {
-                Log.d("pingpong_destination", "PingPong with ping : " + pingDevice.getP2pDevice().deviceAddress);
-
-                config.deviceAddress = pingDevice.getP2pDevice().deviceAddress;
-
-                PingPongList.getInstance().setUse_pongAddress(true);
-            }
-
-            Log.d("ping-pong" , System.currentTimeMillis() + " - disconnect");
+            Log.d(TAG , System.currentTimeMillis() + " - disconnect");
 
             activity.runOnUiThread(new Runnable() {
                 public void run() {
-                    Log.d("UI thread", "I am the UI thread");
-                    Log.d("Pingponglogic" , System.currentTimeMillis() + " - After delay");
-                    ((WiFiDirectActivity) context[0]).disconnectPingPong();
+                    Log.d(TAG, "I am the UI thread");
+                    Log.d(TAG , System.currentTimeMillis() + " - After delay");
+                    ((WiFiDirectActivity) activity).disconnectPingPong();
                 }
             });
         } else {
-            Log.d("pingpong_destination", "Ping Pong disabled");
+            Log.d(TAG, "Ping Pong disabled");
         }
         return null;
     }
 
+    /**
+     * Method to choose the correct device for the pingpong procedure.
+     * @param pingDevice Initial GroupOwner of the pingponging device
+     * @param pongDevice Destination GroupOwner
+     * @return The {@link android.net.wifi.p2p.WifiP2pConfig}
+     */
+    private WifiP2pConfig chooseGroupOwner(P2PDevice pingDevice, P2PDevice pongDevice) {
+        WifiP2pConfig config = new WifiP2pConfig();
+
+        config.wps.setup = WpsInfo.PBC;
+
+        //this requests to be a client, because a pingpong device can be only a client to pingponging
+        //between to groups.
+        config.groupOwnerIntent = 0;
+
+        //i choose the GroupOwner to connect.
+        if (PingPongList.getInstance().isUse_pongAddress()) {
+            Log.d(TAG, "destination - PingPong with pong : " + pongDevice.getP2pDevice().deviceAddress);
+
+            config.deviceAddress = pongDevice.getP2pDevice().deviceAddress;
+
+            PingPongList.getInstance().setUse_pongAddress(false);
+        } else {
+            Log.d(TAG, "destination - PingPong with ping : " + pingDevice.getP2pDevice().deviceAddress);
+
+            config.deviceAddress = pingDevice.getP2pDevice().deviceAddress;
+
+            PingPongList.getInstance().setUse_pongAddress(true);
+        }
+
+        return config;
+    }
 
     /**
-     * Method to get WifiP2pConfig to reconnect.
-     * @return WifiP2pConfig
+     * Method to get {@link android.net.wifi.p2p.WifiP2pConfig} to reconnect.
+     * Attention if this device is not pingponging and you call this method
+     * the result is null!
+     * @return The {@link android.net.wifi.p2p.WifiP2pConfig}
      */
     public WifiP2pConfig getConfigToReconnect() {
-        Log.d("getConfigToReconnect","getConfigToReconnect");
+        Log.d(TAG,"getConfigToReconnect");
 
-        if (PingPongList.getInstance().isPinponging()) {
+        P2PDevice pingDevice = PingPongList.getInstance().getPingDevice();
+        P2PDevice pongDevice = PingPongList.getInstance().getPongDevice();
 
-            P2PDevice pingDevice = PingPongList.getInstance().getPingDevice();
-            P2PDevice pongDevice = PingPongList.getInstance().getPongDevice();
+        if (PingPongList.getInstance().isPingponging()) {
 
-            WifiP2pConfig config = new WifiP2pConfig();
-
-            config.wps.setup = WpsInfo.PBC;
-            //per poter diventare client (visto che pingpong e' un client che saltella tra due gruppi)
-            //e non iniziare un nuovo gruppo come GO
-            config.groupOwnerIntent = 0;
-
-            //stabilisco a quale GO questo client si dovra' connettere
-            if (PingPongList.getInstance().isUse_pongAddress()) {
-                Log.d("pingpong_destination", "PingPong with pong : " + pongDevice.getP2pDevice().deviceAddress);
-
-                config.deviceAddress = pongDevice.getP2pDevice().deviceAddress;
-
-                PingPongList.getInstance().setUse_pongAddress(false);
-            } else {
-                Log.d("pingpong_destination", "PingPong with ping : " + pingDevice.getP2pDevice().deviceAddress);
-
-                config.deviceAddress = pingDevice.getP2pDevice().deviceAddress;
-
-                PingPongList.getInstance().setUse_pongAddress(true);
-            }
-
-            return config;
+            return this.chooseGroupOwner(pingDevice, pongDevice);
 
         }
         return null;

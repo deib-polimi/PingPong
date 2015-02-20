@@ -60,7 +60,9 @@ import it.polimi.wifidirect.model.PingPongList;
  *
  * Created by Stefano Cappa, based on google code samples
  */
-public class DeviceDetailFragment extends Fragment implements ConnectionInfoListener, WifiP2pManager.GroupInfoListener {
+public class DeviceDetailFragment extends Fragment implements
+        WifiP2pManager.ConnectionInfoListener,
+        WifiP2pManager.GroupInfoListener {
 
     protected static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
@@ -77,7 +79,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
         mContentView = inflater.inflate(R.layout.device_detail, null);
 
-        //clik connect's button
+        //click connect's button
         mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -121,7 +123,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 });
 
 
-        //clicco sul pulsante connect
+        //click on connect's button
         mContentView.findViewById(R.id.btn_start_ping_pong).setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -158,9 +160,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     PingPongList.getInstance().setTestmode(bundle.getBoolean("testmode_checkbox_status"));
 
                     //to enable pingpong mode
-                    PingPongList.getInstance().setPinponging(true);
-
-                    //PeerList.getInstance().toString();
+                    PingPongList.getInstance().setPingponging(true);
 
                     P2PDevice pingDevice = PeerList.getInstance().getDeviceByMacAddress(PingPongList.getInstance().getPing_macaddress());
                     P2PDevice pongDevice = PeerList.getInstance().getDeviceByMacAddress(PingPongList.getInstance().getPong_macaddress());
@@ -168,26 +168,28 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     PingPongList.getInstance().setPingDevice(pingDevice);
                     PingPongList.getInstance().setPongDevice(pongDevice);
 
-                    Log.d("DDF_PingPong_yes", "I pressed on yes and the mac addresses received are, ping: " + PingPongList.getInstance().getPing_macaddress()
+                    Log.d("DDF_PingPong", "I pressed on yes and the mac addresses received are, ping: "
+                            + PingPongList.getInstance().getPing_macaddress()
                             + " and pong: " + PingPongList.getInstance().getPong_macaddress());
 
                     this.startPingponging();
 
                 } else if (resultCode == Activity.RESULT_CANCELED) {
                     // After Cancel code.
-                    Log.d("DDF_PingPong_no", "I pressed NO");
+                    Log.d("DDF_PingPong", "I pressed NO");
                 }
 
                 break;
             default:
-                //standard dal codice google
-                // User has picked an image. Transfer it to group owner i.e peer using
+                // User has picked a file. Transfer it to group owner i.e peer using
                 // FileTransferService.
                 if(data!=null) {
                     Uri uri = data.getData();
+                    Log.d("DDF_PingPong", "Intent----------- " + uri);
+
                     TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
                     statusText.setText("Sending: " + uri);
-                    Log.d(WiFiDirectActivity.TAG, "Intent----------- " + uri);
+
                     Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
                     serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
                     serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
@@ -204,18 +206,18 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     }
 
     /**
-     * Method to start Pingpong
+     * Method to start Pingponging.
      */
     private void startPingponging() {
-        new PingPongLogic(this.getActivity()).execute(this.getActivity());
+        new PingPongLogic(this.getActivity()).execute();
 
     }
 
     @Override
     public void onGroupInfoAvailable(WifiP2pGroup group) {
-        Log.d("onGroupInfoAvailable", "Group informations available");
+        Log.d("DDF_PingPong", "Group informations available");
 
-        //group.getOwner() can be this device of not, this is not importanta at the moment,
+        //group.getOwner() can be this device of not, this is not important at the moment,
         //because with this method i obtain always the group owner.
         P2PDevice owner = new P2PDevice(group.getOwner());
         owner.setGroupOwner(true);
@@ -238,17 +240,17 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
 
         if(!group.isGroupOwner()) {
-            //se sono un client e' possibile che voglia diventare pingpong in futuro, quindi setto nella lista pingpong
-            //i vari group owner a cui potrei collegarmi in futuro (supponendo che essi abbiano gia' dei gruppi formati).
-            //Non ha senso farlo se si e' group owner tanto non potra' fare ping pong e anche se la sua lista resta vuota,
-            //non ci sono problemi.
+            //if i am a client, it's possible that i want to pingpong with another group owner.
+            // For this reason, i set in the pingpong list all the possible group owners,
+            // assuming that this devices are go of well formed groups.
+            //If i am a group owner i can't pingpong with another device.
 
-            //Per fare la lista, prima metto il mio attuale group owner a cui sono collegato.
+            //I set in the list my actual group owner.
             PingPongList.getInstance().getPingponglist().add(owner);
 
-            //ora dalla lista dei peer rilevati da me stesso in PeerList, devo togliere il mio group owner e i miei fratelli client
-            //connessi al mio stesso group owner, cioe' ai client che fanno parte del mio gruppo. Ovviamente devo far si che qualunque device
-            //nella Pingpong list sia in realta' un group owner.
+            //now i use the peerlist to fill the PingPongList. Obviously, i must remove my group owner and all my
+            // brothers ;) (the other clients in my group).
+            // And finally i need to check that every device in this list is a group owner.
             for(P2PDevice dev : PeerList.getInstance().getList()) {
                 if(dev.isGroupOwner() && !p2pGroup.getList().contains(dev) &&
                         !PingPongList.getInstance().getPingponglist().contains(dev)) {
@@ -257,10 +259,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             }
         }
 
-        Log.d("Stampo owner", p2pGroup.getGroupOwner().toString());
-        for (P2PDevice device1 : p2pGroup.getList()) {
-            Log.d("Stampo client", device1.toString());
-        }
+//        Log.d("DDF_PingPong", p2pGroup.getGroupOwner().toString());
+//        for (P2PDevice device1 : p2pGroup.getList()) {
+//            Log.d("DDF_PingPong", device1.toString());
+//        }
     }
 
     @Override
@@ -269,7 +271,9 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             progressDialog.dismiss();
         }
 
-        this.getView().setVisibility(View.VISIBLE);
+        if(this.getView()!=null) {
+            this.getView().setVisibility(View.VISIBLE);
+        }
 
         // The owner IP is now known.
         TextView view = (TextView) mContentView.findViewById(R.id.group_owner);
@@ -291,7 +295,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         } else if (info.groupFormed) {
             this.info = info;
 
-            // The other device acts as the client. In this case, we enable the
+            // The other device acts as the client. In this case, i enable the
             // get file button.
             mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
             ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
@@ -314,7 +318,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
      */
     public void showDetails(P2PDevice device) {
         this.device = device;
-        this.getView().setVisibility(View.VISIBLE);
+
+        if(this.getView()!=null) {
+            this.getView().setVisibility(View.VISIBLE);
+        }
         TextView view = (TextView) mContentView.findViewById(R.id.device_address);
         view.setText(device.getP2pDevice().deviceAddress);
         view = (TextView) mContentView.findViewById(R.id.device_info);
@@ -336,7 +343,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         view = (TextView) mContentView.findViewById(R.id.status_text);
         view.setText(R.string.empty);
         mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
-        this.getView().setVisibility(View.GONE);
+
+        if(this.getView()!=null) {
+            this.getView().setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -349,9 +359,9 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         private TextView statusText;
 
         /**
-         * Consutrctor of this class.
-         * @param context Contect
-         * @param statusText A Textview
+         * Constructor of this class.
+         * @param context Context
+         * @param statusText A {@link android.widget.TextView} that represents the status message.
          */
         public FileServerAsyncTask(Context context, View statusText) {
             this.context = context;
@@ -362,12 +372,12 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         protected String doInBackground(Void... params) {
             try {
                 ServerSocket serverSocket = new ServerSocket(8988);
-                Log.d(WiFiDirectActivity.TAG, "Server: Socket opened");
+                Log.d("DDF_PingPong", "Server: Socket opened");
                 Socket client = serverSocket.accept();
-                Log.d(WiFiDirectActivity.TAG, "Server: connection done");
+                Log.d("DDF_PingPong", "Server: connection done");
                 final File f = new File(Environment.getExternalStorageDirectory() + "/"
                         + context.getPackageName() + "/wifip2pshared-" + System.currentTimeMillis()
-                        + ".jpg");
+                        + ".mp4");
 
                 File dirs = new File(f.getParent());
                 if (!dirs.exists())
@@ -377,7 +387,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     f.createNewFile();
                 }
 
-                Log.d(WiFiDirectActivity.TAG, "server: copying files " + f.toString());
+                Log.d("DDF_PingPong", "Server: copying files " + f.toString());
                 InputStream inputstream = client.getInputStream();
 
                 copyFile(inputstream, new FileOutputStream(f));
@@ -385,7 +395,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                 serverSocket.close();
                 return f.getAbsolutePath();
             } catch (IOException e) {
-                Log.e(WiFiDirectActivity.TAG, e.getMessage());
+                Log.e("DDF_PingPong", e.getMessage());
                 return null;
             }
         }
@@ -410,9 +420,9 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
     /**
      * Method to copy a file from input to output streams.
-     * @param inputStream Input
-     * @param out Output
-     * @return true if was completed, or false if not.
+     * @param inputStream InputStream
+     * @param out OutputStream
+     * @return true if completed, or false otherwise.
      */
     public static boolean copyFile(InputStream inputStream, OutputStream out) {
         byte buf[] = new byte[1024];
@@ -424,7 +434,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             out.close();
             inputStream.close();
         } catch (IOException e) {
-            Log.d(WiFiDirectActivity.TAG, e.toString());
+            Log.e("DDF_PingPong", "copyFile", e);
             return false;
         }
         return true;

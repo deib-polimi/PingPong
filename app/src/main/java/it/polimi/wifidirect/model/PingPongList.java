@@ -8,6 +8,7 @@ import lombok.Setter;
 
 /**
  * Created by Stefano Cappa on 01/02/15.
+ *
  * Class that represents the list of GO's mac address available to pingpong with the PingPong device client.
  */
 public class PingPongList {
@@ -19,11 +20,11 @@ public class PingPongList {
 
     @Getter @Setter private P2PDevice pingDevice, pongDevice;
 
-    //Pingpong will stopped when this attribute will be equals to false
-    @Getter @Setter private boolean pinponging;
+    //Pingpong stops when this attribute is equals to false
+    @Getter @Setter private boolean pingponging;
 
     //used to stop the continuously discovery procedure.
-    //The discovery will be restarted by PingPongLogic with the AsyncTask, after the disconnect.
+    //The discovery will be restarted by PingPongLogic with the AsyncTask, after the disconnect event.
     @Getter @Setter private boolean connecting;
 
     //if true this device must use the pong_macaddress, otherwise ping_macaddress
@@ -46,17 +47,17 @@ public class PingPongList {
     private PingPongList () {
         this.pingponglist = new ArrayList<>();
         this.testmode = false;
-        this.pinponging = false;
+        this.pingponging = false;
         this.use_pongAddress = true;
         this.connecting = false;
     }
 
     /**
      * Method to get the next GO to connect, i mean Ping Device or Pong Device, one of them.
-     * @return The next P2pDevice found.
+     * @return The next {@link it.polimi.wifidirect.model.P2PDevice} found.
      */
     public P2PDevice getNextDeviceToConnect() {
-        //stabilisco a quale GO questo client si dovra' connettere
+        //i check which is the next go to connect
         if (PingPongList.getInstance().isUse_pongAddress()) {
             PingPongList.getInstance().setUse_pongAddress(false);
             return pongDevice;

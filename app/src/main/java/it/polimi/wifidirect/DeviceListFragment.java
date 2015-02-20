@@ -22,6 +22,7 @@ import android.content.DialogInterface;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,7 +37,6 @@ import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
-import lombok.NonNull;
 
 /**
  * A ListFragment that displays available peers on discovery and requests the
@@ -44,8 +44,9 @@ import lombok.NonNull;
  *
  * Created by Stefano Cappa, based on google code samples
  */
-public class DeviceListFragment extends ListFragment implements PeerListListener {
+public class DeviceListFragment extends ListFragment implements WifiP2pManager.PeerListListener {
 
+    private static final String TAG = "DeviceListFragment";
     private ProgressDialog progressDialog = null;
     private  View mContentView = null;
 
@@ -57,7 +58,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContentView = inflater.inflate(R.layout.device_list, null);
 
         final CheckBox pingpong_checkbox = (CheckBox) mContentView.findViewById(R.id.pingpong_checkbox);
@@ -65,7 +66,6 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
             @Override
             public void onClick(View v) {
                 LocalP2PDevice.getInstance().setPing_pong_mode(pingpong_checkbox.isChecked());
-                Log.d("pingpong_checkbox", "Stato pingpongmode: " + LocalP2PDevice.getInstance().isPing_pong_mode());
             }
         });
 
@@ -73,6 +73,11 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     }
 
 
+    /**
+     * Method to retrieve the device's status message using his code.
+     * @param deviceStatus int that represents the status code
+     * @return A String that represents the status message
+     */
     private static String getDeviceStatus(int deviceStatus) {
         Log.d(WiFiDirectActivity.TAG, "Peer status :" + deviceStatus);
         switch (deviceStatus) {
@@ -105,7 +110,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     /**
      * Update UI for this device.
      *
-     * @param device P2PDevice object
+     * @param device The P2PDevice used to update the UI
      */
     public void updateThisDevice(P2PDevice device) {
         LocalP2PDevice.getInstance().setLocalDevice(device);
@@ -119,29 +124,24 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
 
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peerList) {
-        Log.d("onPeersAvailable", "onPeersAvailable");
+        Log.d(TAG, "onPeersAvailable");
 
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
-        }
-
-        for (WifiP2pDevice device1 : peerList.getDeviceList()) {
-            Log.d("peerlist", device1.deviceAddress);
         }
 
         PeerList.getInstance().getList().clear();
         PeerList.getInstance().addAllElements(peerList.getDeviceList());
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
         if (PeerList.getInstance().getList().size() == 0) {
-            Log.d(WiFiDirectActivity.TAG, "No devices found");
+            Log.d(TAG, "No devices found");
             return;
         }
 
 
-        if (PingPongList.getInstance().isPinponging() && !PingPongList.getInstance().isConnecting()) {
+        if (PingPongList.getInstance().isPingponging() && !PingPongList.getInstance().isConnecting()) {
 
             //PINGPONG
-
             P2PDevice nextDeviceToConnect = PingPongList.getInstance().getNextDeviceToConnect();
             boolean found = false;
 
@@ -157,7 +157,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
 
                 PingPongList.getInstance().setConnecting(true);
 
-                Log.d("ping-pong" , System.currentTimeMillis() + " - connect");
+                Log.d(TAG , System.currentTimeMillis() + " - connect");
 
                 ((WiFiDirectActivity) this.getActivity()).connect(new PingPongLogic(this.getActivity()).getConfigToReconnect());
 
@@ -200,15 +200,10 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
 
         void showDetails(P2PDevice device);
 
-        void cancelDisconnect();
-
         void connect(WifiP2pConfig config);
 
         void disconnect();
 
-        void disconnectPingPong();
-
-        void discoveryPingPong();
     }
 
 }

@@ -24,6 +24,7 @@ import java.net.Socket;
  */
 public class FileTransferService extends IntentService {
 
+    private static final String TAG = "FileTransferService";
     private static final int SOCKET_TIMEOUT = 5000;
     public static final String ACTION_SEND_FILE = "it.polimi.wifidirect.SEND_FILE";
     public static final String EXTRAS_FILE_PATH = "file_url";
@@ -51,32 +52,32 @@ public class FileTransferService extends IntentService {
             int port = intent.getExtras().getInt(EXTRAS_GROUP_OWNER_PORT);
 
             try {
-                Log.d(WiFiDirectActivity.TAG, "Opening client socket - ");
+                Log.d(TAG, "Opening client socket - ");
                 socket.bind(null);
                 socket.connect((new InetSocketAddress(host, port)), SOCKET_TIMEOUT);
 
-                Log.d(WiFiDirectActivity.TAG, "Client socket - " + socket.isConnected());
+                Log.d(TAG, "Client socket - " + socket.isConnected());
                 OutputStream stream = socket.getOutputStream();
 
-                Log.d("FileTransferService", context.getFilesDir().getAbsolutePath() + "");
+                Log.d(TAG, context.getFilesDir().getAbsolutePath() + "");
 
                 ContentResolver cr = context.getContentResolver();
                 InputStream is = null;
                 try {
                     is = cr.openInputStream(Uri.parse(fileUri));
                 } catch (FileNotFoundException e) {
-                    Log.d(WiFiDirectActivity.TAG, e.toString());
+                    Log.e(TAG, e.getMessage());
                 }
                 copyFileClientSide(is, stream);
-                Log.d(WiFiDirectActivity.TAG, "Client: Data written");
+                Log.d(TAG, "Client: Data written");
             } catch (IOException e) {
-                Log.e(WiFiDirectActivity.TAG, e.getMessage());
+                Log.e(TAG, e.getMessage());
             } finally {
                 if (socket.isConnected()) {
                     try {
                         socket.close();
                     } catch (IOException e) {
-                        Log.e("FileTransferService", "run",e);
+                        Log.e(TAG, e.getMessage());
                     }
                 }
             }

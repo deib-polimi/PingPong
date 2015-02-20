@@ -12,7 +12,7 @@ public class SpinnerRow {
 	
 	@Getter private String name;
 	
-        /**
+    /**
      * Constructor of this class.
      * @param name String that represents the macaddress of the device in the Spinner's row.
      */
@@ -22,6 +22,6 @@ public class SpinnerRow {
 
 	@Override
 	public String toString() {
-        return getName();
+        return name;
 	}
 }

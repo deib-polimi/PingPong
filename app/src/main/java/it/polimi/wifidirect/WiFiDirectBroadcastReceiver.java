@@ -37,6 +37,7 @@ import it.polimi.wifidirect.model.PingPongList;
  */
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
+    private static final String TAG = "BroadcastReceiver";
     private WifiP2pManager manager;
     private Channel channel;
     private WiFiDirectActivity activity;
@@ -44,7 +45,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     /**
      * Constructor of the class.
      * @param manager WifiP2pManager system service
-     * @param channel Wifi p2p channel
+     * @param channel WifiP2pChannel
      * @param activity activity associated with the receiver
      */
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel, WiFiDirectActivity activity) {
@@ -60,7 +61,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
             case WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION:
 
-                // UI update to indicate wifi p2p status.
+                //UI update to indicate wifi p2p status.
                 //in state i have the adapter's state: enabled or not.
                 int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
                 if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
@@ -71,7 +72,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     activity.resetData();
 
                 }
-                Log.d("STATE_CHANGED_ACTION", "P2P state changed - " + state);
+                Log.d(TAG, "P2P state changed - " + state);
                 break;
 
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
@@ -82,7 +83,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 if (manager != null) {
                     manager.requestPeers(channel, (PeerListListener) activity.getFragmentManager().findFragmentById(R.id.frag_list));
                 }
-                Log.d("PEERS_CHANGED_ACTION", "P2P peers changed");
+                Log.d(TAG, "P2P peers changed");
                 break;
 
             case WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION:
@@ -103,7 +104,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     manager.requestConnectionInfo(channel, fragment);
                     manager.requestGroupInfo(channel, fragment);
 
-                    if (PingPongList.getInstance().isPinponging()) {
+                    if (PingPongList.getInstance().isPingponging()) {
                         activity.startNewPingPongCycle();
                     }
 
@@ -111,16 +112,16 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     // It's a disconnect
                     activity.resetData();
 
-                    Log.d("Broadcast received", "Disconnected");
+                    Log.d(TAG, "Disconnected");
 
                     //if the Pingpong mode is enabled, restarts the discovery
-                    Log.d("verifica_pingpong", "Stato pingpong: " + LocalP2PDevice.getInstance().isPing_pong_mode());
+                    Log.d(TAG, "Check Ping pong state: " + LocalP2PDevice.getInstance().isPing_pong_mode());
                     if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
                         activity.discoveryPingPong();
                     }
                     else {
 
-                        if (PingPongList.getInstance().isPinponging()) {
+                        if (PingPongList.getInstance().isPingponging()) {
                             activity.restartDiscoveryPingpongAfterDisconnect();
                         }
                     }
@@ -138,7 +139,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                         )
                 );
 
-                Log.d("THIS_DEVICE_CHANGED_ACTION" , "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
+                Log.d(TAG , "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
                 break;
         }
     }

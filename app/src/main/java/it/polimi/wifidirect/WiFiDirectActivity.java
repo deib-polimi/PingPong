@@ -36,6 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import it.polimi.wifidirect.actionlisteners.CustomizableActionListener;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroups;
@@ -47,12 +48,15 @@ import it.polimi.wifidirect.model.PingPongList;
  * using interfaces to notify the application of operation success or failure.
  * The application should also register a BroadcastReceiver for notification of
  * WiFi state related events.
- *
+ * This activity manages the pingpong logic.
+ * <p/>
  * Created by Stefano Cappa, based on google code samples
  */
-public class WiFiDirectActivity extends Activity implements ChannelListener, DeviceListFragment.DeviceActionListener {
+public class WiFiDirectActivity extends Activity implements
+        WifiP2pManager.ChannelListener,
+        DeviceListFragment.DeviceActionListener {
 
-    public static final String TAG = "wifidirectdemo";
+    public static final String TAG = "P2P-PingPong";
     private WifiP2pManager manager;
     private boolean isWifiP2pEnabled = false;
     private boolean retryChannel = false;
@@ -63,7 +67,8 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
     /**
      * Method to set if wifidirect is enabled.
-     * @param isWifiP2pEnabled the isWifiP2pEnabled to set
+     *
+     * @param isWifiP2pEnabled boolean to set the attribute {@link #isWifiP2pEnabled}
      */
     public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled) {
         this.isWifiP2pEnabled = isWifiP2pEnabled;
@@ -84,7 +89,9 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         channel = manager.initialize(this, getMainLooper(), null);
     }
 
-    /** register the BroadcastReceiver with the intent values to be matched */
+    /**
+     * Register the BroadcastReceiver with the intent values to be matched
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -113,7 +120,10 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         }
 
         P2PGroups.getInstance().getGroupList().clear();
-        fragmentDetails.getView().findViewById(R.id.btn_start_ping_pong).setVisibility(View.GONE);
+
+        if (fragmentDetails.getView() != null) {
+            fragmentDetails.getView().findViewById(R.id.btn_start_ping_pong).setVisibility(View.GONE);
+        }
     }
 
 
@@ -123,8 +133,6 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         inflater.inflate(R.menu.action_items, menu);
         return true;
     }
-
-
 
 
     @Override
@@ -139,29 +147,25 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
                     startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
                 } else {
-                    Log.e(TAG, "channel or manager is null");
+                    Log.e(TAG, "Channel or manager is null");
                 }
                 return true;
 
             case R.id.atn_direct_discover:
                 if (!isWifiP2pEnabled) {
-                    Toast.makeText(WiFiDirectActivity.this, R.string.p2p_off_warning,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(WiFiDirectActivity.this, R.string.p2p_off_warning, Toast.LENGTH_SHORT).show();
                     return true;
                 }
                 final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager().findFragmentById(R.id.frag_list);
                 fragment.onInitiateDiscovery();
-                manager.discoverPeers(channel, new ActionListener() {
+                manager.discoverPeers(channel, new CustomizableActionListener(
+                        WiFiDirectActivity.this,
+                        "discoverPeers",
+                        null,
+                        "Discovery Initiated",
+                        null,
+                        "Discovery Failed"));
 
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(WiFiDirectActivity.this, "Discovery Initiated", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(int reasonCode) {
-                        Toast.makeText(WiFiDirectActivity.this, "Discovery Failed : " + reasonCode, Toast.LENGTH_SHORT).show();
-                    }
-                });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -170,7 +174,8 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
     /**
      * Method to show {@link it.polimi.wifidirect.DeviceDetailFragment}.
-     * @param device P2pDevice to use in the fragment.
+     *
+     * @param device A {@link it.polimi.wifidirect.model.P2PDevice} to use in the fragment.
      */
     @Override
     public void showDetails(P2PDevice device) {
@@ -181,26 +186,20 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
     @Override
     public void connect(WifiP2pConfig config) {
-        Log.d("connect()", "Request connection");
-        manager.connect(channel, config, new ActionListener() {
-
-            @Override
-            public void onSuccess() {
-                Log.d("connect","success");
-            }
-
-            @Override
-            public void onFailure(int reason) {
-                Toast.makeText(WiFiDirectActivity.this, "Connect failed. Retry.",Toast.LENGTH_SHORT).show();
-                Log.d("connect","failed");
-            }
-        });
+        Log.d(TAG, "Request connection");
+        manager.connect(channel, config, new CustomizableActionListener(
+                WiFiDirectActivity.this,
+                "connect",
+                "connect Success",
+                null,
+                "connect Failed",
+                "connect Failed. Retry"));
     }
 
 
-
-    //modified method to start a "silent disconnect" during the pingpong
-    @Override
+    /**
+     * Modified method to start a "silent disconnect" during the pingponging
+     */
     public void disconnectPingPong() {
         final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
         fragment.resetViews();
@@ -216,7 +215,9 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             @Override
             public void onSuccess() {
 
-                fragment.getView().setVisibility(View.GONE);
+                if (fragment.getView() != null) {
+                    fragment.getView().setVisibility(View.GONE);
+                }
             }
 
         });
@@ -228,7 +229,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
      */
     public void restartDiscoveryPingpongAfterDisconnect() {
 
-        Log.d("ping-pong" , System.currentTimeMillis() + " - Preparing to discovery");
+        Log.d(TAG, System.currentTimeMillis() + " - Preparing to discovery");
 
         try {
             Thread.sleep(2000);
@@ -236,7 +237,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             e.printStackTrace();
         }
 
-        Log.d("ping-pong", System.currentTimeMillis() + " - Discovery started");
+        Log.d(TAG, System.currentTimeMillis() + " - Discovery started");
 
         PingPongList.getInstance().setConnecting(false);
 
@@ -247,34 +248,32 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
      * Method used by ping pong to start a new pingpong cycle.
      */
     public void startNewPingPongCycle() {
-        Log.d("ping-pong", System.currentTimeMillis() + " - Reconnected, pingpong cycle completed, but i'm starting a new cycle.");
-        new PingPongLogic(this).execute(this);
+        Log.d(TAG, System.currentTimeMillis() + " - Reconnected, pingpong cycle completed, but i'm starting a new cycle.");
+        new PingPongLogic(this).execute();
     }
 
-    //modified method to start a "silent discovery" without Progessdialog or something else.
-    @Override
+    /**
+     * Modified method to start a "silent discovery" without ProgessDialog or something else.
+     */
     public void discoveryPingPong() {
-        manager.discoverPeers(channel, new ActionListener() {
-
-            @Override
-            public void onSuccess() {
-                Toast.makeText(WiFiDirectActivity.this, "Discovery Initiated", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(int reasonCode) {
-                Toast.makeText(WiFiDirectActivity.this, "Discovery Failed : " + reasonCode, Toast.LENGTH_SHORT).show();
-            }
-        });
+        manager.discoverPeers(channel, new CustomizableActionListener(
+                WiFiDirectActivity.this,
+                "discoveryPingPong",
+                null,
+                "Discovery Initiated",
+                null,
+                "Discovery Failed"));
     }
 
+    /**
+     * Method to disconnect.
+     */
     @Override
     public void disconnect() {
         final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
         fragment.resetViews();
 
         P2PGroups.getInstance().getGroupList().clear();
-
 
         manager.removeGroup(channel, new ActionListener() {
 
@@ -287,7 +286,10 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             @Override
             public void onSuccess() {
                 Toast.makeText(WiFiDirectActivity.this, "Disconnect Success", Toast.LENGTH_SHORT).show();
-                fragment.getView().setVisibility(View.GONE);
+
+                if (fragment.getView() != null) {
+                    fragment.getView().setVisibility(View.GONE);
+                }
             }
 
         });
@@ -302,43 +304,35 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
             retryChannel = true;
             manager.initialize(this, getMainLooper(), this);
         } else {
-            Toast.makeText(this, "Severe! Channel is probably lost premanently. Try Disable/Re-Enable P2P.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Severe! Channel is probably lost permanently. Try Disable/Re-Enable P2P.", Toast.LENGTH_LONG).show();
             P2PGroups.getInstance().getGroupList().clear();
         }
     }
 
-    @Override
+    /**
+     * Method to cancel the disconnect procedure.
+     * Never used in this app, but can be useful in the future
+     */
     public void cancelDisconnect() {
-
         /*
          * A cancel abort request by user. Disconnect i.e. removeGroup if
          * already connected. Else, request WifiP2pManager to abort the ongoing
          * request
          */
         if (manager != null) {
-            final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager().findFragmentById(R.id.frag_list);
-              P2PDevice localDevice = LocalP2PDevice.getInstance().getLocalDevice();
-//            if (fragment.getThisLocalDevice() == null || fragment.getThisLocalDevice().getP2pDevice().status == WifiP2pDevice.CONNECTED) {
-//                disconnect();
-//            } else if (fragment.getThisLocalDevice().getP2pDevice().status == WifiP2pDevice.AVAILABLE || fragment.getThisLocalDevice().getP2pDevice().status == WifiP2pDevice.INVITED) {
+            P2PDevice localDevice = LocalP2PDevice.getInstance().getLocalDevice();
 
-
-                if (localDevice == null || localDevice.getP2pDevice().status == WifiP2pDevice.CONNECTED) {
+            if (localDevice == null || localDevice.getP2pDevice().status == WifiP2pDevice.CONNECTED) {
                 disconnect();
             } else if (localDevice.getP2pDevice().status == WifiP2pDevice.AVAILABLE || localDevice.getP2pDevice().status == WifiP2pDevice.INVITED) {
 
-                manager.cancelConnect(channel, new ActionListener() {
-
-                    @Override
-                    public void onSuccess() {
-                        Toast.makeText(WiFiDirectActivity.this, "Aborting connection", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onFailure(int reasonCode) {
-                        Toast.makeText(WiFiDirectActivity.this, "Connect abort request failed. Reason Code: " + reasonCode, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                manager.cancelConnect(channel, new CustomizableActionListener(
+                        WiFiDirectActivity.this,
+                        "discoveryPingPong",
+                        null,
+                        "Aborting connection",
+                        null,
+                        "Connect abort request failed"));
             }
         }
 

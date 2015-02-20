@@ -8,9 +8,11 @@ import lombok.Setter;
 /**
  * Created by Stefano Cappa on 31/01/15.
  *
- * Class that represents a P2pDevice with inside a WifiP2pDevice and the groupOwner attribute.
- * This class is usefull because can be used to extends the basic WifiP2pDevice's funcionalities.
- * It's an abstraction of a WifiP2pDevice.
+ * Class that represents a {@link it.polimi.wifidirect.model.P2PDevice}
+ * with inside a {@link android.net.wifi.p2p.WifiP2pDevice} and the groupOwner attribute.
+ * This class is useful because can be used to extends the basic {@link android.net.wifi.p2p.WifiP2pDevice}'s
+ * functionalities.
+ * It's an abstraction of a {@link android.net.wifi.p2p.WifiP2pDevice}.
  *
  */
 public class P2PDevice {
@@ -21,7 +23,7 @@ public class P2PDevice {
 
     /**
      * Constructor of the class
-     * @param p2pDevice A WifiP2pDevice
+     * @param p2pDevice A {@link android.net.wifi.p2p.WifiP2pDevice}
      */
     public P2PDevice (WifiP2pDevice p2pDevice) {
         this.p2pDevice = p2pDevice;

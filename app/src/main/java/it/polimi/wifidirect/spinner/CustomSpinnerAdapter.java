@@ -14,15 +14,15 @@ import it.polimi.wifidirect.R;
 /**
  * Created by Stefano Cappa on 31/01/15.
  *
- *  The custom spinner adapter
+ * The custom spinner adapter
  */
 public class CustomSpinnerAdapter extends ArrayAdapter<SpinnerRow> {
 
 	private Activity context;
-	ArrayList<SpinnerRow> spinnerRow;
+	private ArrayList<SpinnerRow> spinnerRow;
 
     /**
-     * Constructor with required parameter.
+     * Constructor with required parameters
      * @param context The context
      * @param resource The resource
      * @param spinnerRow The list of elements
