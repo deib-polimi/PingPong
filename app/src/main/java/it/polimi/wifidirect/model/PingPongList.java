@@ -1,5 +1,7 @@
 package it.polimi.wifidirect.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,9 +62,11 @@ public class PingPongList {
         //i check which is the next go to connect
         if (PingPongList.getInstance().isUse_pongAddress()) {
             PingPongList.getInstance().setUse_pongAddress(false);
+            Log.d("PingPongList", "PingPong-Nextdeviceaddress = pongdevice = " + pongDevice.getP2pDevice().deviceAddress );
             return pongDevice;
         } else {
             PingPongList.getInstance().setUse_pongAddress(true);
+            Log.d("PingPongList", "PingPong-Nextdeviceaddress = pingdevice = " + pingDevice.getP2pDevice().deviceAddress );
             return pingDevice;
         }
     }

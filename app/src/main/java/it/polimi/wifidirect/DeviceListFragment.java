@@ -112,6 +112,7 @@ public class DeviceListFragment extends ListFragment implements
      */
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
+        Log.d(TAG, "Clicked position: " + position);
         P2PDevice device = (P2PDevice) getListAdapter().getItem(position);
         ((DeviceActionListener) getActivity()).showDetails(device);
     }
@@ -187,8 +188,6 @@ public class DeviceListFragment extends ListFragment implements
         void connect(WifiP2pConfig config);
 
         void disconnect();
-
-        void setDeviceNameWithReflection(String deviceName);
 
     }
 

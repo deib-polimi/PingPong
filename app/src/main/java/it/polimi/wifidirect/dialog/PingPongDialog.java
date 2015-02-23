@@ -113,7 +113,7 @@ public class PingPongDialog extends DialogFragment {
                 Intent i = new Intent();
                 Bundle extras=new Bundle();
                 extras.putString("ping_address",spinner_ping.getSelectedItem().toString());
-                extras.putString("pong_address",spinner_ping.getSelectedItem().toString());
+                extras.putString("pong_address",spinner_pong.getSelectedItem().toString());
                 extras.putBoolean("testmode_checkbox_status", testmode_checkbox.isChecked());
                 i.putExtras(extras);
 

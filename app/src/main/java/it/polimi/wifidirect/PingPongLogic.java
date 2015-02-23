@@ -48,7 +48,8 @@ public class PingPongLogic extends AsyncTask<Void, Void, Void> {
 
         if (PingPongList.getInstance().isPingponging()) {
 
-            this.chooseGroupOwner(pingDevice, pongDevice);
+            //attention if you call chooseGroupOwner 2 times you'll get the same config element
+            //WifiP2pConfig config = this.chooseGroupOwner(pingDevice, pongDevice);
 
             Log.d(TAG , System.currentTimeMillis() + " - disconnect");
 
@@ -81,18 +82,19 @@ public class PingPongLogic extends AsyncTask<Void, Void, Void> {
         config.groupOwnerIntent = 0;
 
         //i choose the GroupOwner to connect.
-        if (PingPongList.getInstance().isUse_pongAddress()) {
+        //TODO POSSIBILE BUG
+        if (!PingPongList.getInstance().isUse_pongAddress()) {
             Log.d(TAG, "destination - PingPong with pong : " + pongDevice.getP2pDevice().deviceAddress);
 
             config.deviceAddress = pongDevice.getP2pDevice().deviceAddress;
 
-            PingPongList.getInstance().setUse_pongAddress(false);
+            PingPongList.getInstance().setUse_pongAddress(true);
         } else {
             Log.d(TAG, "destination - PingPong with ping : " + pingDevice.getP2pDevice().deviceAddress);
 
             config.deviceAddress = pingDevice.getP2pDevice().deviceAddress;
 
-            PingPongList.getInstance().setUse_pongAddress(true);
+            PingPongList.getInstance().setUse_pongAddress(false);
         }
 
         return config;

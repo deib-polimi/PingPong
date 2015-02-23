@@ -16,10 +16,8 @@
 
 package it.polimi.wifidirect;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -28,9 +26,7 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
-import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -175,6 +171,7 @@ public static final String TAG = "P2P-PingPong";
 
             //PINGPONG
             P2PDevice nextDeviceToConnect = PingPongList.getInstance().getNextDeviceToConnect();
+            Log.d(TAG, "onPeersAvailable pingpong nextDeviceToConnect =  " + nextDeviceToConnect.getP2pDevice().deviceAddress);
             boolean found = false;
 
             for (P2PDevice device : PeerList.getInstance().getList()) {
@@ -214,7 +211,6 @@ public static final String TAG = "P2P-PingPong";
                     Toast.makeText(WiFiDirectActivity.this, R.string.p2p_off_warning, Toast.LENGTH_SHORT).show();
                     return true;
                 }
-//                listFragment = (DeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.frag_list);
                 listFragment.onInitiateDiscovery();
                 manager.discoverPeers(channel, new CustomizableActionListener(
                         WiFiDirectActivity.this,
@@ -237,7 +233,6 @@ public static final String TAG = "P2P-PingPong";
      */
     @Override
     public void showDetails(P2PDevice device) {
-//        detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentById(R.id.frag_detail);
         detailFragment.showDetails(device);
 
     }
@@ -251,7 +246,7 @@ public static final String TAG = "P2P-PingPong";
                 "connect Success",
                 null,
                 "connect Failed",
-                "connect Failed. Retry"));
+                "connect Failed with" + config.deviceAddress +  ". Retry"));
     }
 
 
@@ -328,7 +323,6 @@ public static final String TAG = "P2P-PingPong";
      */
     @Override
     public void disconnect() {
-//        detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentById(R.id.frag_detail);
         detailFragment.resetViews();
 
         P2PGroups.getInstance().getGroupList().clear();

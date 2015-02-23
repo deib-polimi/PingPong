@@ -34,6 +34,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
 import it.polimi.wifidirect.dialog.PingPongDialog;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
@@ -240,8 +242,13 @@ public class DeviceDetailFragment extends Fragment implements
             //now i use the peerlist to fill the PingPongList. Obviously, i must remove my group owner and all my
             // brothers ;) (the other clients in my group).
             // And finally i need to check that every device in this list is a group owner.
-            for(P2PDevice dev : PeerList.getInstance().getList()) {
-                if(dev.isGroupOwner() && !p2pGroup.getList().contains(dev) &&
+            List<P2PDevice> peerlist = PeerList.getInstance().getList();
+            for(P2PDevice dev : peerlist) {
+//                if(dev.isGroupOwner() && !p2pGroup.getList().contains(dev) &&
+//                        !PingPongList.getInstance().getPingponglist().contains(dev)) {
+//                    PingPongList.getInstance().getPingponglist().add(dev);
+//                }
+                if(!p2pGroup.getList().contains(dev) &&
                         !PingPongList.getInstance().getPingponglist().contains(dev)) {
                     PingPongList.getInstance().getPingponglist().add(dev);
                 }

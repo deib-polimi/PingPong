@@ -15,6 +15,7 @@
         <!-- Preview: layout=@layout/row_devices -->
     </fragment>
 
+
     <fragment
         android:id="@+id/frag_detail"
         class="it.polimi.wifidirect.DeviceDetailFragment"
@@ -22,4 +23,5 @@
         android:layout_height="match_parent">
         <!-- Preview: layout=@layout/device_detail -->
     </fragment>
+
 </LinearLayout>
