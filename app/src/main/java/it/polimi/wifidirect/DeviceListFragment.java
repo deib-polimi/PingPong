@@ -27,6 +27,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,25 +51,57 @@ import lombok.Getter;
  *
  * Created by Stefano Cappa, based on google code samples
  */
-public class DeviceListFragment extends ListFragment implements
+public class DeviceListFragment extends Fragment implements
         //DialogConfirmListener is the interface in LocalDeviceDialog. I use this to call
         //public void changeLocalDeviceName(String deviceName) in this class from the DialogFragment without to pass attributes or other stuff
-        LocalDeviceDialog.DialogConfirmListener {
+        LocalDeviceDialog.DialogConfirmListener,
+        //ItemClickListener is the interface in the adapter to intercept item's click events.
+        //I use this to call itemClicked(v) in this class from WiFiPeerListAdapter.
+        WiFiPeerListAdapter.ItemClickListener {
 
     private static final String TAG = "DeviceListFragment";
     @Getter private ProgressDialog progressDialog = null;
     private  View mContentView = null;
+    private RecyclerView mRecyclerView;
+    @Getter private WiFiPeerListAdapter mAdapter;
+
+    /**
+     * Method to obtain a new Fragment's instance.
+     * @return This Fragment instance.
+     */
+    public static DeviceListFragment newInstance() {
+        return new DeviceListFragment();
+    }
+
+    /**
+     * Default Fragment constructor.
+     */
+    public DeviceListFragment() {}
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        this.setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices));
+//        this.setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices));
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mContentView = inflater.inflate(R.layout.device_list, null);
+        mContentView = inflater.inflate(R.layout.device_list, container, false);
+        mContentView.setTag(TAG);
+
+        mRecyclerView = (RecyclerView) mContentView.findViewById(R.id.recyclerView);
+
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // allows for optimizations if all item views are of the same size.
+        mRecyclerView.setHasFixedSize(true);
+
+        mAdapter = new WiFiPeerListAdapter(this);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         final CheckBox pingpong_checkbox = (CheckBox) mContentView.findViewById(R.id.pingpong_checkbox);
         pingpong_checkbox.setOnClickListener(new View.OnClickListener() {
@@ -80,6 +115,24 @@ public class DeviceListFragment extends ListFragment implements
         cardviewLocalDevice.setOnClickListener(new OnClickListenerLocalDevice(this));
 
         return mContentView;
+    }
+
+    /**
+     * Method called by {@link it.polimi.wifidirect.WiFiPeerListAdapter}
+     * with the {@link it.polimi.wifidirect.WiFiPeerListAdapter.ItemClickListener}
+     * interface, when the user click on an element of the {@link android.support.v7.widget.RecyclerView}.
+     * @param view {@link android.view.View} clicked.
+     */
+    @Override
+    public void itemClicked(View view) {
+        int clickedPosition = mRecyclerView.getChildPosition(view);
+        Log.d(TAG, "Clicked position: " + clickedPosition);
+
+        if(clickedPosition>=0) { //a little check :)
+//            P2PDevice device = (P2PDevice) getListAdapter().getItem(clickedPosition);
+            P2PDevice device = PeerList.getInstance().getList().get(clickedPosition);
+            ((DeviceActionListener) getActivity()).showDetails(device);
+        }
     }
 
 
@@ -107,16 +160,6 @@ public class DeviceListFragment extends ListFragment implements
         }
     }
 
-    /**
-     * Initiate a connection with the peer.
-     */
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        Log.d(TAG, "Clicked position: " + position);
-        P2PDevice device = (P2PDevice) getListAdapter().getItem(position);
-        ((DeviceActionListener) getActivity()).showDetails(device);
-    }
-
 
     /**
      * Update UI for this device.
@@ -141,7 +184,7 @@ public class DeviceListFragment extends ListFragment implements
      */
     public void clearPeers() {
         PeerList.getInstance().getList().clear();
-        ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
+        ((WiFiPeerListAdapter) this.getMAdapter()).notifyDataSetChanged();
     }
 
     /**

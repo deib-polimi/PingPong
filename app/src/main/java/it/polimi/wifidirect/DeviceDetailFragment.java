@@ -65,6 +65,19 @@ public class DeviceDetailFragment extends Fragment implements
     private Fragment fragment = this;
     private static final int PINGPONG = 5; //constant number
 
+    /**
+     * Method to obtain a new Fragment's instance.
+     * @return This Fragment instance.
+     */
+    public static DeviceDetailFragment newInstance() {
+        return new DeviceDetailFragment();
+    }
+
+    /**
+     * Default Fragment constructor.
+     */
+    public DeviceDetailFragment() {}
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 

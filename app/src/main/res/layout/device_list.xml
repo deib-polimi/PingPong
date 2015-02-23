@@ -105,12 +105,10 @@
 
 
     <!-- Available peers -->
-    <ListView
-        android:id="@id/android:list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:layout_weight="1"
-        android:drawSelectorOnTop="false" />
+        android:layout_height="140dp" />
 
     <TextView
         android:id="@id/android:empty"

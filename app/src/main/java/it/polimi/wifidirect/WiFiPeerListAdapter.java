@@ -2,6 +2,8 @@ package it.polimi.wifidirect;
 
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,50 +16,93 @@ import it.polimi.wifidirect.model.PeerList;
 
 /**
  * ListAdapter of {@link it.polimi.wifidirect.model.P2PDevice}.
- * Created by Stefano Cappa on 31/01/15.
+ * Created by Stefano Cappa on 23/02/15.
  */
-public class WiFiPeerListAdapter extends ArrayAdapter<P2PDevice> {
+public class WiFiPeerListAdapter extends RecyclerView.Adapter<WiFiPeerListAdapter.ViewHolder> {
 
-    private Context context;
+    private final ItemClickListener itemClickListener;
 
     /**
-     * Constructor of the class
-     * @param context Context
-     * @param textViewResourceId Resource id
+     * Constructor of the adapter
+     * @param itemClickListener ClickListener to obtain click actions over the recyclerview's elements.
      */
-    public WiFiPeerListAdapter(Context context, int textViewResourceId) {
-        super(context, textViewResourceId, PeerList.getInstance().getList());
-        this.context = context;
-
+    public WiFiPeerListAdapter(@NonNull ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+        setHasStableIds(true);
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-        if (v == null) {
-            LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = vi.inflate(R.layout.row_devices, null);
+    /**
+     * {@link it.polimi.wifidirect.DeviceListFragment} implements this interface
+     */
+    public interface ItemClickListener {
+        void itemClicked(final View view);
+    }
+
+
+    /**
+     * The ViewHolder of this Adapter, useful to store e recycle element for performance reasons.
+     */
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private final View parent;
+        private final TextView nameText;
+        private final TextView statusText;
+        private final TextView macAddressText;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            this.parent = view;
+
+            nameText = (TextView) view.findViewById(R.id.device_name);
+            statusText = (TextView) view.findViewById(R.id.device_status);
+            macAddressText = (TextView) view.findViewById(R.id.device_mac_address);
         }
+
+
+        public void setOnClickListener(View.OnClickListener listener) {
+            parent.setOnClickListener(listener);
+        }
+    }
+
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
+        View v = layoutInflater.inflate(R.layout.row_devices, viewGroup, false);
+        return new ViewHolder(v);
+    }
+
+
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
 
         P2PDevice device = PeerList.getInstance().getList().get(position);
         if (device != null) {
-            TextView name = (TextView) v.findViewById(R.id.device_name);
-            TextView status = (TextView) v.findViewById(R.id.device_status);
-            TextView macAddress = (TextView) v.findViewById(R.id.device_mac_address);
-            if (name != null) {
-                name.setText(device.getP2pDevice().deviceName);
+            if (viewHolder.nameText != null) {
+                viewHolder.nameText.setText(device.getP2pDevice().deviceName);
             }
-            if (status != null) {
-                status.setText(getDeviceStatus(device.getP2pDevice().status));
+            if (viewHolder.statusText != null) {
+                viewHolder.statusText.setText(getDeviceStatus(device.getP2pDevice().status));
             }
-            if (macAddress != null) {
-                macAddress.setText(device.getP2pDevice().deviceAddress);
+            if (viewHolder.macAddressText != null) {
+                viewHolder.macAddressText.setText(device.getP2pDevice().deviceAddress);
             }
         }
 
-        return v;
-
+        viewHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemClickListener.itemClicked(v);
+            }
+        });
     }
+
+
+    @Override
+    public int getItemCount() {
+        return PeerList.getInstance().getList().size();
+    }
+
 
 
     /**

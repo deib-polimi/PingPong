@@ -160,7 +160,7 @@ public static final String TAG = "P2P-PingPong";
 
         PeerList.getInstance().getList().clear();
         PeerList.getInstance().addAllElements(peerList.getDeviceList());
-        ((WiFiPeerListAdapter) listFragment.getListAdapter()).notifyDataSetChanged();
+        ((WiFiPeerListAdapter) listFragment.getMAdapter()).notifyDataSetChanged();
         if (PeerList.getInstance().getList().size() == 0) {
             Log.d(TAG, "No devices found");
             return;
