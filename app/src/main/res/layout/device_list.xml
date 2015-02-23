@@ -3,44 +3,60 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="3dp">
+    android:layout_height="match_parent">
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="@string/label_me" />
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:gravity="center_vertical"
-        android:background="@android:color/holo_blue_light" />
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="6dp"
+        android:text="@string/label_me"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/primary" />
 
-    <!-- Self information -->
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <!-- Local device information -->
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/cardviewLocalDevice"
         android:layout_width="fill_parent"
-        android:layout_height="?android:attr/listPreferredItemHeight"
-        android:background="?android:attr/activatedBackgroundIndicator"
-        android:padding="3dip">
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_marginRight="2dp"
-            android:src="@drawable/machine" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="6dp"
+        android:clickable="true"
+        android:elevation="100dp"
+        android:padding="3dip"
+        android:foreground="?android:attr/selectableItemBackground"
+        card_view:cardBackgroundColor="@color/cardview_light_background">
+
+
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginStart="18dp"
+                android:src="@drawable/android_logo_device" />
+
             <TextView
                 android:id="@+id/my_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:text="name"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true" />
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@+id/imageView"
+                android:textColor="@color/black"/>
+
             <TextView
                 android:id="@+id/my_status"
                 android:layout_width="wrap_content"
@@ -49,7 +65,7 @@
                 android:ellipsize="marquee"
                 android:text="status"
                 android:layout_below="@+id/my_name"
-                android:layout_alignParentStart="true" />
+                android:layout_alignStart="@+id/my_name" />
 
             <TextView
                 android:id="@+id/my_mac_address"
@@ -57,35 +73,35 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:ellipsize="marquee"
+                android:layout_marginBottom="8dp"
                 android:text="mac_address"
                 android:layout_below="@+id/my_status"
-                android:layout_alignParentStart="true" />
+                android:layout_alignStart="@+id/my_status" />
 
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/pingpong_checkbox"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
                 android:checked="false"
-                android:button="@drawable/checkbox_ping_pong"/>
-
-
+                android:button="@drawable/checkbox_ping_pong"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="13dp" />
         </RelativeLayout>
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
+
 
     <TextView
+        android:text="@string/label_peers"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:text="@string/label_peers" />
+        android:layout_marginBottom="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="6dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/primary" />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:gravity="center_vertical"
-        android:background="@android:color/holo_blue_light" />
 
     <!-- Available peers -->
     <ListView
@@ -100,5 +116,6 @@
         android:layout_width="match_parent"
         android:layout_gravity="center"
         android:layout_height="match_parent"
+        android:layout_marginTop="6dp"
         android:text="@string/empty_message" />
 </LinearLayout>

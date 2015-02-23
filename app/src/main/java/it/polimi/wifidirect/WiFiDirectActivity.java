@@ -21,14 +21,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ActionListener;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,7 +44,9 @@ import it.polimi.wifidirect.actionlisteners.CustomizableActionListener;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroups;
+import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
+import lombok.Getter;
 
 /**
  * An activity that uses WiFi Direct APIs to discover and connect with available
@@ -52,14 +58,19 @@ import it.polimi.wifidirect.model.PingPongList;
  * <p/>
  * Created by Stefano Cappa, based on google code samples
  */
-public class WiFiDirectActivity extends Activity implements
+public class WiFiDirectActivity extends ActionBarActivity implements
         WifiP2pManager.ChannelListener,
-        DeviceListFragment.DeviceActionListener {
+        DeviceListFragment.DeviceActionListener,
+        WifiP2pManager.PeerListListener {
 
-    public static final String TAG = "P2P-PingPong";
+
+public static final String TAG = "P2P-PingPong";
     private WifiP2pManager manager;
     private boolean isWifiP2pEnabled = false;
     private boolean retryChannel = false;
+    private Toolbar toolbar;
+    @Getter private DeviceListFragment listFragment;
+    @Getter private DeviceDetailFragment detailFragment;
 
     private final IntentFilter intentFilter = new IntentFilter();
     private Channel channel;
@@ -74,10 +85,25 @@ public class WiFiDirectActivity extends Activity implements
         this.isWifiP2pEnabled = isWifiP2pEnabled;
     }
 
+    /**
+     * Method to setup the {@link android.support.v7.widget.Toolbar}
+     * as supportActionBar in this {@link android.support.v7.app.ActionBarActivity}.
+     */
+    private void setupToolBar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setTitle(getResources().getString(R.string.app_name));
+            toolbar.setTitleTextColor(Color.WHITE);
+            toolbar.inflateMenu(R.menu.action_items);
+            this.setSupportActionBar(toolbar);
+        }
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        this.setupToolBar();
 
         // add necessary intent values to be matched.
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
@@ -110,22 +136,65 @@ public class WiFiDirectActivity extends Activity implements
      * BroadcastReceiver receiving a state change event.
      */
     public void resetData() {
-        DeviceListFragment fragmentList = (DeviceListFragment) getFragmentManager().findFragmentById(R.id.frag_list);
-        DeviceDetailFragment fragmentDetails = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
-        if (fragmentList != null) {
-            fragmentList.clearPeers();
+        listFragment = (DeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.frag_list);
+        detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentById(R.id.frag_detail);
+        if (listFragment != null) {
+            listFragment.clearPeers();
         }
-        if (fragmentDetails != null) {
-            fragmentDetails.resetViews();
+        if (detailFragment != null) {
+            detailFragment.resetViews();
         }
 
         P2PGroups.getInstance().getGroupList().clear();
 
-        if (fragmentDetails.getView() != null) {
-            fragmentDetails.getView().findViewById(R.id.btn_start_ping_pong).setVisibility(View.GONE);
+        if (detailFragment.getView() != null) {
+            detailFragment.getView().findViewById(R.id.btn_start_ping_pong).setVisibility(View.GONE);
         }
     }
 
+    @Override
+    public void onPeersAvailable(WifiP2pDeviceList peerList) {
+        Log.d(TAG, "onPeersAvailable");
+
+        if (listFragment.getProgressDialog() != null && listFragment.getProgressDialog().isShowing()) {
+            listFragment.getProgressDialog().dismiss();
+        }
+
+        PeerList.getInstance().getList().clear();
+        PeerList.getInstance().addAllElements(peerList.getDeviceList());
+        ((WiFiPeerListAdapter) listFragment.getListAdapter()).notifyDataSetChanged();
+        if (PeerList.getInstance().getList().size() == 0) {
+            Log.d(TAG, "No devices found");
+            return;
+        }
+
+
+        if (PingPongList.getInstance().isPingponging() && !PingPongList.getInstance().isConnecting()) {
+
+            //PINGPONG
+            P2PDevice nextDeviceToConnect = PingPongList.getInstance().getNextDeviceToConnect();
+            boolean found = false;
+
+            for (P2PDevice device : PeerList.getInstance().getList()) {
+                if (device.getP2pDevice()!=null && nextDeviceToConnect!=null
+                        && device.getP2pDevice().deviceAddress.equals(nextDeviceToConnect.getP2pDevice().deviceAddress)) {
+                    found = true;
+                }
+            }
+
+            //now i verify if the device to use with Pingpong was found
+            if (found) {
+
+                PingPongList.getInstance().setConnecting(true);
+
+                Log.d(TAG , System.currentTimeMillis() + " - connect");
+
+                connect(new PingPongLogic(this).getConfigToReconnect());
+
+            }
+
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -138,26 +207,13 @@ public class WiFiDirectActivity extends Activity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.atn_direct_enable:
-                if (manager != null && channel != null) {
-
-                    // Since this is the system wireless settings activity, it's
-                    // not going to send us a result. We will be notified by
-                    // WiFiDeviceBroadcastReceiver instead.
-
-                    startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
-                } else {
-                    Log.e(TAG, "Channel or manager is null");
-                }
-                return true;
-
             case R.id.atn_direct_discover:
                 if (!isWifiP2pEnabled) {
                     Toast.makeText(WiFiDirectActivity.this, R.string.p2p_off_warning, Toast.LENGTH_SHORT).show();
                     return true;
                 }
-                final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager().findFragmentById(R.id.frag_list);
-                fragment.onInitiateDiscovery();
+//                listFragment = (DeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.frag_list);
+                listFragment.onInitiateDiscovery();
                 manager.discoverPeers(channel, new CustomizableActionListener(
                         WiFiDirectActivity.this,
                         "discoverPeers",
@@ -179,8 +235,8 @@ public class WiFiDirectActivity extends Activity implements
      */
     @Override
     public void showDetails(P2PDevice device) {
-        DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
-        fragment.showDetails(device);
+//        detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentById(R.id.frag_detail);
+        detailFragment.showDetails(device);
 
     }
 
@@ -201,8 +257,8 @@ public class WiFiDirectActivity extends Activity implements
      * Modified method to start a "silent disconnect" during the pingponging
      */
     public void disconnectPingPong() {
-        final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
-        fragment.resetViews();
+//        detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentById(R.id.frag_detail);
+        detailFragment.resetViews();
 
         manager.removeGroup(channel, new ActionListener() {
 
@@ -215,8 +271,8 @@ public class WiFiDirectActivity extends Activity implements
             @Override
             public void onSuccess() {
 
-                if (fragment.getView() != null) {
-                    fragment.getView().setVisibility(View.GONE);
+                if (detailFragment.getView() != null) {
+                    detailFragment.getView().setVisibility(View.GONE);
                 }
             }
 
@@ -270,8 +326,8 @@ public class WiFiDirectActivity extends Activity implements
      */
     @Override
     public void disconnect() {
-        final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager().findFragmentById(R.id.frag_detail);
-        fragment.resetViews();
+//        detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentById(R.id.frag_detail);
+        detailFragment.resetViews();
 
         P2PGroups.getInstance().getGroupList().clear();
 
@@ -287,8 +343,8 @@ public class WiFiDirectActivity extends Activity implements
             public void onSuccess() {
                 Toast.makeText(WiFiDirectActivity.this, "Disconnect Success", Toast.LENGTH_SHORT).show();
 
-                if (fragment.getView() != null) {
-                    fragment.getView().setVisibility(View.GONE);
+                if (detailFragment.getView() != null) {
+                    detailFragment.getView().setVisibility(View.GONE);
                 }
             }
 

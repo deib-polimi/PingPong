@@ -16,7 +16,6 @@
 
 package it.polimi.wifidirect;
 
-import android.app.ListFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -25,6 +24,7 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +37,7 @@ import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
+import lombok.Getter;
 
 /**
  * A ListFragment that displays available peers on discovery and requests the
@@ -44,10 +45,10 @@ import it.polimi.wifidirect.model.PingPongList;
  *
  * Created by Stefano Cappa, based on google code samples
  */
-public class DeviceListFragment extends ListFragment implements WifiP2pManager.PeerListListener {
+public class DeviceListFragment extends ListFragment {
 
     private static final String TAG = "DeviceListFragment";
-    private ProgressDialog progressDialog = null;
+    @Getter private ProgressDialog progressDialog = null;
     private  View mContentView = null;
 
     @Override
@@ -122,49 +123,7 @@ public class DeviceListFragment extends ListFragment implements WifiP2pManager.P
         view.setText(device.getP2pDevice().deviceAddress);
     }
 
-    @Override
-    public void onPeersAvailable(WifiP2pDeviceList peerList) {
-        Log.d(TAG, "onPeersAvailable");
 
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-
-        PeerList.getInstance().getList().clear();
-        PeerList.getInstance().addAllElements(peerList.getDeviceList());
-        ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
-        if (PeerList.getInstance().getList().size() == 0) {
-            Log.d(TAG, "No devices found");
-            return;
-        }
-
-
-        if (PingPongList.getInstance().isPingponging() && !PingPongList.getInstance().isConnecting()) {
-
-            //PINGPONG
-            P2PDevice nextDeviceToConnect = PingPongList.getInstance().getNextDeviceToConnect();
-            boolean found = false;
-
-            for (P2PDevice device : PeerList.getInstance().getList()) {
-                if (device.getP2pDevice()!=null && nextDeviceToConnect!=null
-                        && device.getP2pDevice().deviceAddress.equals(nextDeviceToConnect.getP2pDevice().deviceAddress)) {
-                    found = true;
-                }
-            }
-
-            //now i verify if the device to use with Pingpong was found
-            if (found) {
-
-                PingPongList.getInstance().setConnecting(true);
-
-                Log.d(TAG , System.currentTimeMillis() + " - connect");
-
-                ((WiFiDirectActivity) this.getActivity()).connect(new PingPongLogic(this.getActivity()).getConfigToReconnect());
-
-            }
-
-        }
-    }
 
 
     /**

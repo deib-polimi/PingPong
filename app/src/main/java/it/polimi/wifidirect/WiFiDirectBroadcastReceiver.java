@@ -81,7 +81,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                 // asynchronous call and the calling activity is notified with a
                 // callback on PeerListListener.onPeersAvailable()
                 if (manager != null) {
-                    manager.requestPeers(channel, (PeerListListener) activity.getFragmentManager().findFragmentById(R.id.frag_list));
+                    manager.requestPeers(channel, activity);
                 }
                 Log.d(TAG, "P2P peers changed");
                 break;
@@ -100,7 +100,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     // we are connected with the other device, request connection
                     // info to find group owner IP
 
-                    DeviceDetailFragment fragment = (DeviceDetailFragment) activity.getFragmentManager().findFragmentById(R.id.frag_detail);
+                    DeviceDetailFragment fragment = (DeviceDetailFragment) activity.getDetailFragment();
                     manager.requestConnectionInfo(channel, fragment);
                     manager.requestGroupInfo(channel, fragment);
 
@@ -130,7 +130,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
 
-                DeviceListFragment fragment = (DeviceListFragment) activity.getFragmentManager().findFragmentById(R.id.frag_list);
+                DeviceListFragment fragment = (DeviceListFragment) activity.getListFragment();
                 WifiP2pDevice wifiP2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
                 fragment.updateThisDevice(

@@ -5,11 +5,13 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
+    <include layout="@layout/toolbar" />
+
     <fragment
         android:id="@+id/frag_list"
         class="it.polimi.wifidirect.DeviceListFragment"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/phone_list_height">
+        android:layout_height="wrap_content">
         <!-- Preview: layout=@layout/row_devices -->
     </fragment>
 

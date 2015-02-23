@@ -17,11 +17,11 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
- * A service that process each file transfer request i.e Intent by opening a
- * socket connection with the WiFi Direct Group Owner and writing the file
- *
- * Copyright 2011 Google Inc. All Rights Reserved. Modified by Stefano Cappa (2015).
- */
+* A service that process each file transfer request i.e Intent by opening a
+* socket connection with the WiFi Direct Group Owner and writing the file
+*
+* Copyright 2011 Google Inc. All Rights Reserved. Modified by Stefano Cappa (2015).
+*/
 public class FileTransferService extends IntentService {
 
     private static final String TAG = "FileTransferService";
@@ -30,8 +30,6 @@ public class FileTransferService extends IntentService {
     public static final String EXTRAS_FILE_PATH = "file_url";
     public static final String EXTRAS_GROUP_OWNER_ADDRESS = "go_host";
     public static final String EXTRAS_GROUP_OWNER_PORT = "go_port";
-
-    private long sended = 0;
 
     public FileTransferService(String name) {
         super(name);
@@ -91,12 +89,11 @@ public class FileTransferService extends IntentService {
         try {
             while ((len = inputStream.read(buf)) != -1) {
                 out.write(buf, 0, len);
-                sended = sended + len;
             }
             out.close();
             inputStream.close();
         } catch (IOException e) {
-            Log.e("FileTransferService", "copyFileClientSide",e);
+            Log.e(TAG, "copyFileClientSide",e);
         }
     }
 }

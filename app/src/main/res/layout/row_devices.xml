@@ -2,15 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
-    android:background="?android:attr/activatedBackgroundIndicator"
-    android:padding="6dip">
+    android:background="?android:attr/activatedBackgroundIndicator">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:layout_marginRight="2dip"
-        android:src="@drawable/machine" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -18,32 +11,43 @@
 
         <TextView
             android:id="@+id/device_name"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:text="name"
+            android:textColor="@color/black"
             android:layout_alignParentTop="true"
-            android:text="name" />
+            android:layout_toEndOf="@+id/imageView" />
 
         <TextView
             android:id="@+id/device_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="marquee"
-            android:singleLine="true"
             android:text="status"
+            android:textColor="@color/black"
             android:layout_below="@+id/device_name"
-            android:layout_alignParentStart="true" />
+            android:layout_alignStart="@+id/device_name" />
 
         <TextView
             android:id="@+id/device_mac_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="marquee"
-            android:singleLine="true"
-            android:text="mac_address"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_marginBottom="8dp"
+            android:text="mac"
+            android:textColor="@color/black"
+            android:layout_below="@+id/device_status"
+            android:layout_alignStart="@+id/device_status" />
 
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="20dp"
+            android:id="@+id/imageView"
+            android:src="@drawable/android_logo_device"
+            android:layout_alignParentStart="true"
+            android:layout_alignBottom="@+id/device_mac_address"
+            android:layout_alignTop="@+id/device_name" />
 
     </RelativeLayout>
 
