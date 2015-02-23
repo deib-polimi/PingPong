@@ -30,7 +30,7 @@ public class PingPongList {
     @Getter @Setter private boolean connecting;
 
     //if true this device must use the pong_macaddress, otherwise ping_macaddress
-    @Getter @Setter private boolean use_pongAddress;
+    @Getter @Setter private boolean use_pongAddress = true;
 
     private static PingPongList instance = new PingPongList();
 
@@ -61,11 +61,11 @@ public class PingPongList {
     public P2PDevice getNextDeviceToConnect() {
         //i check which is the next go to connect
         if (PingPongList.getInstance().isUse_pongAddress()) {
-            PingPongList.getInstance().setUse_pongAddress(false);
+//            PingPongList.getInstance().setUse_pongAddress(false);
             Log.d("PingPongList", "PingPong-Nextdeviceaddress = pongdevice = " + pongDevice.getP2pDevice().deviceAddress );
             return pongDevice;
         } else {
-            PingPongList.getInstance().setUse_pongAddress(true);
+//            PingPongList.getInstance().setUse_pongAddress(true);
             Log.d("PingPongList", "PingPong-Nextdeviceaddress = pingdevice = " + pingDevice.getP2pDevice().deviceAddress );
             return pingDevice;
         }

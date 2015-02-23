@@ -68,6 +68,8 @@ public class PingPongLogic extends AsyncTask<Void, Void, Void> {
 
     /**
      * Method to choose the correct device for the pingpong procedure.
+     * IMPORANT: this method switches between ping and pong addresses with the attribute use_pongAddress.
+     * Every call of this method, if the attribute use_pongAddress is true, will be replaced with false, and otherwise.
      * @param pingDevice Initial GroupOwner of the pingponging device
      * @param pongDevice Destination GroupOwner
      * @return The {@link android.net.wifi.p2p.WifiP2pConfig}
@@ -82,19 +84,20 @@ public class PingPongLogic extends AsyncTask<Void, Void, Void> {
         config.groupOwnerIntent = 0;
 
         //i choose the GroupOwner to connect.
-        //TODO POSSIBILE BUG
-        if (!PingPongList.getInstance().isUse_pongAddress()) {
+        //IMPORANT: this switches between ping and pong addresses with the attribute use_pongAddress.
+        //Every call of this, if the attribute use_pongAddress is true, will be replaced with false, and otherwise.
+        if (PingPongList.getInstance().isUse_pongAddress()) {
             Log.d(TAG, "destination - PingPong with pong : " + pongDevice.getP2pDevice().deviceAddress);
 
             config.deviceAddress = pongDevice.getP2pDevice().deviceAddress;
 
-            PingPongList.getInstance().setUse_pongAddress(true);
+            PingPongList.getInstance().setUse_pongAddress(false);
         } else {
             Log.d(TAG, "destination - PingPong with ping : " + pingDevice.getP2pDevice().deviceAddress);
 
             config.deviceAddress = pingDevice.getP2pDevice().deviceAddress;
 
-            PingPongList.getInstance().setUse_pongAddress(false);
+            PingPongList.getInstance().setUse_pongAddress(true);
         }
 
         return config;
