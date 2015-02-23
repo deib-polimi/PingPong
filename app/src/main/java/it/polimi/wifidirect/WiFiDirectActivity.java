@@ -40,6 +40,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import java.lang.reflect.Method;
+
 import it.polimi.wifidirect.actionlisteners.CustomizableActionListener;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
@@ -364,6 +366,35 @@ public static final String TAG = "P2P-PingPong";
             P2PGroups.getInstance().getGroupList().clear();
         }
     }
+
+    /**
+     * This method sets the name of this {@link it.polimi.wifidirect.model.LocalP2PDevice}
+     * in the UI and inside the device. In this way, all other devices can see this updated name during the discovery phase.
+     * Attention, WifiP2pManager uses ad annotation called @hide to hide the method called setDeviceName, in Android SDK.
+     * This method uses Java reflection to call this hidden method.
+     * @param deviceName String that represents the visible device name of a device, during discovery.
+     */
+    public void setDeviceNameWithReflection(String deviceName) {
+        try {
+            Method m = manager.getClass().getMethod(
+                    "setDeviceName",
+                    new Class[]{WifiP2pManager.Channel.class, String.class,
+                            WifiP2pManager.ActionListener.class});
+
+            m.invoke(manager, channel, deviceName,
+                    new CustomizableActionListener(
+                            WiFiDirectActivity.this,
+                            "setDeviceNameWithReflection",
+                            "Device name changed",
+                            "Device name changed",
+                            "Error, device name not changed",
+                            "Error, device name not changed"));
+        } catch (Exception e) {
+            Log.e(TAG, "Exception during setDeviceNameWithReflection" , e);
+            Toast.makeText(WiFiDirectActivity.this, "Impossible to change the device name", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     /**
      * Method to cancel the disconnect procedure.

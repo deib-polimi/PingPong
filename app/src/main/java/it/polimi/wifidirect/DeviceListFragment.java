@@ -24,7 +24,9 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +35,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import it.polimi.wifidirect.dialog.LocalDeviceDialog;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
@@ -45,7 +48,10 @@ import lombok.Getter;
  *
  * Created by Stefano Cappa, based on google code samples
  */
-public class DeviceListFragment extends ListFragment {
+public class DeviceListFragment extends ListFragment implements
+        //DialogConfirmListener is the interface in LocalDeviceDialog. I use this to call
+        //public void changeLocalDeviceName(String deviceName) in this class from the DialogFragment without to pass attributes or other stuff
+        LocalDeviceDialog.DialogConfirmListener {
 
     private static final String TAG = "DeviceListFragment";
     @Getter private ProgressDialog progressDialog = null;
@@ -69,6 +75,9 @@ public class DeviceListFragment extends ListFragment {
                 LocalP2PDevice.getInstance().setPing_pong_mode(pingpong_checkbox.isChecked());
             }
         });
+
+        CardView cardviewLocalDevice = (CardView) mContentView.findViewById(R.id.cardviewLocalDevice);
+        cardviewLocalDevice.setOnClickListener(new OnClickListenerLocalDevice(this));
 
         return mContentView;
     }
@@ -152,6 +161,22 @@ public class DeviceListFragment extends ListFragment {
     }
 
     /**
+     * Method to change the local device name and update the GUI element.
+     * @param deviceName String that represents the device name.
+     */
+    @Override
+    public void changeLocalDeviceName(String deviceName) {
+        if(deviceName==null) {
+            return;
+        }
+
+        if(mContentView!=null) {
+            ((TextView) mContentView.findViewById(R.id.my_name)).setText(deviceName);
+            ((WiFiDirectActivity) getActivity()).setDeviceNameWithReflection(deviceName);
+        }
+    }
+
+    /**
      * An interface-callback for the activity to listen to fragment interaction
      * events.
      */
@@ -163,6 +188,37 @@ public class DeviceListFragment extends ListFragment {
 
         void disconnect();
 
+        void setDeviceNameWithReflection(String deviceName);
+
+    }
+
+
+    /**
+     * Inner class that implements the Onclicklistener for the local device cardview.
+     * It's useful to open the {@link it.polimi.wifidirect.dialog.LocalDeviceDialog}
+     * after a click's event.
+     */
+    class OnClickListenerLocalDevice implements View.OnClickListener {
+
+        private final Fragment fragment;
+
+        public OnClickListenerLocalDevice(Fragment fragment1) {
+            fragment = fragment1;
+        }
+
+        @Override
+        public void onClick(View v) {
+            LocalDeviceDialog localDeviceDialogFragment = (LocalDeviceDialog) getFragmentManager()
+                    .findFragmentByTag("localDeviceDialogFragment");
+
+            if (localDeviceDialogFragment == null) {
+                localDeviceDialogFragment = LocalDeviceDialog.newInstance();
+                localDeviceDialogFragment.setTargetFragment(fragment, 0);
+
+                localDeviceDialogFragment.show(getFragmentManager(), "localDeviceDialogFragment");
+                getFragmentManager().executePendingTransactions();
+            }
+        }
     }
 
 }

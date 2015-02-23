@@ -308,8 +308,8 @@ public class DeviceDetailFragment extends Fragment implements
         }
         TextView view = (TextView) mContentView.findViewById(R.id.device_address);
         view.setText(device.getP2pDevice().deviceAddress);
-        view = (TextView) mContentView.findViewById(R.id.device_info);
-        view.setText(device.getP2pDevice().toString());
+        view = (TextView) mContentView.findViewById(R.id.device_name);
+        view.setText(device.getP2pDevice().deviceName);
 
     }
 
@@ -320,7 +320,7 @@ public class DeviceDetailFragment extends Fragment implements
         mContentView.findViewById(R.id.btn_connect).setVisibility(View.VISIBLE);
         TextView view = (TextView) mContentView.findViewById(R.id.device_address);
         view.setText(R.string.empty);
-        view = (TextView) mContentView.findViewById(R.id.device_info);
+        view = (TextView) mContentView.findViewById(R.id.device_name);
         view.setText(R.string.empty);
         view = (TextView) mContentView.findViewById(R.id.group_owner);
         view.setText(R.string.empty);

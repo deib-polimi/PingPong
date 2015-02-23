@@ -8,4 +8,5 @@
         android:icon="@drawable/ic_action_discover"
         android:title="@string/discover_peers_button"
         app:showAsAction="always|withText" />
+
 </menu>
