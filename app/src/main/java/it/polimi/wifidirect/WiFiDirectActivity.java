@@ -36,7 +36,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,13 +70,14 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         WifiP2pManager.GroupInfoListener {
 
 
-public static final String TAG = "P2P-PingPong";
+    public static final String TAG = "P2P-PingPong";
     private WifiP2pManager manager;
     private boolean isWifiP2pEnabled = false;
     private boolean retryChannel = false;
-    private Toolbar toolbar;
-    @Getter private DeviceListFragment listFragment;
-    @Getter private DeviceDetailFragment detailFragment;
+    @Getter
+    private DeviceListFragment listFragment;
+    @Getter
+    private DeviceDetailFragment detailFragment;
     private WifiP2pInfo info;
 
     private final IntentFilter intentFilter = new IntentFilter();
@@ -97,7 +98,7 @@ public static final String TAG = "P2P-PingPong";
      * as supportActionBar in this {@link android.support.v7.app.ActionBarActivity}.
      */
     private void setupToolBar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setTitle(getResources().getString(R.string.app_name));
             toolbar.setTitleTextColor(Color.WHITE);
@@ -105,6 +106,7 @@ public static final String TAG = "P2P-PingPong";
             this.setSupportActionBar(toolbar);
         }
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,7 +180,7 @@ public static final String TAG = "P2P-PingPong";
             boolean found = false;
 
             for (P2PDevice device : PeerList.getInstance().getList()) {
-                if (device.getP2pDevice()!=null && nextDeviceToConnect!=null
+                if (device.getP2pDevice() != null
                         && device.getP2pDevice().deviceAddress.equals(nextDeviceToConnect.getP2pDevice().deviceAddress)) {
                     found = true;
                 }
@@ -189,7 +191,7 @@ public static final String TAG = "P2P-PingPong";
 
                 PingPongList.getInstance().setConnecting(true);
 
-                Log.d(TAG , System.currentTimeMillis() + " - connect");
+                Log.d(TAG, System.currentTimeMillis() + " - connect");
 
                 connect(new PingPongLogic(this).getConfigToReconnect());
                 this.showDetailFragment();
@@ -226,7 +228,7 @@ public static final String TAG = "P2P-PingPong";
                 return true;
 
             case R.id.atn_pingpong:
-                if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
+                if (LocalP2PDevice.getInstance().isPing_pong_mode()) {
                     item.setIcon(getResources().getDrawable(R.drawable.ic_action_pingpong_mode_disabled));
                     LocalP2PDevice.getInstance().setPing_pong_mode(false);
                 } else {
@@ -248,7 +250,7 @@ public static final String TAG = "P2P-PingPong";
     public void showDetails(P2PDevice device) {
         this.showDetailFragment();
 
-        if(detailFragment==null) {
+        if (detailFragment == null) {
             detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentByTag("detailFragment");
         }
         //show DeviceListFragment replacing container_root's FrameLayout with the Fragment
@@ -266,7 +268,7 @@ public static final String TAG = "P2P-PingPong";
                 "connect Success",
                 null,
                 "connect Failed",
-                "connect Failed with" + config.deviceAddress +  ". Retry"));
+                "connect Failed with" + config.deviceAddress + ". Retry"));
     }
 
 
@@ -388,6 +390,7 @@ public static final String TAG = "P2P-PingPong";
      * in the UI and inside the device. In this way, all other devices can see this updated name during the discovery phase.
      * Attention, WifiP2pManager uses ad annotation called @hide to hide the method called setDeviceName, in Android SDK.
      * This method uses Java reflection to call this hidden method.
+     *
      * @param deviceName String that represents the visible device name of a device, during discovery.
      */
     public void setDeviceNameWithReflection(String deviceName) {
@@ -406,7 +409,7 @@ public static final String TAG = "P2P-PingPong";
                             "Error, device name not changed",
                             "Error, device name not changed"));
         } catch (Exception e) {
-            Log.e(TAG, "Exception during setDeviceNameWithReflection" , e);
+            Log.e(TAG, "Exception during setDeviceNameWithReflection", e);
             Toast.makeText(WiFiDirectActivity.this, "Impossible to change the device name", Toast.LENGTH_SHORT).show();
         }
     }
@@ -424,7 +427,7 @@ public static final String TAG = "P2P-PingPong";
         p2pGroup.setGroup(group);
         p2pGroup.setGroupOwner(owner);
 
-        if(!P2PGroups.getInstance().getGroupList().contains(p2pGroup)) {
+        if (!P2PGroups.getInstance().getGroupList().contains(p2pGroup)) {
             P2PGroups.getInstance().getGroupList().add(p2pGroup);
             P2PGroups.getInstance().getGroupList().get(0).setGroupOwnerIpAddress(info.groupOwnerAddress);
         }
@@ -437,7 +440,7 @@ public static final String TAG = "P2P-PingPong";
         }
 
 
-        if(!group.isGroupOwner()) {
+        if (!group.isGroupOwner()) {
             //if i am a client, it's possible that i want to pingpong with another group owner.
             // For this reason, i set in the pingpong list all the possible group owners,
             // assuming that this devices are go of well formed groups.
@@ -450,12 +453,12 @@ public static final String TAG = "P2P-PingPong";
             // brothers ;) (the other clients in my group).
             // And finally i need to check that every device in this list is a group owner.
             List<P2PDevice> peerlist = PeerList.getInstance().getList();
-            for(P2PDevice dev : peerlist) {
+            for (P2PDevice dev : peerlist) {
 //                if(dev.isGroupOwner() && !p2pGroup.getList().contains(dev) &&
 //                        !PingPongList.getInstance().getPingponglist().contains(dev)) {
 //                    PingPongList.getInstance().getPingponglist().add(dev);
 //                }
-                if(!p2pGroup.getList().contains(dev) &&
+                if (!p2pGroup.getList().contains(dev) &&
                         !PingPongList.getInstance().getPingponglist().contains(dev)) {
                     PingPongList.getInstance().getPingponglist().add(dev);
                 }
@@ -477,6 +480,29 @@ public static final String TAG = "P2P-PingPong";
         this.getSupportFragmentManager().executePendingTransactions();
     }
 
+    /**
+     * Method to show a GO Icon inside the local device in {@link it.polimi.wifidirect.DeviceDetailFragment}.
+     * This is useful to identify which device is a GO.
+     */
+    private void showLocalDeviceGoIcon(){
+        if(detailFragment !=null && detailFragment.getView()!=null && detailFragment.getView().findViewById(R.id.go_logo)!=null) {
+            ImageView goLogoImageView = (ImageView) detailFragment.getView().findViewById(R.id.go_logo);
+            goLogoImageView.setImageDrawable(getResources().getDrawable(R.drawable.go_logo));
+            goLogoImageView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Method to hide a GO Icon inside the local device in {@link it.polimi.wifidirect.DeviceDetailFragment}.
+     * This is useful to identify which device is a GO.
+     */
+    public void hideLocalDeviceGoIcon(){
+        if(detailFragment !=null && detailFragment.getView()!=null && detailFragment.getView().findViewById(R.id.go_logo)!=null) {
+            ImageView goLogoImageView = (ImageView) detailFragment.getView().findViewById(R.id.go_logo);
+            goLogoImageView.setVisibility(View.INVISIBLE);
+        }
+    }
+
     @Override
     public void onConnectionInfoAvailable(final WifiP2pInfo info) {
         if (detailFragment.getProgressDialog() != null && detailFragment.getProgressDialog().isShowing()) {
@@ -485,15 +511,16 @@ public static final String TAG = "P2P-PingPong";
 
         this.showDetailFragment();
 
+        if(detailFragment.getView()!=null) {
+            // The owner IP is now known.
+            TextView view = (TextView) detailFragment.getView().findViewById(R.id.group_ip);
+            view.setText(info.groupOwnerAddress + "");
 
-        // The owner IP is now known.
-        TextView view = (TextView) detailFragment.getView().findViewById(R.id.group_ip);
-        view.setText(info.groupOwnerAddress+"");
-
-        view = (TextView) detailFragment.getView().findViewById(R.id.group_owner);
-        view.setText(getResources().getString(R.string.group_owner_text)
-                + ((info.isGroupOwner) ? getResources().getString(R.string.yes)
-                : getResources().getString(R.string.no)));
+            view = (TextView) detailFragment.getView().findViewById(R.id.group_owner);
+            view.setText(getResources().getString(R.string.group_owner_text)
+                    + ((info.isGroupOwner) ? getResources().getString(R.string.yes)
+                    : getResources().getString(R.string.no)));
+        }
 
         // After the group negotiation, we assign the group owner as the file
         // server. The file server is single threaded, single connection server
@@ -504,10 +531,14 @@ public static final String TAG = "P2P-PingPong";
             //as GO
             LocalP2PDevice.getInstance().getLocalDevice().setGroupOwner(true);
 
+            this.showLocalDeviceGoIcon();
+
             new FileServerAsyncTask(this, detailFragment.getView().findViewById(R.id.status_text))
                     .execute();
         } else if (info.groupFormed) {
             this.info = info;
+
+            this.hideLocalDeviceGoIcon();
 
             // The other device acts as the client. In this case, i enable the
             // get file button.
@@ -523,35 +554,5 @@ public static final String TAG = "P2P-PingPong";
         if (!LocalP2PDevice.getInstance().getLocalDevice().isGroupOwner()) {
             detailFragment.getView().findViewById(R.id.btn_start_ping_pong).setVisibility(View.VISIBLE);
         }
-    }
-
-
-    /**
-     * Method to cancel the disconnect procedure.
-     * Never used in this app, but can be useful in the future
-     */
-    public void cancelDisconnect() {
-        /*
-         * A cancel abort request by user. Disconnect i.e. removeGroup if
-         * already connected. Else, request WifiP2pManager to abort the ongoing
-         * request
-         */
-        if (manager != null) {
-            P2PDevice localDevice = LocalP2PDevice.getInstance().getLocalDevice();
-
-            if (localDevice == null || localDevice.getP2pDevice().status == WifiP2pDevice.CONNECTED) {
-                disconnect();
-            } else if (localDevice.getP2pDevice().status == WifiP2pDevice.AVAILABLE || localDevice.getP2pDevice().status == WifiP2pDevice.INVITED) {
-
-                manager.cancelConnect(channel, new CustomizableActionListener(
-                        WiFiDirectActivity.this,
-                        "discoveryPingPong",
-                        null,
-                        "Aborting connection",
-                        null,
-                        "Connect abort request failed"));
-            }
-        }
-
     }
 }

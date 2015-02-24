@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,7 @@ public class PingPongDialog extends DialogFragment {
     static private Spinner spinner_ping, spinner_pong;
     static private CheckBox testmode_checkbox;
 
-    static ArrayList<SpinnerRow> list_ping, list_pong; //list_ping: list of starting device, list_pong: list of destinations
+    private static ArrayList<SpinnerRow> list_ping, list_pong; //list_ping: list of starting device, list_pong: list of destinations
 
     /**
      * Method to obtain a new Fragment's instance.
@@ -97,7 +96,7 @@ public class PingPongDialog extends DialogFragment {
      * @param spinner The Spinner to set
      * @param list ArrayList<SpinnerRow> of the element to fill the Spinner.
      */
-    public void setSpinnerAdapter(Spinner spinner, ArrayList<SpinnerRow> list) {
+    private void setSpinnerAdapter(Spinner spinner, ArrayList<SpinnerRow> list) {
         spinner.setAdapter(new CustomSpinnerAdapter(this.getActivity(),
                 android.R.layout.simple_spinner_item,
                 list));
@@ -106,7 +105,7 @@ public class PingPongDialog extends DialogFragment {
     /**
      * Method to set listeners on buttons and checkbox.
      */
-    public void setListener() {
+    private void setListener() {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {

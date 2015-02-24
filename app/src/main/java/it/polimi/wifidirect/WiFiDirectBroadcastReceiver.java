@@ -120,19 +120,20 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     Log.d(TAG, "Check Ping pong state: " + LocalP2PDevice.getInstance().isPing_pong_mode());
                     if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
                         activity.discoveryPingPong();
-                    }
-                    else {
+                    } else {
 
                         if (PingPongList.getInstance().isPingponging()) {
                             activity.restartDiscoveryPingpongAfterDisconnect();
                         }
                     }
+
+                    activity.hideLocalDeviceGoIcon();
                 }
                 break;
 
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
 
-                DeviceListFragment fragment = (DeviceListFragment) activity.getListFragment();
+                DeviceListFragment fragment = activity.getListFragment();
                 WifiP2pDevice wifiP2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
                 fragment.updateThisDevice(

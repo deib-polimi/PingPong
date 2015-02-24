@@ -69,12 +69,6 @@ public class DeviceListFragment extends Fragment implements
     public DeviceListFragment() {}
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContentView = inflater.inflate(R.layout.device_list, container, false);
         mContentView.setTag(TAG);

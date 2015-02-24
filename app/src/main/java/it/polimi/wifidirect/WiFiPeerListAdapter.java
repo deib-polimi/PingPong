@@ -1,6 +1,5 @@
 package it.polimi.wifidirect;
 
-import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import it.polimi.wifidirect.model.P2PDevice;

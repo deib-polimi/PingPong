@@ -25,7 +25,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginBottom="6dp"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="6dp"
                 android:textColor="@color/white"/>
 
@@ -52,12 +52,12 @@
 
                 <ImageView
                     android:id="@+id/go_logo"
-                    android:src="@drawable/go_logo"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:layout_marginStart="30dp"
                     android:layout_alignTop="@+id/linearLayout2"
                     android:layout_alignStart="@+id/imageView"
-                    android:layout_marginStart="30dp" />
+                    android:layout_alignBottom="@+id/linearLayout2" />
 
                 <TextView
                     android:id="@+id/my_name"
@@ -144,17 +144,6 @@
                 </LinearLayout>
 
 
-                <TextView
-                    android:id="@+id/i_am_a_go_textview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:singleLine="true"
-                    android:ellipsize="marquee"
-                    android:textColor="@color/white"
-                    android:text="I&apos;m a GO"
-                    android:layout_below="@+id/go_logo"
-                    android:layout_alignStart="@+id/go_logo" />
                 <!--android:visibility="invisible"-->
 
 

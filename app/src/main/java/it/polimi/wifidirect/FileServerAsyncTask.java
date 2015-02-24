@@ -22,7 +22,7 @@ import java.net.Socket;
  *
  * Created by Stefano Cappa on 22/02/15.
  */
-public class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
+class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
 
     private static final String TAG = "FileServerSyncTask";
 
@@ -94,7 +94,7 @@ public class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
      * @param out OutputStream
      * @return true if completed, or false otherwise.
      */
-    public static boolean copyFile(InputStream inputStream, OutputStream out) {
+    private static boolean copyFile(InputStream inputStream, OutputStream out) {
         byte buf[] = new byte[1024];
         int len;
         try {

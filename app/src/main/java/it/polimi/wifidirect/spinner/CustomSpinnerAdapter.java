@@ -34,10 +34,6 @@ public class CustomSpinnerAdapter extends ArrayAdapter<SpinnerRow> {
 
 	}
 	
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-        return super.getView(position, convertView, parent);
-}
 
 
 	@Override

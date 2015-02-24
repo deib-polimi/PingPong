@@ -14,7 +14,7 @@ import it.polimi.wifidirect.model.PingPongList;
  *
  * Created by Stefano Cappa on 01/02/15.
  */
-public class PingPongLogic extends AsyncTask<Void, Void, Void> {
+class PingPongLogic extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = "ping-pong-logic";
     private Activity activity;

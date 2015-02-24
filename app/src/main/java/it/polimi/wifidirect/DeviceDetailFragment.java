@@ -46,7 +46,7 @@ import lombok.Getter;
 public class DeviceDetailFragment extends Fragment {
 
     private static final String TAG = "DDF_PingPong";
-    protected static final int CHOOSE_FILE_RESULT_CODE = 20;
+    private static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
 
     private P2PDevice device;
@@ -218,13 +218,15 @@ public class DeviceDetailFragment extends Fragment {
     public void showDetails(P2PDevice device) {
         this.device = device;
 
-        TextView view = (TextView) getView().findViewById(R.id.device_address);
-        view.setText(device.getP2pDevice().deviceAddress);
-        view = (TextView) getView().findViewById(R.id.device_name);
-        view.setText(device.getP2pDevice().deviceName);
+        if(getView()!=null) {
+            TextView view = (TextView) getView().findViewById(R.id.device_address);
+            view.setText(device.getP2pDevice().deviceAddress);
+            view = (TextView) getView().findViewById(R.id.device_name);
+            view.setText(device.getP2pDevice().deviceName);
 
-        view = (TextView) getView().findViewById(R.id.device_name);
-        view.setText(device.getP2pDevice().deviceName);
+            view = (TextView) getView().findViewById(R.id.device_name);
+            view.setText(device.getP2pDevice().deviceName);
+        }
 
     }
 
