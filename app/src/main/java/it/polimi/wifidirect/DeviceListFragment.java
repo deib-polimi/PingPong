@@ -34,6 +34,7 @@ import it.polimi.wifidirect.dialog.LocalDeviceDialog;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
+import it.polimi.wifidirect.utilities.DeviceStatus;
 import lombok.Getter;
 
 /**
@@ -89,6 +90,12 @@ public class DeviceListFragment extends Fragment implements
         CardView cardviewLocalDevice = (CardView) mContentView.findViewById(R.id.cardviewLocalDevice);
         cardviewLocalDevice.setOnClickListener(new OnClickListenerLocalDevice(this));
 
+
+        if(LocalP2PDevice.getInstance().getLocalDevice()!=null &&
+                LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice()!=null) {
+            this.updateThisDevice();
+        }
+
         return mContentView;
     }
 
@@ -110,45 +117,17 @@ public class DeviceListFragment extends Fragment implements
         }
     }
 
-
-    /**
-     * Method to retrieve the device's status message using his code.
-     * @param deviceStatus int that represents the status code
-     * @return A String that represents the status message
-     */
-    private static String getDeviceStatus(int deviceStatus) {
-        Log.d(WiFiDirectActivity.TAG, "Peer status :" + deviceStatus);
-        switch (deviceStatus) {
-            case WifiP2pDevice.AVAILABLE:
-                return "Available";
-            case WifiP2pDevice.INVITED:
-                return "Invited";
-            case WifiP2pDevice.CONNECTED:
-                return "Connected";
-            case WifiP2pDevice.FAILED:
-                return "Failed";
-            case WifiP2pDevice.UNAVAILABLE:
-                return "Unavailable";
-            default:
-                return "Unknown";
-
-        }
-    }
-
-
     /**
      * Update UI for this device.
-     *
-     * @param device The P2PDevice used to update the UI
      */
-    public void updateThisDevice(P2PDevice device) {
-        LocalP2PDevice.getInstance().setLocalDevice(device);
-        TextView view = (TextView) mContentView.findViewById(R.id.my_name);
-        view.setText(device.getP2pDevice().deviceName);
-        view = (TextView) mContentView.findViewById(R.id.my_status);
-        view.setText(getDeviceStatus(device.getP2pDevice().status));
-        view = (TextView) mContentView.findViewById(R.id.my_mac_address);
-        view.setText(device.getP2pDevice().deviceAddress);
+    public void updateThisDevice() {
+        TextView myNameCardView = (TextView) mContentView.findViewById(R.id.my_name);
+        TextView myStatusCardView = (TextView) mContentView.findViewById(R.id.my_status);
+        TextView myMacAddressCardView = (TextView) mContentView.findViewById(R.id.my_mac_address);
+
+        myNameCardView.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceName);
+        myStatusCardView.setText(DeviceStatus.getDeviceStatus(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().status));
+        myMacAddressCardView.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceAddress);
     }
 
 

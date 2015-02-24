@@ -27,16 +27,13 @@ class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
     private static final String TAG = "FileServerSyncTask";
 
     private Context context;
-    private TextView statusText;
 
     /**
      * Constructor of this class.
      * @param context Context
-     * @param statusText A {@link android.widget.TextView} that represents the status message.
      */
-    public FileServerAsyncTask(Context context, View statusText) {
+    public FileServerAsyncTask(Context context) {
         this.context = context;
-        this.statusText = (TextView) statusText;
     }
 
     @Override
@@ -74,19 +71,12 @@ class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         if (result != null) {
-            statusText.setText("File copied - " + result);
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_VIEW);
             context.startActivity(intent);
         }
 
     }
-
-    @Override
-    protected void onPreExecute() {
-        statusText.setText("Opening a server socket");
-    }
-
 
     /**
      * Method to copy a file from input to output streams.

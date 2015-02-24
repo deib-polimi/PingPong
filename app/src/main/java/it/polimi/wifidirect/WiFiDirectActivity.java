@@ -37,10 +37,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.wifidirect.actionlisteners.CustomizableActionListener;
@@ -253,9 +253,8 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         if (detailFragment == null) {
             detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentByTag("detailFragment");
         }
-        //show DeviceListFragment replacing container_root's FrameLayout with the Fragment
 
-        detailFragment.showDetails(device);
+        detailFragment.showNameAndAddress(device);
 
     }
 
@@ -454,14 +453,26 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             // And finally i need to check that every device in this list is a group owner.
             List<P2PDevice> peerlist = PeerList.getInstance().getList();
             for (P2PDevice dev : peerlist) {
-//                if(dev.isGroupOwner() && !p2pGroup.getList().contains(dev) &&
-//                        !PingPongList.getInstance().getPingponglist().contains(dev)) {
-//                    PingPongList.getInstance().getPingponglist().add(dev);
-//                }
                 if (!p2pGroup.getList().contains(dev) &&
                         !PingPongList.getInstance().getPingponglist().contains(dev)) {
                     PingPongList.getInstance().getPingponglist().add(dev);
                 }
+            }
+
+            //i'm NOT the go
+            if(detailFragment.getView()!=null) {
+                detailFragment.showDeviceIp(info, true);
+                detailFragment.showConnectedDeviceGoIcon();
+                detailFragment.showNameAndAddress(new P2PDevice(group.getOwner()));
+            }
+        } else {
+            //i'm the go
+            if(detailFragment.getView()!=null) {
+                detailFragment.showDeviceIp(info, false);
+                detailFragment.hideConnectedDeviceGoIcon();
+
+                detailFragment.showNameAndAddress(p2pGroup.getList().get(0));
+
             }
         }
     }
@@ -478,6 +489,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
                 .replace(R.id.container_root, listFragment, "listFragment")
                 .commit();
         this.getSupportFragmentManager().executePendingTransactions();
+
     }
 
     /**
@@ -511,16 +523,20 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
         this.showDetailFragment();
 
-        if(detailFragment.getView()!=null) {
-            // The owner IP is now known.
-            TextView view = (TextView) detailFragment.getView().findViewById(R.id.group_ip);
-            view.setText(info.groupOwnerAddress + "");
-
-            view = (TextView) detailFragment.getView().findViewById(R.id.group_owner);
-            view.setText(getResources().getString(R.string.group_owner_text)
-                    + ((info.isGroupOwner) ? getResources().getString(R.string.yes)
-                    : getResources().getString(R.string.no)));
-        }
+//        if(detailFragment.getView()!=null) {
+//            // The owner IP is now known.
+//
+//            detailFragment.showDeviceIp(info);
+//
+//            //i'm using "!" because the connected device, must be the opposite of the actual device
+//            //It's impossibile that the local device is a go and his connected to a device that is also a go.
+//            if(!info.isGroupOwner) {
+//                detailFragment.showConnectedDeviceGoIcon();
+//            } else {
+//                detailFragment.hideConnectedDeviceGoIcon();
+//            }
+//
+//        }
 
         // After the group negotiation, we assign the group owner as the file
         // server. The file server is single threaded, single connection server
@@ -531,10 +547,10 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             //as GO
             LocalP2PDevice.getInstance().getLocalDevice().setGroupOwner(true);
 
+
             this.showLocalDeviceGoIcon();
 
-            new FileServerAsyncTask(this, detailFragment.getView().findViewById(R.id.status_text))
-                    .execute();
+            new FileServerAsyncTask(this).execute();
         } else if (info.groupFormed) {
             this.info = info;
 
@@ -543,8 +559,6 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             // The other device acts as the client. In this case, i enable the
             // get file button.
             detailFragment.getView().findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
-            ((TextView) detailFragment.getView().findViewById(R.id.status_text)).setText(getResources()
-                    .getString(R.string.client_text));
         }
 
         // hide the connect button

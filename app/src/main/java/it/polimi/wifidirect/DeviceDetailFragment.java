@@ -22,19 +22,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import it.polimi.wifidirect.dialog.PingPongDialog;
+import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroups;
 import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
+import it.polimi.wifidirect.utilities.DeviceStatus;
 import lombok.Getter;
 
 /**
@@ -73,6 +77,14 @@ public class DeviceDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mContentView = inflater.inflate(R.layout.device_detail, null);
+
+        TextView myName = (TextView) mContentView.findViewById(R.id.my_name);
+        TextView myStatus = (TextView) mContentView.findViewById(R.id.my_status);
+        TextView myMacAddress = (TextView) mContentView.findViewById(R.id.my_mac_address);
+
+        myName.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceName);
+        myStatus.setText(DeviceStatus.getDeviceStatus(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().status));
+        myMacAddress.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceAddress);
 
         //click connect's button
         mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
@@ -182,9 +194,6 @@ public class DeviceDetailFragment extends Fragment {
                     Uri uri = data.getData();
                     Log.d(TAG, "Intent----------- " + uri);
 
-                    TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
-                    statusText.setText("Sending: " + uri);
-
                     Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
                     serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
                     serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
@@ -209,40 +218,79 @@ public class DeviceDetailFragment extends Fragment {
     }
 
 
+    public void showDeviceIp(WifiP2pInfo info, boolean show) {
+        if(getView()!=null) {
+            TextView view = (TextView) getView().findViewById(R.id.group_ip);
+            if(show) {
+                view.setText(info.groupOwnerAddress.getHostAddress() + "");
+            } else {
+                view.setText(R.string.empty);
+            }
+        }
+    }
+
 
     /**
-     * Updates the UI with device data
+     * Updates the UI with nameTextView and addressTextView
+     * of the connected device in {@link it.polimi.wifidirect.DeviceDetailFragment}.
      *
      * @param device the device to be displayed
      */
-    public void showDetails(P2PDevice device) {
+    public void showNameAndAddress(P2PDevice device) {
         this.device = device;
 
         if(getView()!=null) {
-            TextView view = (TextView) getView().findViewById(R.id.device_address);
-            view.setText(device.getP2pDevice().deviceAddress);
-            view = (TextView) getView().findViewById(R.id.device_name);
-            view.setText(device.getP2pDevice().deviceName);
+            TextView deviceName = (TextView) getView().findViewById(R.id.device_name);
+            TextView deviceMacAddress = (TextView) getView().findViewById(R.id.device_address);
 
-            view = (TextView) getView().findViewById(R.id.device_name);
-            view.setText(device.getP2pDevice().deviceName);
+            deviceName.setText(device.getP2pDevice().deviceName);
+            deviceMacAddress.setText(device.getP2pDevice().deviceAddress);
         }
 
     }
 
     /**
-     * Clears the UI fields after a disconnect or direct mode disable operation.
+     * Method to show a GO Icon inside the cardview of the connected device.
+     * This is useful to identify which device is a GO.
+     */
+    public void showConnectedDeviceGoIcon(){
+        if(getView() !=null && getView().findViewById(R.id.device_go_logo)!=null && getView().findViewById(R.id.device_i_am_your_go_textview)!=null) {
+            ImageView deviceGoLogoImageView = (ImageView) getView().findViewById(R.id.device_go_logo);
+            TextView device_i_am_a_go_textView = (TextView) getView().findViewById(R.id.device_i_am_your_go_textview);
+
+            deviceGoLogoImageView.setImageDrawable(getResources().getDrawable(R.drawable.go_logo_black));
+            deviceGoLogoImageView.setVisibility(View.VISIBLE);
+            device_i_am_a_go_textView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /**
+     * Method to hide a GO Icon inside the cardview of the connected device.
+     * This is useful to identify which device is a GO.
+     */
+    public void hideConnectedDeviceGoIcon() {
+        if(getView()!=null && getView().findViewById(R.id.device_go_logo)!=null && getView().findViewById(R.id.device_i_am_your_go_textview)!=null) {
+            ImageView deviceGoLogoImageView = (ImageView) getView().findViewById(R.id.device_go_logo);
+            TextView device_i_am_a_go_textView = (TextView) getView().findViewById(R.id.device_i_am_your_go_textview);
+
+            deviceGoLogoImageView.setVisibility(View.INVISIBLE);
+            device_i_am_a_go_textView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    /**
+     * Clears the UI fields in device cardview.
      */
     public void resetViews() {
+        this.hideConnectedDeviceGoIcon();
         mContentView.findViewById(R.id.btn_connect).setVisibility(View.VISIBLE);
-        TextView view = (TextView) mContentView.findViewById(R.id.device_address);
-        view.setText(R.string.empty);
-        view = (TextView) mContentView.findViewById(R.id.device_name);
-        view.setText(R.string.empty);
-        view = (TextView) mContentView.findViewById(R.id.group_owner);
-        view.setText(R.string.empty);
-        view = (TextView) mContentView.findViewById(R.id.status_text);
-        view.setText(R.string.empty);
         mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
+
+        TextView view = (TextView) mContentView.findViewById(R.id.device_name);
+        view.setText(R.string.empty);
+        view = (TextView) mContentView.findViewById(R.id.device_address);
+        view.setText(R.string.empty);
+        view = (TextView) mContentView.findViewById(R.id.group_ip);
+        view.setText(R.string.empty);
     }
 }

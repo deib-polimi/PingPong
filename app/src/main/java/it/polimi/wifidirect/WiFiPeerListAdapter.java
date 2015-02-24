@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
+import it.polimi.wifidirect.utilities.DeviceStatus;
 
 /**
  * ListAdapter of {@link it.polimi.wifidirect.model.P2PDevice}.
@@ -80,7 +81,7 @@ public class WiFiPeerListAdapter extends RecyclerView.Adapter<WiFiPeerListAdapte
                 viewHolder.nameText.setText(device.getP2pDevice().deviceName);
             }
             if (viewHolder.statusText != null) {
-                viewHolder.statusText.setText(getDeviceStatus(device.getP2pDevice().status));
+                viewHolder.statusText.setText(DeviceStatus.getDeviceStatus(device.getP2pDevice().status));
             }
             if (viewHolder.macAddressText != null) {
                 viewHolder.macAddressText.setText(device.getP2pDevice().deviceAddress);
@@ -102,28 +103,4 @@ public class WiFiPeerListAdapter extends RecyclerView.Adapter<WiFiPeerListAdapte
     }
 
 
-
-    /**
-     * Method to retrieve the device's status message using his code.
-     * @param deviceStatus int that represents the status code
-     * @return A String that represents the status message
-     */
-    private static String getDeviceStatus(int deviceStatus) {
-        Log.d("WiFiPeerListAdapter", "Peer status :" + deviceStatus);
-        switch (deviceStatus) {
-            case WifiP2pDevice.AVAILABLE:
-                return "Available";
-            case WifiP2pDevice.INVITED:
-                return "Invited";
-            case WifiP2pDevice.CONNECTED:
-                return "Connected";
-            case WifiP2pDevice.FAILED:
-                return "Failed";
-            case WifiP2pDevice.UNAVAILABLE:
-                return "Unavailable";
-            default:
-                return "Unknown";
-
-        }
-    }
 }

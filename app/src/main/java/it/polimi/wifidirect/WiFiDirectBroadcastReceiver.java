@@ -133,14 +133,13 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
             case WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION:
 
-                DeviceListFragment fragment = activity.getListFragment();
                 WifiP2pDevice wifiP2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
-                fragment.updateThisDevice(
-                        new P2PDevice(
-                                wifiP2pDevice
-                        )
-                );
+                P2PDevice thisDevice = new P2PDevice( wifiP2pDevice );
+
+                LocalP2PDevice.getInstance().setLocalDevice(thisDevice);
+
+                activity.getListFragment().updateThisDevice();
 
                 Log.d(TAG , "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
                 break;
