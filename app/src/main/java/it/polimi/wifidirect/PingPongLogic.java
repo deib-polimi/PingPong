@@ -43,8 +43,10 @@ class PingPongLogic extends AsyncTask<Void, Void, Void> {
         P2PDevice pingDevice = PingPongList.getInstance().getPingDevice();
         P2PDevice pongDevice = PingPongList.getInstance().getPongDevice();
 
-        Log.d(TAG, "Pingdevice macaddress : " + pingDevice.getP2pDevice().deviceAddress);
-        Log.d(TAG, "Pongdevice macaddress : " + pongDevice.getP2pDevice().deviceAddress);
+        if(pingDevice.getP2pDevice()!=null && pongDevice.getP2pDevice()!=null ) {
+            Log.d(TAG, "Pingdevice macaddress : " + pingDevice.getP2pDevice().deviceAddress);
+            Log.d(TAG, "Pongdevice macaddress : " + pongDevice.getP2pDevice().deviceAddress);
+        }
 
         if (PingPongList.getInstance().isPingponging()) {
 

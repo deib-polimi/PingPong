@@ -175,7 +175,6 @@
                     android:id="@+id/device_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="name"
                     android:layout_alignParentTop="true"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
@@ -188,7 +187,6 @@
                     android:layout_height="wrap_content"
                     android:singleLine="true"
                     android:ellipsize="marquee"
-                    android:text="macaddress"
                     android:layout_below="@+id/device_name"
                     android:layout_alignStart="@+id/device_name" />
 
