@@ -16,7 +16,7 @@ import lombok.Setter;
 */
 public class LocalP2PDevice {
 
-    private static LocalP2PDevice instance = new LocalP2PDevice();
+    private static final LocalP2PDevice instance = new LocalP2PDevice();
 
     @Getter @Setter private P2PDevice localDevice;
 

@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 public class P2PGroup {
 
-    @Getter private List<P2PDevice> list; //in this list there is also the group owner.
+    @Getter private final List<P2PDevice> list; //in this list there is also the group owner.
     @Getter @Setter private P2PDevice groupOwner;
     @Getter @Setter private InetAddress groupOwnerIpAddress;
     @Getter @Setter private boolean persistent;

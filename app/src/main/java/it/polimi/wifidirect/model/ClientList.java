@@ -1,10 +1,6 @@
 package it.polimi.wifidirect.model;
 
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import lombok.Getter;
@@ -17,9 +13,9 @@ import lombok.Getter;
  */
 public class ClientList {
 
-    @Getter private List<P2PDevice> list;
+    @Getter private final List<P2PDevice> list;
 
-    private static ClientList instance = new ClientList();
+    private final static ClientList instance = new ClientList();
 
     /**
      * Method to get the instance of this class.

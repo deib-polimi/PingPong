@@ -70,7 +70,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         WifiP2pManager.GroupInfoListener {
 
 
-    public static final String TAG = "P2P-PingPong";
+    private static final String TAG = "P2P-PingPong";
     private WifiP2pManager manager;
     private boolean isWifiP2pEnabled = false;
     private boolean retryChannel = false;
@@ -157,6 +157,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         }
 
         P2PGroups.getInstance().getGroupList().clear();
+        ClientList.getInstance().getList().clear();
     }
 
     @Override
@@ -226,8 +227,8 @@ public class WiFiDirectActivity extends ActionBarActivity implements
                         "Discovery Failed"));
 
                 return true;
-
             case R.id.atn_pingpong:
+                //update pingpong menu item after a click and setPing_pong_mode attribute in LocalP2PDevice
                 if (LocalP2PDevice.getInstance().isPing_pong_mode()) {
                     item.setIcon(getResources().getDrawable(R.drawable.ic_action_pingpong_mode_disabled));
                     LocalP2PDevice.getInstance().setPing_pong_mode(false);
@@ -242,7 +243,8 @@ public class WiFiDirectActivity extends ActionBarActivity implements
     }
 
     /**
-     * Method to show {@link it.polimi.wifidirect.DeviceDetailFragment}.
+     * Method to show {@link it.polimi.wifidirect.DeviceDetailFragment}, set p2pDevice, clear Clientlist
+     * and finally update the {@link it.polimi.wifidirect.WiFiDetailClientListAdapter}.
      *
      * @param device A {@link it.polimi.wifidirect.model.P2PDevice} to use in the fragment.
      */
@@ -256,11 +258,16 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
         detailFragment.setP2pDevice(device);
 
+        //add "device" as client and update the adapter of the client's recyclerview.
         ClientList.getInstance().getList().add(device);
         detailFragment.getMAdapter().notifyDataSetChanged();
 
     }
 
+    /**
+     * To connect to a device, specified in config.deviceAddress.
+     * @param config The WifiP2pConfig to connect.
+     */
     @Override
     public void connect(WifiP2pConfig config) {
         Log.d(TAG, "Request connection");
@@ -275,82 +282,10 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
 
     /**
-     * Modified method to start a "silent disconnect" during the pingponging
-     */
-    public void disconnectPingPong() {
-        detailFragment.resetViews();
-
-        manager.removeGroup(channel, new ActionListener() {
-
-            @Override
-            public void onFailure(int reasonCode) {
-                Log.e(TAG, "Disconnect failed. Reason :" + reasonCode);
-
-                //disconnect failed (this happens when you click on disconnect
-                // button, but you aren't really connected). I must restore the listFragment.
-                showListFragment();
-
-            }
-
-            @Override
-            public void onSuccess() {
-                Log.d(TAG, "Disconnect success");
-                //now look in WiFiDirectBroadcastReceiver, line "if(LocalP2PDevice.getInstance().isPing_pong_mode()) {"
-
-            }
-
-        });
-    }
-
-
-    /**
-     * Method to restart discovery after a disconnect.
-     */
-    public void restartDiscoveryPingpongAfterDisconnect() {
-
-        Log.d(TAG, System.currentTimeMillis() + " - Preparing to discovery");
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Thread.sleep InterruptedException", e);
-        }
-
-        Log.d(TAG, System.currentTimeMillis() + " - Discovery started");
-
-        PingPongList.getInstance().setConnecting(false);
-
-        this.discoveryPingPong();
-    }
-
-    /**
-     * Method used by ping pong to start a new pingpong cycle.
-     */
-    public void startNewPingPongCycle() {
-        Log.d(TAG, System.currentTimeMillis() + " - Reconnected, pingpong cycle completed, but i'm starting a new cycle.");
-        new PingPongLogic(this).execute();
-    }
-
-    /**
-     * Modified method to start a "silent discovery" without ProgessDialog or something else.
-     */
-    public void discoveryPingPong() {
-        manager.discoverPeers(channel, new CustomizableActionListener(
-                WiFiDirectActivity.this,
-                "discoveryPingPong",
-                null,
-                "Discovery Initiated",
-                null,
-                "Discovery Failed"));
-    }
-
-    /**
      * Method to disconnect.
      */
     @Override
     public void disconnect() {
-//        detailFragment.resetViews();
-
         P2PGroups.getInstance().getGroupList().clear();
 
         manager.removeGroup(channel, new ActionListener() {
@@ -369,7 +304,6 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             public void onSuccess() {
                 Toast.makeText(WiFiDirectActivity.this, "Disconnect Success", Toast.LENGTH_SHORT).show();
             }
-
         });
     }
 
@@ -462,6 +396,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
                 }
             }
 
+
             //i'm NOT the go
             if(detailFragment.getView()!=null) {
                 P2PDevice device = new P2PDevice(group.getOwner());
@@ -469,6 +404,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
                 ClientList.getInstance().getList().add(device);
                 detailFragment.showConnectedDeviceGoIcon();
                 detailFragment.setP2pDevice(device);
+                detailFragment.getMAdapter().notifyDataSetChanged();
             }
         } else {
             //i'm the go
@@ -487,6 +423,10 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         }
     }
 
+    /**
+     * Method to show the {@link it.polimi.wifidirect.DeviceDetailFragment}
+     * and to hide all others fragments.
+     */
     public void showDetailFragment() {
         this.getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_root, detailFragment, "detailFragment")
@@ -494,6 +434,10 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         this.getSupportFragmentManager().executePendingTransactions();
     }
 
+    /**
+     * Method to show the {@link it.polimi.wifidirect.DeviceListFragment}
+     * and to hide all others fragments.
+     */
     public void showListFragment() {
         this.getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_root, listFragment, "listFragment")
@@ -533,21 +477,6 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
         this.showDetailFragment();
 
-//        if(detailFragment.getView()!=null) {
-//            // The owner IP is now known.
-//
-//            detailFragment.showDeviceIp(info);
-//
-//            //i'm using "!" because the connected device, must be the opposite of the actual device
-//            //It's impossibile that the local device is a go and his connected to a device that is also a go.
-//            if(!info.isGroupOwner) {
-//                detailFragment.showConnectedDeviceGoIcon();
-//            } else {
-//                detailFragment.hideConnectedDeviceGoIcon();
-//            }
-//
-//        }
-
         // After the group negotiation, we assign the group owner as the file
         // server. The file server is single threaded, single connection server
         // socket.
@@ -556,7 +485,6 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
             //as GO
             LocalP2PDevice.getInstance().getLocalDevice().setGroupOwner(true);
-
 
             this.showLocalDeviceGoIcon();
 
@@ -568,15 +496,87 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
             // The other device acts as the client. In this case, i enable the
             // get file button.
-            detailFragment.getView().findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
+            if(detailFragment.getView()!=null) {
+                detailFragment.getView().findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
+            }
         }
 
         // hide the connect button
-        detailFragment.getView().findViewById(R.id.btn_connect).setVisibility(View.GONE);
+        if(detailFragment.getView()!=null) {
+            detailFragment.getView().findViewById(R.id.btn_connect).setVisibility(View.GONE);
+        }
 
         //enable ping pong button only if the local device is a client
         if (!LocalP2PDevice.getInstance().getLocalDevice().isGroupOwner()) {
             detailFragment.getView().findViewById(R.id.btn_start_ping_pong).setVisibility(View.VISIBLE);
         }
+    }
+
+
+    /**
+     * Modified method to start a "silent disconnect" during the pingponging
+     */
+    public void disconnectPingPong() {
+        detailFragment.resetViews();
+
+        manager.removeGroup(channel, new ActionListener() {
+
+            @Override
+            public void onFailure(int reasonCode) {
+                Log.e(TAG, "Disconnect failed. Reason :" + reasonCode);
+
+                //disconnect failed (this happens when you click on disconnect
+                // button, but you aren't really connected). I must restore the listFragment.
+                showListFragment();
+            }
+
+            @Override
+            public void onSuccess() {
+                Log.d(TAG, "Disconnect success");
+                //now look in WiFiDirectBroadcastReceiver, line "if(LocalP2PDevice.getInstance().isPing_pong_mode()) {"
+            }
+        });
+    }
+
+
+    /**
+     * Method to restart discovery after a disconnect.
+     */
+    public void restartDiscoveryPingpongAfterDisconnect() {
+
+        Log.d(TAG, System.currentTimeMillis() + " - Preparing to discovery");
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Thread.sleep InterruptedException", e);
+        }
+
+        Log.d(TAG, System.currentTimeMillis() + " - Discovery started");
+
+        PingPongList.getInstance().setConnecting(false);
+
+        this.discoveryPingPong();
+    }
+
+    /**
+     * Method used by ping pong to start a new pingpong cycle.
+     */
+    public void startNewPingPongCycle() {
+        Log.d(TAG, System.currentTimeMillis() + " - Reconnected, pingpong cycle completed, but i'm starting a new cycle.");
+        new PingPongLogic(this).execute();
+    }
+
+    /**
+     * Modified method to start a "silent discovery" without ProgessDialog or something else.
+     */
+    public void discoveryPingPong() {
+        manager.discoverPeers(channel, new CustomizableActionListener(
+                WiFiDirectActivity.this,
+                "discoveryPingPong",
+                null,
+                "Discovery Initiated",
+                null,
+                "Discovery Failed"));
     }
 }

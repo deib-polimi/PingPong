@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +24,7 @@ class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
 
     private static final String TAG = "FileServerSyncTask";
 
-    private Context context;
+    private final Context context;
 
     /**
      * Constructor of this class.
@@ -82,9 +80,8 @@ class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
      * Method to copy a file from input to output streams.
      * @param inputStream InputStream
      * @param out OutputStream
-     * @return true if completed, or false otherwise.
      */
-    private static boolean copyFile(InputStream inputStream, OutputStream out) {
+    private static void copyFile(InputStream inputStream, OutputStream out) {
         byte buf[] = new byte[1024];
         int len;
         try {
@@ -95,8 +92,7 @@ class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
             inputStream.close();
         } catch (IOException e) {
             Log.e(TAG, "copyFile", e);
-            return false;
         }
-        return true;
+        return;
     }
 }

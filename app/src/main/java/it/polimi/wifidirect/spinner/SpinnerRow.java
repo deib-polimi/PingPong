@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 public class SpinnerRow {
 	
-	@Getter private String name;
+	@Getter private final String name;
 	
     /**
      * Constructor of this class.

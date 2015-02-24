@@ -17,9 +17,9 @@ import lombok.Getter;
 public class PeerList {
 
     @Getter
-    private List<P2PDevice> list;
+    private final List<P2PDevice> list;
 
-    private static PeerList instance = new PeerList();
+    private static final PeerList instance = new PeerList();
 
     /**
      * Method to get the instance of this class.

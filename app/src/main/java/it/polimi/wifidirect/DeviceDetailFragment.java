@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.WifiP2pInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -56,13 +55,12 @@ public class DeviceDetailFragment extends Fragment {
     private static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
 
-    private RecyclerView mRecyclerView;
     @Getter private WiFiDetailClientListAdapter mAdapter;
 
     private P2PDevice device;
 
     @Getter private ProgressDialog progressDialog = null;
-    private Fragment fragment = this;
+    private final Fragment fragment = this;
     private static final int PINGPONG = 5; //constant number
 
     /**
@@ -81,7 +79,7 @@ public class DeviceDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        mContentView = inflater.inflate(R.layout.device_detail, null);
+        mContentView = inflater.inflate(R.layout.device_detail, container, false);
 
         TextView myName = (TextView) mContentView.findViewById(R.id.my_name);
         TextView myStatus = (TextView) mContentView.findViewById(R.id.my_status);
@@ -156,7 +154,7 @@ public class DeviceDetailFragment extends Fragment {
         mContentView.findViewById(R.id.btn_start_ping_pong).setVisibility(View.GONE);
 
 
-        mRecyclerView = (RecyclerView) mContentView.findViewById(R.id.clientRecyclerView);
+        RecyclerView mRecyclerView = (RecyclerView) mContentView.findViewById(R.id.clientRecyclerView);
 
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -247,7 +245,8 @@ public class DeviceDetailFragment extends Fragment {
     }
 
     /**
-     * Method to show a GO Icon inside the cardview of the connected device.
+     * Method to show a GO Icon inside the cardview in {@link it.polimi.wifidirect.DeviceDetailFragment}
+     * of the connected device.
      * This is useful to identify which device is a GO.
      */
     public void showConnectedDeviceGoIcon(){
@@ -262,7 +261,8 @@ public class DeviceDetailFragment extends Fragment {
     }
 
     /**
-     * Method to hide a GO Icon inside the cardview of the connected device.
+     * Method to hide a GO Icon inside the cardview in {@link it.polimi.wifidirect.DeviceDetailFragment}
+     * of the connected device.
      * This is useful to identify which device is a GO.
      */
     public void hideConnectedDeviceGoIcon() {
@@ -287,7 +287,5 @@ public class DeviceDetailFragment extends Fragment {
         view.setText(R.string.empty);
         view = (TextView) mContentView.findViewById(R.id.device_address);
         view.setText(R.string.empty);
-//        view = (TextView) mContentView.findViewById(R.id.group_ip);
-//        view.setText(R.string.empty);
     }
 }

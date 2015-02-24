@@ -70,7 +70,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textSize="8sp"
             android:visibility="invisible"
-            android:layout_below="@+id/device_name"
+            android:layout_alignBottom="@+id/device_address"
             android:layout_alignParentEnd="true" />
 
 

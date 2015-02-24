@@ -17,7 +17,7 @@ import it.polimi.wifidirect.model.PingPongList;
 class PingPongLogic extends AsyncTask<Void, Void, Void> {
 
     private static final String TAG = "ping-pong-logic";
-    private Activity activity;
+    private final Activity activity;
 
     /**
      * Constructor of the class

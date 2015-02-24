@@ -15,7 +15,7 @@ import lombok.Setter;
  */
 public class PingPongList {
 
-    @Getter private List<P2PDevice> pingponglist;
+    @Getter private final List<P2PDevice> pingponglist;
 
     @Getter @Setter private String ping_macaddress, pong_macaddress;
     @Getter @Setter private boolean testmode;
@@ -32,7 +32,7 @@ public class PingPongList {
     //if true this device must use the pong_macaddress, otherwise ping_macaddress
     @Getter @Setter private boolean use_pongAddress = true;
 
-    private static PingPongList instance = new PingPongList();
+    private static final PingPongList instance = new PingPongList();
 
     /**
      * Method to get the instance of this class.

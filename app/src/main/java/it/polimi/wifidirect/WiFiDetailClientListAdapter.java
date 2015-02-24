@@ -1,6 +1,5 @@
 package it.polimi.wifidirect;
 
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +8,6 @@ import android.widget.TextView;
 
 import it.polimi.wifidirect.model.ClientList;
 import it.polimi.wifidirect.model.P2PDevice;
-import it.polimi.wifidirect.model.PeerList;
-import it.polimi.wifidirect.utilities.DeviceStatus;
 
 /**
  * ListAdapter of {@link it.polimi.wifidirect.model.P2PDevice}.
@@ -68,6 +65,4 @@ public class WiFiDetailClientListAdapter extends RecyclerView.Adapter<WiFiDetail
     public int getItemCount() {
         return ClientList.getInstance().getList().size();
     }
-
-
 }

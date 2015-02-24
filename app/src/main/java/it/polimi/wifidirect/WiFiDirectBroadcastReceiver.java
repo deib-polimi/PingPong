@@ -37,9 +37,9 @@ import it.polimi.wifidirect.model.PingPongList;
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "BroadcastReceiver";
-    private WifiP2pManager manager;
-    private Channel channel;
-    private WiFiDirectActivity activity;
+    private final WifiP2pManager manager;
+    private final Channel channel;
+    private final WiFiDirectActivity activity;
 
     /**
      * Constructor of the class.

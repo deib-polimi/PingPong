@@ -104,6 +104,7 @@
 
         <Button
             android:id="@+id/dialog_no"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.70"
@@ -115,6 +116,7 @@
 
         <Button
             android:id="@+id/dialog_yes"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.30"

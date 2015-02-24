@@ -14,10 +14,9 @@ import lombok.Getter;
  */
 public class P2PGroups {
 
-    @Getter
-    List<P2PGroup> groupList;
+    @Getter private final List<P2PGroup> groupList;
 
-    private static P2PGroups instance = new P2PGroups();
+    private static final P2PGroups instance = new P2PGroups();
 
     /**
      * Method to get the instance of this class.

@@ -128,9 +128,6 @@ public class DeviceListFragment extends Fragment implements
         myMacAddressCardView.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceAddress);
     }
 
-
-
-
     /**
      * Method to clear peer's list and to update the UI.
      */
@@ -166,9 +163,7 @@ public class DeviceListFragment extends Fragment implements
         void connect(WifiP2pConfig config);
 
         void disconnect();
-
     }
-
 
     /**
      * Inner class that implements the Onclicklistener for the local device cardview.
