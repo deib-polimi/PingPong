@@ -7,21 +7,25 @@
 
     <include layout="@layout/toolbar" />
 
-    <fragment
-        android:id="@+id/frag_list"
-        class="it.polimi.wifidirect.DeviceListFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <!-- Preview: layout=@layout/row_devices -->
-    </fragment>
+    <!--<fragment-->
+        <!--android:id="@+id/frag_list"-->
+        <!--class="it.polimi.wifidirect.DeviceListFragment"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
+        <!--&lt;!&ndash; Preview: layout=@layout/row_devices &ndash;&gt;-->
+    <!--</fragment>-->
 
 
-    <fragment
-        android:id="@+id/frag_detail"
-        class="it.polimi.wifidirect.DeviceDetailFragment"
+    <FrameLayout
+        android:id="@+id/container_root"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <!-- Preview: layout=@layout/device_detail -->
-    </fragment>
+        android:layout_height="match_parent" />
+    <!--<fragment-->
+        <!--android:id="@+id/frag_detail"-->
+        <!--class="it.polimi.wifidirect.DeviceDetailFragment"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!--&lt;!&ndash; Preview: layout=@layout/device_detail &ndash;&gt;-->
+    <!--</fragment>-->
 
 </LinearLayout>

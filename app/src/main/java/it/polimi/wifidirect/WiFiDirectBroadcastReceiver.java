@@ -23,7 +23,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
-import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.util.Log;
 
 import it.polimi.wifidirect.model.LocalP2PDevice;
@@ -100,9 +99,10 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     // we are connected with the other device, request connection
                     // info to find group owner IP
 
-                    DeviceDetailFragment fragment = (DeviceDetailFragment) activity.getDetailFragment();
-                    manager.requestConnectionInfo(channel, fragment);
-                    manager.requestGroupInfo(channel, fragment);
+                    manager.requestConnectionInfo(channel, activity);
+                    manager.requestGroupInfo(channel, activity);
+
+                    activity.showDetailFragment();
 
                     if (PingPongList.getInstance().isPingponging()) {
                         activity.startNewPingPongCycle();
@@ -110,6 +110,8 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
                 } else {
                     // It's a disconnect
+                    activity.showListFragment();
+
                     activity.resetData();
 
                     Log.d(TAG, "Disconnected");

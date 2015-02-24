@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">PingPong</string>
     <string name="discover_peers_button">Discover</string>
+    <string name="pingpong_mode_button">PingPong Mode</string>
     <string name="empty"></string>
     <string name="yes">yes</string>
     <string name="no">no</string>

@@ -16,16 +16,10 @@
 
 package it.polimi.wifidirect;
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,15 +28,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import it.polimi.wifidirect.dialog.LocalDeviceDialog;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.PeerList;
-import it.polimi.wifidirect.model.PingPongList;
 import lombok.Getter;
 
 /**
@@ -60,7 +51,6 @@ public class DeviceListFragment extends Fragment implements
         WiFiPeerListAdapter.ItemClickListener {
 
     private static final String TAG = "DeviceListFragment";
-    @Getter private ProgressDialog progressDialog = null;
     private  View mContentView = null;
     private RecyclerView mRecyclerView;
     @Getter private WiFiPeerListAdapter mAdapter;
@@ -81,7 +71,6 @@ public class DeviceListFragment extends Fragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        this.setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices));
 
     }
 
@@ -102,14 +91,6 @@ public class DeviceListFragment extends Fragment implements
         mAdapter = new WiFiPeerListAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        final CheckBox pingpong_checkbox = (CheckBox) mContentView.findViewById(R.id.pingpong_checkbox);
-        pingpong_checkbox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LocalP2PDevice.getInstance().setPing_pong_mode(pingpong_checkbox.isChecked());
-            }
-        });
 
         CardView cardviewLocalDevice = (CardView) mContentView.findViewById(R.id.cardviewLocalDevice);
         cardviewLocalDevice.setOnClickListener(new OnClickListenerLocalDevice(this));
@@ -184,24 +165,7 @@ public class DeviceListFragment extends Fragment implements
      */
     public void clearPeers() {
         PeerList.getInstance().getList().clear();
-        ((WiFiPeerListAdapter) this.getMAdapter()).notifyDataSetChanged();
-    }
-
-    /**
-     *  Method to manage the ProgressDialog during discovery procedures.
-     */
-    public void onInitiateDiscovery() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-        progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel", "finding peers", true,
-                true, new DialogInterface.OnCancelListener() {
-
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-
-                    }
-                });
+        this.getMAdapter().notifyDataSetChanged();
     }
 
     /**

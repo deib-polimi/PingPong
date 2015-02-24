@@ -4,6 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/atn_pingpong"
+        android:icon="@drawable/ic_action_pingpong_mode_disabled"
+        android:title="@string/pingpong_mode_button"
+        app:showAsAction="always|withText" />
+
+
+    <item
         android:id="@+id/atn_direct_discover"
         android:icon="@drawable/ic_action_discover"
         android:title="@string/discover_peers_button"

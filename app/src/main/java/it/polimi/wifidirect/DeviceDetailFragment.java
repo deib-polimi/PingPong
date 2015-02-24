@@ -22,10 +22,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pGroup;
-import android.net.wifi.p2p.WifiP2pInfo;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -34,15 +30,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import it.polimi.wifidirect.dialog.PingPongDialog;
-import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
-import it.polimi.wifidirect.model.P2PGroup;
 import it.polimi.wifidirect.model.P2PGroups;
 import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
+import lombok.Getter;
 
 /**
  * A fragment that manages a particular peer and allows interaction with device
@@ -50,18 +43,16 @@ import it.polimi.wifidirect.model.PingPongList;
  *
  * Created by Stefano Cappa, based on google code samples
  */
-public class DeviceDetailFragment extends Fragment implements
-        WifiP2pManager.ConnectionInfoListener,
-        WifiP2pManager.GroupInfoListener {
+public class DeviceDetailFragment extends Fragment {
 
     private static final String TAG = "DDF_PingPong";
     protected static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
 
     private P2PDevice device;
-    private WifiP2pInfo info;
 
-    private ProgressDialog progressDialog = null;
+
+    @Getter private ProgressDialog progressDialog = null;
     private Fragment fragment = this;
     private static final int PINGPONG = 5; //constant number
 
@@ -217,103 +208,7 @@ public class DeviceDetailFragment extends Fragment implements
 
     }
 
-    @Override
-    public void onGroupInfoAvailable(WifiP2pGroup group) {
-        Log.d(TAG, "Group informations available");
 
-        //group.getOwner() can be this device of not, this is not important at the moment,
-        //because with this method i obtain always the group owner.
-        P2PDevice owner = new P2PDevice(group.getOwner());
-        owner.setGroupOwner(true);
-
-        P2PGroup p2pGroup = new P2PGroup(true);
-        p2pGroup.setGroup(group);
-        p2pGroup.setGroupOwner(owner);
-
-        if(!P2PGroups.getInstance().getGroupList().contains(p2pGroup)) {
-            P2PGroups.getInstance().getGroupList().add(p2pGroup);
-            P2PGroups.getInstance().getGroupList().get(0).setGroupOwnerIpAddress(info.groupOwnerAddress);
-        }
-
-        P2PDevice client;
-        for (WifiP2pDevice device : group.getClientList()) {
-            client = new P2PDevice(device);
-            client.setGroupOwner(false);
-            p2pGroup.getList().add(client);
-        }
-
-
-        if(!group.isGroupOwner()) {
-            //if i am a client, it's possible that i want to pingpong with another group owner.
-            // For this reason, i set in the pingpong list all the possible group owners,
-            // assuming that this devices are go of well formed groups.
-            //If i am a group owner i can't pingpong with another device.
-
-            //I set in the list my actual group owner.
-            PingPongList.getInstance().getPingponglist().add(owner);
-
-            //now i use the peerlist to fill the PingPongList. Obviously, i must remove my group owner and all my
-            // brothers ;) (the other clients in my group).
-            // And finally i need to check that every device in this list is a group owner.
-            List<P2PDevice> peerlist = PeerList.getInstance().getList();
-            for(P2PDevice dev : peerlist) {
-//                if(dev.isGroupOwner() && !p2pGroup.getList().contains(dev) &&
-//                        !PingPongList.getInstance().getPingponglist().contains(dev)) {
-//                    PingPongList.getInstance().getPingponglist().add(dev);
-//                }
-                if(!p2pGroup.getList().contains(dev) &&
-                        !PingPongList.getInstance().getPingponglist().contains(dev)) {
-                    PingPongList.getInstance().getPingponglist().add(dev);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionInfoAvailable(final WifiP2pInfo info) {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
-        }
-
-        if(this.getView()!=null) {
-            this.getView().setVisibility(View.VISIBLE);
-        }
-
-        // The owner IP is now known.
-        TextView view = (TextView) mContentView.findViewById(R.id.group_owner);
-        view.setText(getResources().getString(R.string.group_owner_text)
-                + ((info.isGroupOwner) ? getResources().getString(R.string.yes)
-                : getResources().getString(R.string.no)));
-
-        // After the group negotiation, we assign the group owner as the file
-        // server. The file server is single threaded, single connection server
-        // socket.
-        if (info.groupFormed && info.isGroupOwner) {
-            this.info = info;
-
-            //as GO
-            LocalP2PDevice.getInstance().getLocalDevice().setGroupOwner(true);
-
-            new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text))
-                    .execute();
-        } else if (info.groupFormed) {
-            this.info = info;
-
-            // The other device acts as the client. In this case, i enable the
-            // get file button.
-            mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
-            ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
-                    .getString(R.string.client_text));
-        }
-
-        // hide the connect button
-        mContentView.findViewById(R.id.btn_connect).setVisibility(View.GONE);
-
-        //enable ping pong button only if the local device is a client
-        if (!LocalP2PDevice.getInstance().getLocalDevice().isGroupOwner()) {
-            mContentView.findViewById(R.id.btn_start_ping_pong).setVisibility(View.VISIBLE);
-        }
-    }
 
     /**
      * Updates the UI with device data
@@ -323,12 +218,12 @@ public class DeviceDetailFragment extends Fragment implements
     public void showDetails(P2PDevice device) {
         this.device = device;
 
-        if(this.getView()!=null) {
-            this.getView().setVisibility(View.VISIBLE);
-        }
-        TextView view = (TextView) mContentView.findViewById(R.id.device_address);
+        TextView view = (TextView) getView().findViewById(R.id.device_address);
         view.setText(device.getP2pDevice().deviceAddress);
-        view = (TextView) mContentView.findViewById(R.id.device_name);
+        view = (TextView) getView().findViewById(R.id.device_name);
+        view.setText(device.getP2pDevice().deviceName);
+
+        view = (TextView) getView().findViewById(R.id.device_name);
         view.setText(device.getP2pDevice().deviceName);
 
     }
@@ -347,9 +242,5 @@ public class DeviceDetailFragment extends Fragment implements
         view = (TextView) mContentView.findViewById(R.id.status_text);
         view.setText(R.string.empty);
         mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
-
-        if(this.getView()!=null) {
-            this.getView().setVisibility(View.GONE);
-        }
     }
 }
