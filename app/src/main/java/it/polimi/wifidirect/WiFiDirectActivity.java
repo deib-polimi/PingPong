@@ -40,10 +40,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.wifidirect.actionlisteners.CustomizableActionListener;
+import it.polimi.wifidirect.model.ClientList;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroup;
@@ -254,7 +254,10 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             detailFragment = (DeviceDetailFragment) getSupportFragmentManager().findFragmentByTag("detailFragment");
         }
 
-        detailFragment.showNameAndAddress(device);
+        detailFragment.setP2pDevice(device);
+
+        ClientList.getInstance().getList().add(device);
+        detailFragment.getMAdapter().notifyDataSetChanged();
 
     }
 
@@ -461,17 +464,24 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
             //i'm NOT the go
             if(detailFragment.getView()!=null) {
-                detailFragment.showDeviceIp(info, true);
+                P2PDevice device = new P2PDevice(group.getOwner());
+                ClientList.getInstance().getList().clear();
+                ClientList.getInstance().getList().add(device);
                 detailFragment.showConnectedDeviceGoIcon();
-                detailFragment.showNameAndAddress(new P2PDevice(group.getOwner()));
+                detailFragment.setP2pDevice(device);
             }
         } else {
             //i'm the go
             if(detailFragment.getView()!=null) {
-                detailFragment.showDeviceIp(info, false);
                 detailFragment.hideConnectedDeviceGoIcon();
 
-                detailFragment.showNameAndAddress(p2pGroup.getList().get(0));
+                ClientList.getInstance().getList().clear();
+
+                for(P2PDevice device : p2pGroup.getList()) {
+                    ClientList.getInstance().getList().add(device);
+
+                }
+                detailFragment.getMAdapter().notifyDataSetChanged();
 
             }
         }

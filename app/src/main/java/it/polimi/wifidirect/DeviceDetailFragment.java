@@ -25,6 +25,9 @@ import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,8 +56,10 @@ public class DeviceDetailFragment extends Fragment {
     private static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
 
-    private P2PDevice device;
+    private RecyclerView mRecyclerView;
+    @Getter private WiFiDetailClientListAdapter mAdapter;
 
+    private P2PDevice device;
 
     @Getter private ProgressDialog progressDialog = null;
     private Fragment fragment = this;
@@ -150,6 +155,21 @@ public class DeviceDetailFragment extends Fragment {
 
         mContentView.findViewById(R.id.btn_start_ping_pong).setVisibility(View.GONE);
 
+
+        mRecyclerView = (RecyclerView) mContentView.findViewById(R.id.clientRecyclerView);
+
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        // allows for optimizations if all item views are of the same size.
+        mRecyclerView.setHasFixedSize(true);
+
+        mAdapter = new WiFiDetailClientListAdapter();
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+
         return mContentView;
     }
 
@@ -217,36 +237,13 @@ public class DeviceDetailFragment extends Fragment {
 
     }
 
-
-    public void showDeviceIp(WifiP2pInfo info, boolean show) {
-        if(getView()!=null) {
-            TextView view = (TextView) getView().findViewById(R.id.group_ip);
-            if(show) {
-                view.setText(info.groupOwnerAddress.getHostAddress() + "");
-            } else {
-                view.setText(R.string.empty);
-            }
-        }
-    }
-
-
     /**
-     * Updates the UI with nameTextView and addressTextView
-     * of the connected device in {@link it.polimi.wifidirect.DeviceDetailFragment}.
+     * Method to set the {@link it.polimi.wifidirect.model.P2PDevice}
      *
-     * @param device the device to be displayed
+     * @param device the device to set
      */
-    public void showNameAndAddress(P2PDevice device) {
+    public void setP2pDevice(P2PDevice device) {
         this.device = device;
-
-        if(getView()!=null) {
-            TextView deviceName = (TextView) getView().findViewById(R.id.device_name);
-            TextView deviceMacAddress = (TextView) getView().findViewById(R.id.device_address);
-
-            deviceName.setText(device.getP2pDevice().deviceName);
-            deviceMacAddress.setText(device.getP2pDevice().deviceAddress);
-        }
-
     }
 
     /**
@@ -290,7 +287,7 @@ public class DeviceDetailFragment extends Fragment {
         view.setText(R.string.empty);
         view = (TextView) mContentView.findViewById(R.id.device_address);
         view.setText(R.string.empty);
-        view = (TextView) mContentView.findViewById(R.id.group_ip);
-        view.setText(R.string.empty);
+//        view = (TextView) mContentView.findViewById(R.id.group_ip);
+//        view.setText(R.string.empty);
     }
 }

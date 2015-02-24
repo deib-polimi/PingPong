@@ -1,9 +1,7 @@
 package it.polimi.wifidirect;
 
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +15,7 @@ import it.polimi.wifidirect.utilities.DeviceStatus;
  * ListAdapter of {@link it.polimi.wifidirect.model.P2PDevice}.
  * Created by Stefano Cappa on 23/02/15.
  */
-public class WiFiPeerListAdapter extends RecyclerView.Adapter<WiFiPeerListAdapter.ViewHolder> {
+public class WiFiDeviceListAdapter extends RecyclerView.Adapter<WiFiDeviceListAdapter.ViewHolder> {
 
     private final ItemClickListener itemClickListener;
 
@@ -25,7 +23,7 @@ public class WiFiPeerListAdapter extends RecyclerView.Adapter<WiFiPeerListAdapte
      * Constructor of the adapter
      * @param itemClickListener ClickListener to obtain click actions over the recyclerview's elements.
      */
-    public WiFiPeerListAdapter(@NonNull ItemClickListener itemClickListener) {
+    public WiFiDeviceListAdapter(@NonNull ItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
         setHasStableIds(true);
     }

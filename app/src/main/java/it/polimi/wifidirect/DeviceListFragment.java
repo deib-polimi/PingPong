@@ -17,7 +17,6 @@
 package it.polimi.wifidirect;
 
 import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -49,12 +48,12 @@ public class DeviceListFragment extends Fragment implements
         LocalDeviceDialog.DialogConfirmListener,
         //ItemClickListener is the interface in the adapter to intercept item's click events.
         //I use this to call itemClicked(v) in this class from WiFiPeerListAdapter.
-        WiFiPeerListAdapter.ItemClickListener {
+        WiFiDeviceListAdapter.ItemClickListener {
 
     private static final String TAG = "DeviceListFragment";
     private  View mContentView = null;
     private RecyclerView mRecyclerView;
-    @Getter private WiFiPeerListAdapter mAdapter;
+    @Getter private WiFiDeviceListAdapter mAdapter;
 
     /**
      * Method to obtain a new Fragment's instance.
@@ -83,7 +82,7 @@ public class DeviceListFragment extends Fragment implements
         // allows for optimizations if all item views are of the same size.
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new WiFiPeerListAdapter(this);
+        mAdapter = new WiFiDeviceListAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -100,8 +99,8 @@ public class DeviceListFragment extends Fragment implements
     }
 
     /**
-     * Method called by {@link it.polimi.wifidirect.WiFiPeerListAdapter}
-     * with the {@link it.polimi.wifidirect.WiFiPeerListAdapter.ItemClickListener}
+     * Method called by {@link WiFiDeviceListAdapter}
+     * with the {@link WiFiDeviceListAdapter.ItemClickListener}
      * interface, when the user click on an element of the {@link android.support.v7.widget.RecyclerView}.
      * @param view {@link android.view.View} clicked.
      */
@@ -111,7 +110,6 @@ public class DeviceListFragment extends Fragment implements
         Log.d(TAG, "Clicked position: " + clickedPosition);
 
         if(clickedPosition>=0) { //a little check :)
-//            P2PDevice device = (P2PDevice) getListAdapter().getItem(clickedPosition);
             P2PDevice device = PeerList.getInstance().getList().get(clickedPosition);
             ((DeviceActionListener) getActivity()).showDetails(device);
         }
