@@ -81,13 +81,7 @@ public class DeviceDetailFragment extends Fragment {
 
         mContentView = inflater.inflate(R.layout.device_detail, container, false);
 
-        TextView myName = (TextView) mContentView.findViewById(R.id.my_name);
-        TextView myStatus = (TextView) mContentView.findViewById(R.id.my_status);
-        TextView myMacAddress = (TextView) mContentView.findViewById(R.id.my_mac_address);
-
-        myName.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceName);
-        myStatus.setText(DeviceStatus.getDeviceStatus(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().status));
-        myMacAddress.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceAddress);
+        this.updateThisDevice();
 
         //click connect's button
         mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
@@ -169,6 +163,19 @@ public class DeviceDetailFragment extends Fragment {
 
 
         return mContentView;
+    }
+
+    /**
+     * Update UI for this device.
+     */
+    public void updateThisDevice() {
+        TextView myNameCardView = (TextView) mContentView.findViewById(R.id.my_name);
+        TextView myStatusCardView = (TextView) mContentView.findViewById(R.id.my_status);
+        TextView myMacAddressCardView = (TextView) mContentView.findViewById(R.id.my_mac_address);
+
+        myNameCardView.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceName);
+        myStatusCardView.setText(DeviceStatus.getDeviceStatus(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().status));
+        myMacAddressCardView.setText(LocalP2PDevice.getInstance().getLocalDevice().getP2pDevice().deviceAddress);
     }
 
     @Override

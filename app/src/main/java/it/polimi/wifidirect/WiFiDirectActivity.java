@@ -237,6 +237,11 @@ public class WiFiDirectActivity extends ActionBarActivity implements
                     LocalP2PDevice.getInstance().setPing_pong_mode(true);
                 }
                 return true;
+            case R.id.cancelConnection:
+
+                this.forcedCancelConnect();
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -404,6 +409,10 @@ public class WiFiDirectActivity extends ActionBarActivity implements
                 ClientList.getInstance().getList().add(device);
                 detailFragment.showConnectedDeviceGoIcon();
                 detailFragment.setP2pDevice(device);
+
+                //now i call this to show the "connected" text in the DetailFragment
+                detailFragment.updateThisDevice();
+
                 detailFragment.getMAdapter().notifyDataSetChanged();
             }
         } else {
@@ -557,6 +566,21 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         PingPongList.getInstance().setConnecting(false);
 
         this.discoveryPingPong();
+    }
+
+    /**
+     * Method to cancel a pending connection, used by the MenuItem icon.
+     */
+    private void forcedCancelConnect() {
+        manager.cancelConnect(channel,
+                new CustomizableActionListener(
+                        this,
+                        TAG,
+                        "forcedCancelConnect success",
+                        "Cancel connect success",
+                        "forcedCancelConnect failed",
+                        "Cancel connect failed"
+                ));
     }
 
     /**
