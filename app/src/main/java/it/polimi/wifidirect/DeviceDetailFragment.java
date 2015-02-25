@@ -16,7 +16,6 @@
 
 package it.polimi.wifidirect;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -46,25 +45,29 @@ import lombok.Getter;
 /**
  * A fragment that manages a particular peer and allows interaction with device
  * i.e. setting up network connection and transferring data.
- *
+ * <p/>
  * Created by Stefano Cappa, based on google code samples
  */
-public class DeviceDetailFragment extends Fragment {
+public class DeviceDetailFragment extends Fragment
+        implements PingPongDialog.DialogPingPongListener {
 
     private static final String TAG = "DDF_PingPong";
     private static final int CHOOSE_FILE_RESULT_CODE = 20;
     private View mContentView = null;
 
-    @Getter private WiFiDetailClientListAdapter mAdapter;
+    @Getter
+    private WiFiDetailClientListAdapter mAdapter;
 
     private P2PDevice device;
 
-    @Getter private ProgressDialog progressDialog = null;
+    @Getter
+    private ProgressDialog progressDialog = null;
     private final Fragment fragment = this;
     private static final int PINGPONG = 5; //constant number
 
     /**
      * Method to obtain a new Fragment's instance.
+     *
      * @return This Fragment instance.
      */
     public static DeviceDetailFragment newInstance() {
@@ -74,7 +77,8 @@ public class DeviceDetailFragment extends Fragment {
     /**
      * Default Fragment constructor.
      */
-    public DeviceDetailFragment() {}
+    public DeviceDetailFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -181,58 +185,55 @@ public class DeviceDetailFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        switch (requestCode) {
-            case PINGPONG:
+        if (requestCode == PINGPONG) {
+            // User has picked a file. Transfer it to group owner i.e peer using
+            // FileTransferService.
+            if (data != null) {
+                Uri uri = data.getData();
+                Log.d(TAG, "Intent----------- " + uri);
 
-                if (resultCode == Activity.RESULT_OK) {
-                    // After Ok code.
-                    Bundle bundle = data.getExtras();
-                    PingPongList.getInstance().setPing_macaddress(bundle.getString("ping_address"));
-                    PingPongList.getInstance().setPong_macaddress(bundle.getString("pong_address"));
-                    PingPongList.getInstance().setTestmode(bundle.getBoolean("testmode_checkbox_status"));
-
-                    //to enable pingpong mode
-                    PingPongList.getInstance().setPingponging(true);
-
-                    P2PDevice pingDevice = PeerList.getInstance().getDeviceByMacAddress(PingPongList.getInstance().getPing_macaddress());
-                    P2PDevice pongDevice = PeerList.getInstance().getDeviceByMacAddress(PingPongList.getInstance().getPong_macaddress());
-
-                    PingPongList.getInstance().setPingDevice(pingDevice);
-                    PingPongList.getInstance().setPongDevice(pongDevice);
-
-                    Log.d(TAG, "I pressed on yes and the mac addresses received are, ping: "
-                            + PingPongList.getInstance().getPing_macaddress()
-                            + " and pong: " + PingPongList.getInstance().getPong_macaddress());
-
-                    this.startPingponging();
-
-                } else if (resultCode == Activity.RESULT_CANCELED) {
-                    // After Cancel code.
-                    Log.d(TAG, "I pressed NO");
-                }
-
-                break;
-            default:
-                // User has picked a file. Transfer it to group owner i.e peer using
-                // FileTransferService.
-                if(data!=null) {
-                    Uri uri = data.getData();
-                    Log.d(TAG, "Intent----------- " + uri);
-
-                    Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
-                    serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-                    serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
-                    serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
-                            P2PGroups.getInstance().getGroupList().get(0).getGroupOwnerIpAddress().getHostAddress());
-                    serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
-                    getActivity().startService(serviceIntent);
-                }
-                break;
-
+                Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
+                serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
+                serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
+                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+                        P2PGroups.getInstance().getGroupList().get(0).getGroupOwnerIpAddress().getHostAddress());
+                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+                getActivity().startService(serviceIntent);
+            }
         }
-
-
     }
+
+
+    @Override
+    public void initAndStartPingPong(String ping_address, String pong_address, boolean isChecked) {
+        PingPongList.getInstance().setPing_macaddress(ping_address);
+        PingPongList.getInstance().setPong_macaddress(pong_address);
+        PingPongList.getInstance().setTestmode(isChecked);
+
+        Log.d(TAG, "ping_macaddress : " + PingPongList.getInstance().getPing_macaddress());
+        Log.d(TAG, "pong_macaddress : " + PingPongList.getInstance().getPong_macaddress());
+
+        //to enable pingpong mode
+        PingPongList.getInstance().setPingponging(true);
+
+        P2PDevice pingDevice = PeerList.getInstance().getDeviceByMacAddress(PingPongList.getInstance().getPing_macaddress());
+        P2PDevice pongDevice = PeerList.getInstance().getDeviceByMacAddress(PingPongList.getInstance().getPong_macaddress());
+
+        PingPongList.getInstance().setPingDevice(pingDevice);
+        PingPongList.getInstance().setPongDevice(pongDevice);
+
+
+        Log.d(TAG, "ping_device : " + PingPongList.getInstance().getPingDevice().toString());
+        Log.d(TAG, "pong_device : " + PingPongList.getInstance().getPongDevice().toString());
+
+
+        Log.d(TAG, "I pressed on yes and the mac addresses received are, ping: "
+                + PingPongList.getInstance().getPing_macaddress()
+                + " and pong: " + PingPongList.getInstance().getPong_macaddress());
+
+        this.startPingponging();
+    }
+
 
     /**
      * Method to start Pingponging.
@@ -256,10 +257,10 @@ public class DeviceDetailFragment extends Fragment {
      * of the connected device.
      * This is useful to identify which device is a GO.
      */
-    public void showConnectedDeviceGoIcon(){
-        if(getView() !=null && getView().findViewById(R.id.device_go_logo)!=null && getView().findViewById(R.id.device_i_am_your_go_textview)!=null) {
-            ImageView deviceGoLogoImageView = (ImageView) getView().findViewById(R.id.device_go_logo);
-            TextView device_i_am_a_go_textView = (TextView) getView().findViewById(R.id.device_i_am_your_go_textview);
+    public void showConnectedDeviceGoIcon() {
+        if (getView() != null && getView().findViewById(R.id.peerlist_go_logo) != null && getView().findViewById(R.id.peerlist_i_am_a_go_textview) != null) {
+            ImageView deviceGoLogoImageView = (ImageView) getView().findViewById(R.id.peerlist_go_logo);
+            TextView device_i_am_a_go_textView = (TextView) getView().findViewById(R.id.peerlist_i_am_a_go_textview);
 
             deviceGoLogoImageView.setImageDrawable(getResources().getDrawable(R.drawable.go_logo_black));
             deviceGoLogoImageView.setVisibility(View.VISIBLE);
@@ -273,9 +274,9 @@ public class DeviceDetailFragment extends Fragment {
      * This is useful to identify which device is a GO.
      */
     public void hideConnectedDeviceGoIcon() {
-        if(getView()!=null && getView().findViewById(R.id.device_go_logo)!=null && getView().findViewById(R.id.device_i_am_your_go_textview)!=null) {
-            ImageView deviceGoLogoImageView = (ImageView) getView().findViewById(R.id.device_go_logo);
-            TextView device_i_am_a_go_textView = (TextView) getView().findViewById(R.id.device_i_am_your_go_textview);
+        if (getView() != null && getView().findViewById(R.id.peerlist_go_logo) != null && getView().findViewById(R.id.peerlist_i_am_a_go_textview) != null) {
+            ImageView deviceGoLogoImageView = (ImageView) getView().findViewById(R.id.peerlist_go_logo);
+            TextView device_i_am_a_go_textView = (TextView) getView().findViewById(R.id.peerlist_i_am_a_go_textview);
 
             deviceGoLogoImageView.setVisibility(View.INVISIBLE);
             device_i_am_a_go_textView.setVisibility(View.INVISIBLE);

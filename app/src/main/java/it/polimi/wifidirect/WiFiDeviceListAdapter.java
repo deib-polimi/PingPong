@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import it.polimi.wifidirect.model.P2PDevice;
@@ -44,6 +45,8 @@ public class WiFiDeviceListAdapter extends RecyclerView.Adapter<WiFiDeviceListAd
         private final TextView nameText;
         private final TextView statusText;
         private final TextView macAddressText;
+        private final ImageView isGoImage;
+        private final TextView iAmGoText;
 
         public ViewHolder(View view) {
             super(view);
@@ -53,6 +56,8 @@ public class WiFiDeviceListAdapter extends RecyclerView.Adapter<WiFiDeviceListAd
             nameText = (TextView) view.findViewById(R.id.device_name);
             statusText = (TextView) view.findViewById(R.id.device_status);
             macAddressText = (TextView) view.findViewById(R.id.device_mac_address);
+            isGoImage = (ImageView) view.findViewById(R.id.peerlist_go_logo);
+            iAmGoText = (TextView) view.findViewById(R.id.peerlist_i_am_a_go_textview);
         }
 
 
@@ -74,6 +79,7 @@ public class WiFiDeviceListAdapter extends RecyclerView.Adapter<WiFiDeviceListAd
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
 
         P2PDevice device = PeerList.getInstance().getList().get(position);
+
         if (device != null) {
             if (viewHolder.nameText != null) {
                 viewHolder.nameText.setText(device.getP2pDevice().deviceName);
@@ -83,6 +89,20 @@ public class WiFiDeviceListAdapter extends RecyclerView.Adapter<WiFiDeviceListAd
             }
             if (viewHolder.macAddressText != null) {
                 viewHolder.macAddressText.setText(device.getP2pDevice().deviceAddress);
+            }
+            if (viewHolder.isGoImage != null) {
+                if(device.getP2pDevice().isGroupOwner()) {
+                    viewHolder.isGoImage.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.isGoImage.setVisibility(View.INVISIBLE);
+                }
+            }
+            if (viewHolder.iAmGoText != null) {
+                if(device.getP2pDevice().isGroupOwner()) {
+                    viewHolder.iAmGoText.setVisibility(View.VISIBLE);
+                } else {
+                    viewHolder.iAmGoText.setVisibility(View.INVISIBLE);
+                }
             }
         }
 

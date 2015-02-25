@@ -33,7 +33,7 @@ class PingPongLogic extends AsyncTask<Void, Void, Void> {
         Log.d(TAG , System.currentTimeMillis() + " - Before delay");
 
         try {
-            Thread.sleep(3000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -43,7 +43,7 @@ class PingPongLogic extends AsyncTask<Void, Void, Void> {
         P2PDevice pingDevice = PingPongList.getInstance().getPingDevice();
         P2PDevice pongDevice = PingPongList.getInstance().getPongDevice();
 
-        if(pingDevice.getP2pDevice()!=null && pongDevice.getP2pDevice()!=null ) {
+        if(pingDevice!=null && pongDevice!=null && pingDevice.getP2pDevice()!=null && pongDevice.getP2pDevice()!=null ) {
             Log.d(TAG, "Pingdevice macaddress : " + pingDevice.getP2pDevice().deviceAddress);
             Log.d(TAG, "Pongdevice macaddress : " + pongDevice.getP2pDevice().deviceAddress);
         }

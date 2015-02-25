@@ -40,6 +40,14 @@ public class PingPongDialog extends DialogFragment {
     private static ArrayList<SpinnerRow> list_ping, list_pong; //list_ping: list of starting device, list_pong: list of destinations
 
     /**
+     * {@link it.polimi.wifidirect.DeviceDetailFragment} implements this interface.
+     * But the method to change the device name in
+     */
+    public interface DialogPingPongListener {
+        public void initAndStartPingPong(String ping_address, String pong_address, boolean isChecked);
+    }
+
+    /**
      * Method to obtain a new Fragment's instance.
      * @return This Fragment instance.
      */
@@ -102,6 +110,8 @@ public class PingPongDialog extends DialogFragment {
                 list));
     }
 
+
+
     /**
      * Method to set listeners on buttons and checkbox.
      */
@@ -109,15 +119,10 @@ public class PingPongDialog extends DialogFragment {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Intent i = new Intent();
-                Bundle extras=new Bundle();
-                extras.putString("ping_address",spinner_ping.getSelectedItem().toString());
-                extras.putString("pong_address",spinner_pong.getSelectedItem().toString());
-                extras.putBoolean("testmode_checkbox_status", testmode_checkbox.isChecked());
-                i.putExtras(extras);
 
-                //notify to DeviceDetailFragment, onActivityResult's method.
-                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, i);
+                ((DialogPingPongListener)getTargetFragment()).initAndStartPingPong(spinner_ping.getSelectedItem().toString(),
+                        spinner_pong.getSelectedItem().toString(), testmode_checkbox.isChecked());
+
                 dismiss();
             }
         });

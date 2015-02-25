@@ -53,16 +53,16 @@
             android:singleLine="true" />
 
         <ImageView
-            android:id="@+id/device_go_logo"
+            android:id="@+id/peerlist_go_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/device_i_am_your_go_textview"
-            android:layout_alignEnd="@+id/device_i_am_your_go_textview"
-            android:layout_alignStart="@+id/device_i_am_your_go_textview"
+            android:layout_above="@+id/peerlist_i_am_a_go_textview"
+            android:layout_alignEnd="@+id/peerlist_i_am_a_go_textview"
+            android:layout_alignStart="@+id/peerlist_i_am_a_go_textview"
             android:layout_alignTop="@+id/device_name" />
 
         <TextView
-            android:id="@+id/device_i_am_your_go_textview"
+            android:id="@+id/peerlist_i_am_a_go_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="17dp"
