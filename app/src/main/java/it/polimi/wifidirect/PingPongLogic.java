@@ -33,9 +33,9 @@ class PingPongLogic extends AsyncTask<Void, Void, Void> {
         Log.d(TAG , System.currentTimeMillis() + " - Before delay");
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(5000); //if you have problems use 5000 here
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "Pingponglogic-doinbackground" , e);
         }
 
         Log.d(TAG , System.currentTimeMillis() + " - After delay");

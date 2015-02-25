@@ -50,6 +50,7 @@ import it.polimi.wifidirect.model.P2PGroup;
 import it.polimi.wifidirect.model.P2PGroups;
 import it.polimi.wifidirect.model.PeerList;
 import it.polimi.wifidirect.model.PingPongList;
+import it.polimi.wifidirect.utilities.SleepAsyncTask;
 import lombok.Getter;
 
 /**
@@ -555,12 +556,14 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
         Log.d(TAG, System.currentTimeMillis() + " - Preparing to discovery");
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Thread.sleep InterruptedException", e);
-        }
+        new SleepAsyncTask(this).execute();
+//        sleepCompleted();
 
+        //when SleepAsyncTask is complete, its executes sleepCompleted()
+
+    }
+
+    public void sleepCompleted() {
         Log.d(TAG, System.currentTimeMillis() + " - Discovery started");
 
         PingPongList.getInstance().setConnecting(false);
