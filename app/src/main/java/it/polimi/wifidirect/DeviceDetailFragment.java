@@ -184,22 +184,19 @@ public class DeviceDetailFragment extends Fragment
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // User has picked a file. Transfer it to group owner i.e peer using
+        // FileTransferService.
+        if (data != null) {
+            Uri uri = data.getData();
+            Log.d(TAG, "Intent----------- " + uri);
 
-        if (requestCode == PINGPONG) {
-            // User has picked a file. Transfer it to group owner i.e peer using
-            // FileTransferService.
-            if (data != null) {
-                Uri uri = data.getData();
-                Log.d(TAG, "Intent----------- " + uri);
-
-                Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
-                serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-                serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
-                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
-                        P2PGroups.getInstance().getGroupList().get(0).getGroupOwnerIpAddress().getHostAddress());
-                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
-                getActivity().startService(serviceIntent);
-            }
+            Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
+            serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
+            serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
+            serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+                    P2PGroups.getInstance().getGroupList().get(0).getGroupOwnerIpAddress().getHostAddress());
+            serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+            getActivity().startService(serviceIntent);
         }
     }
 
