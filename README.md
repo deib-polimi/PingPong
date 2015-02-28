@@ -10,7 +10,8 @@ PingPong è stata creata per Android 4.4 (KitKat) o superiore. Questa scelta è 
 E' importante ricordare che si tratta di una applicazione dimostrativa, quindi funzionalità come la gestione della rotazione dello schermo, standby del dispositivo, wifi disattivato and so on, non sono gestite come in un prodotto commerciale.
 
 ## Results
-VIDEO YOUTUBE
+VIDEO YOUTUBE 
+
 Come si nota dal video, l'app funziona perfettamente, ma con performance davvero inaccettabili. 
 Il problema è la fase di Discovery del protocollo / l'implementazione di WiFi-Direct in Android, infatti:
 1. Il tempo di ricerca dei dispisitivi è troppo elevato
