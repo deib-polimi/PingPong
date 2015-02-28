@@ -14,6 +14,7 @@ import it.polimi.wifidirect.utilities.DeviceStatus;
 
 /**
  * ListAdapter of {@link it.polimi.wifidirect.model.P2PDevice}.
+ * <p></p>
  * Created by Stefano Cappa on 23/02/15.
  */
 public class WiFiDeviceListAdapter extends RecyclerView.Adapter<WiFiDeviceListAdapter.ViewHolder> {

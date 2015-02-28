@@ -5,6 +5,7 @@ import android.util.Log;
 
 /**
  * Utility class to retrieve the device's status message using his code.
+ * <p></p>
  * Created by Stefano Cappa on 24/02/15.
  */
 public class DeviceStatus {

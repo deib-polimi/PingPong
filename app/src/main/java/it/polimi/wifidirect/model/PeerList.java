@@ -10,9 +10,9 @@ import java.util.List;
 import lombok.Getter;
 
 /**
- * Created by Stefano Cappa on 31/01/15.
- *
  * Class that represents the list of device discovered during the discovery phase.
+ * <p></p>
+ * Created by Stefano Cappa on 31/01/15.
  */
 public class PeerList {
 

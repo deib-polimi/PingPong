@@ -5,13 +5,13 @@ import lombok.Setter;
 
 /**
  *
- * Created by Stefano Cappa on 31/01/15.
- *
  * Class that represents the {@link it.polimi.wifidirect.model.P2PDevice} associated to this device.
  * It contains the {@link #ping_pong_mode} attribute, used to activate/deactivate the "pingpong mode" on this device.
  * Attention, this means that if ping_pong_mode==true this device can be part of one of the pingpong groups,
  * but it can't be the pingpong device. Otherwise, if false, it's possible to use this device as a
  * pingpong device, but its can't be part of a pingpong group
+ * <p></p>
+ * Created by Stefano Cappa on 31/01/15.
  *
 */
 public class LocalP2PDevice {

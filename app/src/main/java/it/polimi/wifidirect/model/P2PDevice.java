@@ -6,14 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Created by Stefano Cappa on 31/01/15.
- *
  * Class that represents a {@link it.polimi.wifidirect.model.P2PDevice}
  * with inside a {@link android.net.wifi.p2p.WifiP2pDevice} and the groupOwner attribute.
  * This class is useful because can be used to extends the basic {@link android.net.wifi.p2p.WifiP2pDevice}'s
  * functionalities.
  * It's an abstraction of a {@link android.net.wifi.p2p.WifiP2pDevice}.
- *
+ * <p></p>
+ * Created by Stefano Cappa on 31/01/15.
  */
 public class P2PDevice {
 

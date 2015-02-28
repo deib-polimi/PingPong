@@ -3,9 +3,9 @@ package it.polimi.wifidirect.spinner;
 import lombok.Getter;
 
 /**
- * Created by Stefano Cappa on 31/01/15.
- *
  * This class represents a row of the spinners.
+ * <p></p>
+ * Created by Stefano Cappa on 31/01/15.
  *
  */
 public class SpinnerRow {

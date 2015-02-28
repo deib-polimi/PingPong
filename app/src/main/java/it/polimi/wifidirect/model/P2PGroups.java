@@ -6,11 +6,11 @@ import java.util.List;
 import lombok.Getter;
 
 /**
- * Created by Stefano Cappa on 01/02/15
- *
  * Class that contain a list of the groups of this device.
  * At the moment Android can't use multiple groups, this is an abstract concept.
  * For this reason this list has only one element.
+ * <p></p>
+ * Created by Stefano Cappa on 01/02/15
  */
 public class P2PGroups {
 

@@ -60,7 +60,7 @@ import lombok.Getter;
  * The application should also register a BroadcastReceiver for notification of
  * WiFi state related events.
  * This activity manages the pingpong logic.
- * <p/>
+ * <p></p>
  * Created by Stefano Cappa, based on google code samples
  */
 public class WiFiDirectActivity extends ActionBarActivity implements

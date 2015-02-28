@@ -17,7 +17,7 @@ import java.net.Socket;
 /**
  * A simple server socket that accepts connection and writes some data on
  * the stream.
- *
+ * <p></p>
  * Created by Stefano Cappa on 22/02/15.
  */
 class FileServerAsyncTask extends AsyncTask<Void, Void, String> {

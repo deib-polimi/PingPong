@@ -39,7 +39,7 @@ import lombok.Getter;
 /**
  * A ListFragment that displays available peers on discovery and requests the
  * parent activity to handle user interaction events.
- *
+ * <p></p>
  * Created by Stefano Cappa, based on google code samples
  */
 public class DeviceListFragment extends Fragment implements
@@ -101,8 +101,8 @@ public class DeviceListFragment extends Fragment implements
     /**
      * Method called by {@link WiFiDeviceListAdapter}
      * with the {@link WiFiDeviceListAdapter.ItemClickListener}
-     * interface, when the user click on an element of the {@link android.support.v7.widget.RecyclerView}.
-     * @param view {@link android.view.View} clicked.
+     * interface, when the user click on an element of the RecyclerView.
+     * @param view view.View clicked.
      */
     @Override
     public void itemClicked(View view) {

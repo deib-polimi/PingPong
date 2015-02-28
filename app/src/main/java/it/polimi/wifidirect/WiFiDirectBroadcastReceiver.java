@@ -31,7 +31,7 @@ import it.polimi.wifidirect.model.PingPongList;
 
 /**
  * A BroadcastReceiver that notifies of important wifi p2p events.
- *
+ * <p></p>
  * Created by Stefano Cappa, based on google code samples.
  */
 public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {

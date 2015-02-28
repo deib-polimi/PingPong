@@ -19,7 +19,7 @@ import java.net.Socket;
 /**
 * A service that process each file transfer request i.e Intent by opening a
 * socket connection with the WiFi Direct Group Owner and writing the file
-*
+* <p></p>
 * Copyright 2011 Google Inc. All Rights Reserved. Modified by Stefano Cappa (2015).
 */
 public class FileTransferService extends IntentService {

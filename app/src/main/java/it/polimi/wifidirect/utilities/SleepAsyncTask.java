@@ -7,8 +7,9 @@ import android.util.Log;
 import it.polimi.wifidirect.WiFiDirectActivity;
 
 /**
- * AsyncTask to create a delay with Thread.sleep.
+ * AsyncTask to create a delay with Thread.sleep.<p></p>
  * This is safe, because it is not executed in the UI Thread.
+ * <p></p>
  * Created by Stefano Cappa on 25/02/15.
  */
 public class SleepAsyncTask extends AsyncTask<Void, Void, Void> {

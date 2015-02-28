@@ -11,7 +11,7 @@ import it.polimi.wifidirect.model.PingPongList;
 
 /**
  * Class that represents the logic/async to pingpong.
- *
+ * <p></p>
  * Created by Stefano Cappa on 01/02/15.
  */
 class PingPongLogic extends AsyncTask<Void, Void, Void> {

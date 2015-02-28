@@ -21,13 +21,11 @@ import it.polimi.wifidirect.spinner.CustomSpinnerAdapter;
 import it.polimi.wifidirect.spinner.SpinnerRow;
 
 /**
- * Created by Stefano Cappa on 30/01/15.
- *
  * Class that represents a DialogFragment used to choose the GO's mac address of the device which you want to do "pingpong".
  * Be careful, because, before that you can proceed to use this device as a "pingpong device", it must be connected to a GO.
  * In this Dialog there is the GO's mac address of the other group, where this device is not a peer/client, but he want to do "pingpong".
- *
- *
+ * <p></p>
+ * Created by Stefano Cappa on 30/01/15.
  */
 public class PingPongDialog extends DialogFragment {
 

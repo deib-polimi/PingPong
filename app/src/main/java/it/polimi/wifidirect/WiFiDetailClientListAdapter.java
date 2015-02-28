@@ -11,6 +11,7 @@ import it.polimi.wifidirect.model.P2PDevice;
 
 /**
  * ListAdapter of {@link it.polimi.wifidirect.model.P2PDevice}.
+ * <p></p>
  * Created by Stefano Cappa on 24/02/15.
  */
 public class WiFiDetailClientListAdapter extends RecyclerView.Adapter<WiFiDetailClientListAdapter.ViewHolder> {

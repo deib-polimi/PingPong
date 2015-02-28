@@ -6,10 +6,10 @@ import java.util.List;
 import lombok.Getter;
 
 /**
- * Created by Stefano Cappa on 24/02/15.
- *
  * Class that represents the list of device connect to the group owner.
  * This list will be empty is this device is a client.
+ * <p></p>
+ * Created by Stefano Cappa on 24/02/15.
  */
 public class ClientList {
 

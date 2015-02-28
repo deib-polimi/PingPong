@@ -9,9 +9,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Created by Stefano Cappa on 01/02/15.
- *
  * Class that represents the list of GO's mac address available to pingpong with the PingPong device client.
+ * <p></p>
+ * Created by Stefano Cappa on 01/02/15.
  */
 public class PingPongList {
 

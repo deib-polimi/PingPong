@@ -10,12 +10,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Created by Stefano Cappa on 31/01/15.
- *
  * Class that represents a P2PGroup with inside a {@link android.net.wifi.p2p.WifiP2pDevice} and
  * other parameters like, {@link #persistent}, the go's {@link it.polimi.wifidirect.model.P2PDevice},
  * the go's ip address, and the entire list of clients, if this device is a GO.
  * It's an abstraction of a {@link android.net.wifi.p2p.WifiP2pGroup}.
+ * <p></p>
+ * Created by Stefano Cappa on 31/01/15.
  *
  */
 public class P2PGroup {

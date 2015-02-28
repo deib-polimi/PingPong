@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import it.polimi.wifidirect.R;
 
 /**
- * Created by Stefano Cappa on 31/01/15.
- *
  * The custom spinner adapter
+ * <p></p>
+ * Created by Stefano Cappa on 31/01/15.
  */
 public class CustomSpinnerAdapter extends ArrayAdapter<SpinnerRow> {
 
