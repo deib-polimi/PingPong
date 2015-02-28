@@ -43,6 +43,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import it.polimi.wifidirect.actionlisteners.CustomizableActionListener;
+import it.polimi.wifidirect.filetransfer.FileServerAsyncTask;
 import it.polimi.wifidirect.model.ClientList;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;

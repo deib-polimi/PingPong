@@ -1,6 +1,6 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
 
-package it.polimi.wifidirect;
+package it.polimi.wifidirect.filetransfer;
 
 import android.app.IntentService;
 import android.content.ContentResolver;

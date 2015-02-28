@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import it.polimi.wifidirect.dialog.PingPongDialog;
+import it.polimi.wifidirect.filetransfer.FileTransferService;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroups;

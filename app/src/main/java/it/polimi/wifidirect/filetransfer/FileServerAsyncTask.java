@@ -1,4 +1,4 @@
-package it.polimi.wifidirect;
+package it.polimi.wifidirect.filetransfer;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +20,7 @@ import java.net.Socket;
  * <p></p>
  * Created by Stefano Cappa on 22/02/15.
  */
-class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
+public class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
 
     private static final String TAG = "FileServerSyncTask";
 

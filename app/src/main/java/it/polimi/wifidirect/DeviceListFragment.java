@@ -132,8 +132,8 @@ public class DeviceListFragment extends Fragment implements
      * Method to clear peer's list and to update the UI.
      */
     public void clearPeers() {
-        PeerList.getInstance().getList().clear();
-        this.getMAdapter().notifyDataSetChanged();
+//        PeerList.getInstance().getList().clear();
+//        this.getMAdapter().notifyDataSetChanged();
     }
 
     /**
