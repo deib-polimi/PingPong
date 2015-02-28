@@ -12,13 +12,13 @@ E' importante ricordare che si tratta di una applicazione dimostrativa, quindi f
 ## Results
 VIDEO YOUTUBE 
 
-Come si nota dal video, l'app funziona perfettamente, ma con performance davvero inaccettabili. 
-Il problema è la fase di Discovery del protocollo / l'implementazione di WiFi-Direct in Android, infatti:
-1. Il tempo di ricerca dei dispisitivi è troppo elevato
-2. Dopo un certo tempo, il dispositivo non risulta più rilevabile dagli altri, quindi bisogna riavviare la Discovery su tutti i device
+Come si nota dal video, l'app funziona perfettamente, ma con performance davvero inaccettabili.<br/>
+Il problema è la fase di Discovery del protocollo / l'implementazione di WiFi-Direct in Android, infatti:<br/>
+1. Il tempo di ricerca dei dispositivi è troppo elevato<br/>
+2. Dopo un certo tempo, il dispositivo non risulta più rilevabile dagli altri, quindi bisogna riavviare la Discovery su tutti i device<br/>
 3. A volte la parte wifi di Android crasha e l'unico modo per risolvere il problema è un completo reboot del dispositivo (questa sitauzione è riconoscibile dalle impostazioni Wifi di android, dove improvvisamente non risulta più un grado di scansionare le rete wifi)
 
-Questo mostra come la fase di Discovery del protocollo WiFi Direct sia il tallone di Achille di ogni progetto mirato ad esterne le funzione e superarne i limiti.
+Questo mostra come la fase di Discovery del protocollo WiFi Direct sia il tallone di Achille di ogni progetto mirato ad estendere le funzione e superarne i limiti.
 Per ovviare al problema, è necessario attendere il rilascio della nuova versione del protocollo con l'utilizzo di (NAN) [https://www.wi-fi.org/wi-fi-nan-technical-specification-draft-v0024], ancora in versione draft e non implementata in Android.
 
 
