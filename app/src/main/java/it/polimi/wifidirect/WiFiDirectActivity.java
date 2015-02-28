@@ -553,14 +553,11 @@ public class WiFiDirectActivity extends ActionBarActivity implements
      * Method to restart discovery after a disconnect.
      */
     public void restartDiscoveryPingpongAfterDisconnect() {
-
         Log.d(TAG, System.currentTimeMillis() + " - Preparing to discovery");
 
         new SleepAsyncTask(this).execute();
-//        sleepCompleted();
 
         //when SleepAsyncTask is complete, its executes sleepCompleted()
-
     }
 
     public void sleepCompleted() {
