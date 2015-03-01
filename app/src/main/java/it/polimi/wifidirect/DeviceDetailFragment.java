@@ -35,6 +35,7 @@ import android.widget.TextView;
 
 import it.polimi.wifidirect.dialog.PingPongDialog;
 import it.polimi.wifidirect.filetransfer.FileTransferService;
+import it.polimi.wifidirect.model.ClientList;
 import it.polimi.wifidirect.model.LocalP2PDevice;
 import it.polimi.wifidirect.model.P2PDevice;
 import it.polimi.wifidirect.model.P2PGroups;
@@ -114,6 +115,7 @@ public class DeviceDetailFragment extends Fragment
 
                     @Override
                     public void onClick(View v) {
+                        ClientList.getInstance().getList().clear();
                         ((DeviceListFragment.DeviceActionListener) getActivity()).disconnect();
                     }
                 });

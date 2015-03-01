@@ -278,6 +278,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
     @Override
     public void connect(WifiP2pConfig config) {
         Log.d(TAG, "Request connection");
+
         manager.connect(channel, config, new CustomizableActionListener(
                 WiFiDirectActivity.this,
                 "connect",
@@ -558,6 +559,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
         new SleepAsyncTask(this).execute();
 
+//        this.sleepCompleted();
         //when SleepAsyncTask is complete, its executes sleepCompleted()
     }
 
@@ -596,6 +598,14 @@ public class WiFiDirectActivity extends ActionBarActivity implements
      * Modified method to start a "silent discovery" without ProgessDialog or something else.
      */
     public void discoveryPingPong() {
+
+        manager.stopPeerDiscovery(channel , new CustomizableActionListener(
+                WiFiDirectActivity.this,
+                "stopPeerDiscovery",
+                null,
+                null,
+                null,
+                null));
         manager.discoverPeers(channel, new CustomizableActionListener(
                 WiFiDirectActivity.this,
                 "discoveryPingPong",

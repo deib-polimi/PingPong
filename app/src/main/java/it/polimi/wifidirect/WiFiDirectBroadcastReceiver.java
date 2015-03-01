@@ -43,8 +43,9 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     /**
      * Constructor of the class.
-     * @param manager WifiP2pManager system service
-     * @param channel WifiP2pChannel
+     *
+     * @param manager  WifiP2pManager system service
+     * @param channel  WifiP2pChannel
      * @param activity activity associated with the receiver
      */
     public WiFiDirectBroadcastReceiver(WifiP2pManager manager, Channel channel, WiFiDirectActivity activity) {
@@ -56,7 +57,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        switch(intent.getAction()) {
+        switch (intent.getAction()) {
 
             case WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION:
 
@@ -114,22 +115,17 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
                     activity.resetData();
 
+                    activity.hideLocalDeviceGoIcon();
+
                     Log.d(TAG, "Disconnected");
 
-                    activity.discoveryPingPong();
-
-                    //if the Pingpong mode is enabled, restarts the discovery
-                    Log.d(TAG, "Check Ping pong state: " + LocalP2PDevice.getInstance().isPing_pong_mode());
-                    if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
-//                        activity.discoveryPingPong();
+                    if (PingPongList.getInstance().isPingponging()) {
+                        activity.restartDiscoveryPingpongAfterDisconnect();
                     } else {
-
-                        if (PingPongList.getInstance().isPingponging()) {
-                            activity.restartDiscoveryPingpongAfterDisconnect();
-                        }
+                        activity.discoveryPingPong();
                     }
 
-                    activity.hideLocalDeviceGoIcon();
+
                 }
                 break;
 
@@ -137,13 +133,13 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
                 WifiP2pDevice wifiP2pDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
 
-                P2PDevice thisDevice = new P2PDevice( wifiP2pDevice );
+                P2PDevice thisDevice = new P2PDevice(wifiP2pDevice);
 
                 LocalP2PDevice.getInstance().setLocalDevice(thisDevice);
 
                 activity.getListFragment().updateThisDevice();
 
-                Log.d(TAG , "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
+                Log.d(TAG, "WIFI_P2P_THIS_DEVICE_CHANGED_ACTION");
                 break;
         }
     }
