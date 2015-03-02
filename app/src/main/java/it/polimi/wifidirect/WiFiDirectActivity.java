@@ -290,7 +290,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
     /**
      * Method to disconnect.
-     */
+     */ 
     @Override
     public void disconnect() {
         P2PGroups.getInstance().getGroupList().clear();
