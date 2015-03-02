@@ -59,4 +59,7 @@ proguard/
 # Log Files
 *.log
 
+#intelliJ
+.idea
+
 
