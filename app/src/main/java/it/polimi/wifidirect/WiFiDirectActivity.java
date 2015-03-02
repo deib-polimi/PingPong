@@ -378,7 +378,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         P2PDevice client;
         for (WifiP2pDevice device : group.getClientList()) {
             client = new P2PDevice(device);
-            client.setGroupOwner(false);
+            client.setGroupOwner(device.isGroupOwner());
             p2pGroup.getList().add(client);
         }
 
@@ -389,13 +389,12 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             // assuming that this devices are go of well formed groups.
             //If i am a group owner i can't pingpong with another device.
 
-            //I set in the list my actual group owner.
-            PingPongList.getInstance().getPingponglist().add(owner);
-
+            
             //now i use the peerlist to fill the PingPongList. Obviously, i must remove my group owner and all my
             // brothers ;) (the other clients in my group).
             // And finally i need to check that every device in this list is a group owner.
             List<P2PDevice> peerlist = PeerList.getInstance().getList();
+            PingPongList.getInstance().getPingponglist().clear();
             for (P2PDevice dev : peerlist) {
                 if (!p2pGroup.getList().contains(dev) &&
                         !PingPongList.getInstance().getPingponglist().contains(dev)) {

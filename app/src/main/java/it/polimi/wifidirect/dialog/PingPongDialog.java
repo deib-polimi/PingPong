@@ -127,7 +127,6 @@ public class PingPongDialog extends DialogFragment {
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_CANCELED, getActivity().getIntent());
                 dismiss();
             }
         });
