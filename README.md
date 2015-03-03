@@ -1,5 +1,8 @@
 # WiFiDirect PingPong
 
+![alt tag](http://www.ks89.it/image_tesi_github/pingpong_header_github.png)
+
+
 ## Informations
 WiFiDirect PingPong (aka PingPong) is a demo Android's application that try to overcome some WiFi-Direct limitations.
 At the moment, the wifi diver of commercial devices don't allow a device to partecipate simultaneosly in two WiFi-Direct's groups. This app tries to overcome this limitations. The main goal is the possibility for a client to "jump" continously between two different groups, like a ball in the game called ping pong.
@@ -33,49 +36,48 @@ You can:
 5. show GO's information on all clients connected to him
 6. show the list of Clients and some other data on every GO
 7. **send video files in the gallery** from clients to their GO's
-8. **transorm a client into a "PingPong Device"** choosing the "starting GO" called Ping Device and the "destination GO" called Pong Device.  e iniziando a connettersi e disconnettersi in modo alternato dai 2 group owner, senza interferire col funzionamento degli altri peer
-
-## Possibile future extensions
+8. **transform a client into a "PingPong Device"** choosing the "starting GO" called Ping Device and the "destination GO" called Pong Device. The PingpPong Device connects and disconnects to the Ping Device and Pong Device alternately, i.e. "jumps" ;).
+9. use the **Ping Pong mode** a resized version of the "Eternal Discovery" in "Pigeon Messenger" that tries to synchronize the devices
 
 ## Usage
 
 ### General usage
-1. Attivare il WiFi su tutti i dispositivi
-2. Aprire l'app su tutti i dispositivi scelti
-3. Scegliere i nomi dei dispositivi toccando la "cardview" sotto la scritta "This device"
-2. Attendere la ricerca dei dispositivi nelle vicinanze
-3. Collegarsi ad un dispositivo toccando l'elemento della lista
-4. Sul peer toccare il primo pulsante (gallery button) per scegliere un video dalla galleria ed inviarlo (attendere che la ricezione sia completata)
-5. Disconnettere dal GO (tutti i client saranno disconnessi) o dal client (solo quesl client sarà disconnesso) toccando il secondo pulsante (disconnect button)
+1. Activate WiFi on all devices
+2. Open this app on all devices
+3. Touch the "cardview" under the words "This Device" to choose the device name
+4. Wait until devices are discovered
+5. Connect your device to another one touching an element in the list under the words "Other Devices"
+6. On the Client touch the first button (gallery button) to send a video from your gallery (plase wait some seconds, i didn't implement a progress bar)
+7. Disconnect from GO (obviously all clients will be disconnected) or from Client (only this client will be disconnected) touching the second button (disconnect button)
 
 ### Group with multiple peers usage
-1. Attivare il WiFi su tutti i dispositivi
-2. Aprire l'app su tutti i dispositivi scelti
-3. Scegliere i nomi dei dispositivi toccando la "cardview" sotto la scritta "This device"
-2. Attendere la ricerca dei dispositivi nelle vicinanze
-3. Collegarsi ad un dispositivo toccando l'elemento della lista
-4. Toccare sulla seconda icona della toolbar per riavviare la discovery su tutti i dispositivi
-5. Collegare altri client, scegliendo nella propria lista "Other Devices" il GO già scelto in precendeza. In questo modo sul GO la lista di peer verrà aggiornata e il nuovo dispositivo aggiunto.
+1. Activate WiFi on all devices
+2. Open this app on all devices
+3. Touch the "cardview" under the words "This Device" to choose the device name
+4. Wait until devices are discovered
+5. Connect your device to another one touching an element in the list under the words "Other Devices"
+4. On every device, touch the second toolbar's icon to restart the Discovery Phase
+5. Connect other Clients choosing always the same GO. In this way on the GO you will see his Client's list.
 
 ### PingPong usage
-1. Attivare il WiFi su tutti i dispositivi
-2. Aprire l'app su tutti i dispositivi scelti
-3. Scegliere i nomi dei dispositivi toccando la "cardview" sotto la scritta "This device"
-2. Attendere la ricerca dei dispositivi nelle vicinanze
-3. Collegarsi ai un dispositivo toccando l'elemento della lista
-4. Dopo aver creato i 2 gruppi di dispositivi, sceglierne uno come dispositivo che farà pingpong, quindi su tutti gli altri device (eccetto quello scelto per ping pong) 
-toccare la prima icona della toolbar, in modo da attivare la pingpong mode ed automatizzare le fasi di discovery
-5. Sul peer toccare il terzo pulsante (ping pong button) per aprire il Dialog e scegliere il go di destinazione (il GO del gruppo a cui il dispositivo che vuole fare pingpong non appartiene)
-6. Confermare per avviare pingponging
+1. Activate WiFi on all devices
+2. Open this app on all devices
+3. Touch the "cardview" under the words "This Device" to choose the device name
+4. Wait until devices are discovered
+5. Connect your device to another one touching an element in the list under the words "Other Devices"
+4. After the group's creation, choose one of them uno as "PingPong Device" and in every other devices touch the first toolbar's icon to activate the pingpong mode. This in extremely similar to the "Eternal Discovery" in Pigeon Messenger, but here the performances are lower due to synchronization's problems and the only way to achive this is with this trick that i called "PingPong mode"
+5. On the Client touch the third button (ping pong button) to open a dialog and choose the destination GO (the GO of the groups where the device want to be a Client during pingponging)
+6. Confirm to start "PingPong"
 
 
 ## Interesting things
-Questa app cotiene una astrazione degli oggetti P2PDevice, P2PGroup and P2PGroups per renderli più semplici da adattare e utilizzare per implementare funzionalità più complesse di quelle fornite da Android.
-Per esempio si può ottenere facilemente l' IP Address associato al GO di un certo P2PGroup.
-L'estensione che permette di gestire gli indirizzi ip dei client in WiFi MultiChat si basa su una di queste classi.
+This app contains an abstraction of Android's p2p object, that i called: P2PDevice, P2PGroup and P2PGroups to make it easly maintainable and easy to extend. For example you can obtain easly the IP Address associated to the GO in a P2PGroup.
+I created the logic to obtain IP Addresses in Pigeon Messenger extending these classes.
 
-Inoltre vi sono altre list che utilizzano Singleton per memorizzare in modo facilmente accessibile da tutto il programma 
-i client di un GO, i dispositivi rilevati, la lista di dispositivi con cui poter fare pingpong and so on.
+Moreover, there are some lists that use Singleton's pattern:
+* the Client list of a GO
+* the discovered devices
+* the device list used by Ping Pong funcionality
 
 ## License
 
