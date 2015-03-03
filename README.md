@@ -28,16 +28,16 @@ This shows that in some applications, in particular when you need to transfer fi
 
 
 ## Features
-You can:
-1. **change the device name** with Java Reflection
-2. show a list of nearby devices
-3. manage connection and disconnection between devices
-4. connect more than one client to the same GO
-5. show GO's information on all clients connected to him
-6. show the list of Clients and some other data on every GO
-7. **send video files in the gallery** from clients to their GO's
-8. **transform a client into a "PingPong Device"** choosing the "starting GO" called Ping Device and the "destination GO" called Pong Device. The PingpPong Device connects and disconnects to the Ping Device and Pong Device alternately, i.e. "jumps" ;).
-9. use the **Ping Pong mode** a resized version of the "Eternal Discovery" in "Pigeon Messenger" that tries to synchronize the devices
+You can:<br/>
+1. **change the device name** with Java Reflection <br/>
+2. show a list of nearby devices <br/>
+3. manage connection and disconnection between devices <br/>
+4. connect more than one client to the same GO <br/>
+5. show GO's information on all clients connected to him <br/>
+6. show the list of Clients and some other data on every GO <br/>
+7. **send video files in the gallery** from clients to their GO's <br/>
+8. **transform a client into a "PingPong Device"** choosing the "starting GO" called Ping Device and the "destination GO" called Pong Device. The PingpPong Device connects and disconnects to the Ping Device and Pong Device alternately, i.e. "jumps" ;) <br/>
+9. use the **Ping Pong mode** a resized version of the "Eternal Discovery" in "Pigeon Messenger" that tries to synchronize the devices <br/>
 
 ## Usage
 
