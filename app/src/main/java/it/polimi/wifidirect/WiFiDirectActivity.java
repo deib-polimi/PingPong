@@ -189,7 +189,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
                 }
             }
 
-            //now i verify if the device to use with Pingpong was found
+            //now i verify if the device to use with Pingpong if available
             if (found) {
 
                 PingPongList.getInstance().setConnecting(true);
@@ -215,6 +215,16 @@ public class WiFiDirectActivity extends ActionBarActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.atn_autonomous_group:
+                //update pingpong menu item after a click and setPing_pong_mode attribute in LocalP2PDevice
+                if (LocalP2PDevice.getInstance().isAutonomous_go()) {
+                    item.setIcon(getResources().getDrawable(R.drawable.ic_action_autonomous_disabled));
+                    LocalP2PDevice.getInstance().setAutonomous_go(false);
+                } else {
+                    item.setIcon(getResources().getDrawable(R.drawable.ic_action_autonomous_enabled));
+                    LocalP2PDevice.getInstance().setAutonomous_go(true);
+                }
+                return true;
             case R.id.atn_direct_discover:
                 if (!isWifiP2pEnabled) {
                     Toast.makeText(WiFiDirectActivity.this, R.string.p2p_off_warning, Toast.LENGTH_SHORT).show();
@@ -273,24 +283,38 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
     /**
      * To connect to a device, specified in config.deviceAddress.
+     * If you activate the autonomous group mode with the toolbar's button, the config
+     * is not used.
+     *
      * @param config The WifiP2pConfig to connect.
      */
     @Override
     public void connect(WifiP2pConfig config) {
         Log.d(TAG, "Request connection");
-        manager.connect(channel, config, new CustomizableActionListener(
-                WiFiDirectActivity.this,
-                "connect",
-                "connect Success",
-                null,
-                "connect Failed",
-                "connect Failed with" + config.deviceAddress + ". Retry"));
+
+        if (LocalP2PDevice.getInstance().isAutonomous_go()) {
+            manager.createGroup(channel, new CustomizableActionListener(
+                    WiFiDirectActivity.this,
+                    "create autonomous",
+                    "create autonomous Success",
+                    null,
+                    "create autonomous Failed",
+                    "create autonomous Failed. Retry"));
+        } else {
+            manager.connect(channel, config, new CustomizableActionListener(
+                    WiFiDirectActivity.this,
+                    "connect",
+                    "connect Success",
+                    null,
+                    "connect Failed",
+                    "connect Failed with" + config.deviceAddress + ". Retry"));
+        }
     }
 
 
     /**
      * Method to disconnect.
-     */ 
+     */
     @Override
     public void disconnect() {
         P2PGroups.getInstance().getGroupList().clear();
@@ -389,7 +413,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             // assuming that this devices are go of well formed groups.
             //If i am a group owner i can't pingpong with another device.
 
-            
+
             //now i use the peerlist to fill the PingPongList. Obviously, i must remove my group owner and all my
             // brothers ;) (the other clients in my group).
             // And finally i need to check that every device in this list is a group owner.
@@ -404,7 +428,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
 
             //i'm NOT the go
-            if(detailFragment.getView()!=null) {
+            if (detailFragment.getView() != null) {
                 P2PDevice device = new P2PDevice(group.getOwner());
                 ClientList.getInstance().getList().clear();
                 ClientList.getInstance().getList().add(device);
@@ -418,12 +442,12 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             }
         } else {
             //i'm the go
-            if(detailFragment.getView()!=null) {
+            if (detailFragment.getView() != null) {
                 detailFragment.hideConnectedDeviceGoIcon();
 
                 ClientList.getInstance().getList().clear();
 
-                for(P2PDevice device : p2pGroup.getList()) {
+                for (P2PDevice device : p2pGroup.getList()) {
                     ClientList.getInstance().getList().add(device);
 
                 }
@@ -460,8 +484,8 @@ public class WiFiDirectActivity extends ActionBarActivity implements
      * Method to show a GO Icon inside the local device in {@link it.polimi.wifidirect.DeviceDetailFragment}.
      * This is useful to identify which device is a GO.
      */
-    private void showLocalDeviceGoIcon(){
-        if(detailFragment !=null && detailFragment.getView()!=null && detailFragment.getView().findViewById(R.id.go_logo)!=null) {
+    private void showLocalDeviceGoIcon() {
+        if (detailFragment != null && detailFragment.getView() != null && detailFragment.getView().findViewById(R.id.go_logo) != null) {
             ImageView goLogoImageView = (ImageView) detailFragment.getView().findViewById(R.id.go_logo);
             goLogoImageView.setImageDrawable(getResources().getDrawable(R.drawable.go_logo));
             goLogoImageView.setVisibility(View.VISIBLE);
@@ -472,8 +496,8 @@ public class WiFiDirectActivity extends ActionBarActivity implements
      * Method to hide a GO Icon inside the local device in {@link it.polimi.wifidirect.DeviceDetailFragment}.
      * This is useful to identify which device is a GO.
      */
-    public void hideLocalDeviceGoIcon(){
-        if(detailFragment !=null && detailFragment.getView()!=null && detailFragment.getView().findViewById(R.id.go_logo)!=null) {
+    public void hideLocalDeviceGoIcon() {
+        if (detailFragment != null && detailFragment.getView() != null && detailFragment.getView().findViewById(R.id.go_logo) != null) {
             ImageView goLogoImageView = (ImageView) detailFragment.getView().findViewById(R.id.go_logo);
             goLogoImageView.setVisibility(View.INVISIBLE);
         }
@@ -506,13 +530,13 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
             // The other device acts as the client. In this case, i enable the
             // get file button.
-            if(detailFragment.getView()!=null) {
+            if (detailFragment.getView() != null) {
                 detailFragment.getView().findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
             }
         }
 
         // hide the connect button
-        if(detailFragment.getView()!=null) {
+        if (detailFragment.getView() != null) {
             detailFragment.getView().findViewById(R.id.btn_connect).setVisibility(View.GONE);
         }
 

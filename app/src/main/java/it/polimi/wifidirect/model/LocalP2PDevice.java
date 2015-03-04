@@ -9,7 +9,8 @@ import lombok.Setter;
  * It contains the {@link #ping_pong_mode} attribute, used to activate/deactivate the "pingpong mode" on this device.
  * Attention, this means that if ping_pong_mode==true this device can be part of one of the pingpong groups,
  * but it can't be the pingpong device. Otherwise, if false, it's possible to use this device as a
- * pingpong device, but its can't be part of a pingpong group
+ * pingpong device, but its can't be part of a pingpong group.
+ * Here you can set also the {@link #autonomous_go} attribute if you want that this device creares an autonomous group.
  * <p></p>
  * Created by Stefano Cappa on 31/01/15.
  *
@@ -24,6 +25,9 @@ public class LocalP2PDevice {
     //If you want to use pingpong mode, you need to activate this attributes in every other device, except this device.
     @Getter @Setter private boolean ping_pong_mode;
 
+    //this attribute is useful to create an autnomous group owner
+    @Getter @Setter private boolean autonomous_go;
+    
     /**
      * Method to get the instance of this class.
      * @return instance of this class.
@@ -38,6 +42,7 @@ public class LocalP2PDevice {
     private LocalP2PDevice(){
         localDevice = new P2PDevice();
         ping_pong_mode = false;
+        autonomous_go = false;
     }
 
 }

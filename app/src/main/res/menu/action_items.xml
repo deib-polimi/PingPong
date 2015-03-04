@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/atn_autonomous_group"
+        android:icon="@drawable/ic_action_autonomous_disabled"
+        android:title="@string/autonomous_group_button"
+        app:showAsAction="always|withText" />
+    
+    <item
         android:id="@+id/atn_pingpong"
         android:icon="@drawable/ic_action_pingpong_mode_disabled"
         android:title="@string/pingpong_mode_button"
