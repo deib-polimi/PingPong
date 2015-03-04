@@ -1,11 +1,11 @@
-# WiFiDirect PingPong
+# PingPong
 
 ![alt tag](https://dl.dropboxusercontent.com/u/2336896/pingpong_header_github.png)
 
 
 ## Informations
-WiFiDirect PingPong (aka PingPong) is a demo Android's application that try to overcome some WiFi-Direct limitations.
-At the moment, the wifi diver of commercial devices don't allow a device to partecipate simultaneosly in two WiFi-Direct's groups. This app tries to overcome this limitations. The main goal is the possibility for a client to "jump" continously between two different groups, like a ball in the game called ping pong.
+Wi-Fi Direct PingPong (aka PingPong) is a demo Android's application that try to overcome some Wi-Fi Direct limitations.
+At the moment, the wifi diver of commercial devices don't allow a device to partecipate simultaneosly in two Wi-Fi Direct's groups. This app tries to overcome this limitations. The main goal is the possibility for a client to "jump" continously between two different groups, like a ball in the game called ping pong.
 It's possibile to achieve this with synchronized connection and disconnection between GO's and the "PingPong client".
 
 PingPong requires Android 4.4 KitKat (API 19) or higher. This choice is related to to the fact that in previous versions, this protocol was unstable and unreliable.
@@ -16,10 +16,10 @@ It's important to remember that this is a demo application, so features like the
 VIDEO YOUTUBE 
 
 As you can see, PingPong works with poor performances.<br/>
-The main problems are the "Discovery Phase" of this protocol and the WiFi-Direct implementation in Android, in fact:<br/>
+The main problems are the "Discovery Phase" of this protocol and the Wi-Fi Direct implementation in Android, in fact:<br/>
 1. The discovery time is too high when the number of devices increases <br/>
 2. After a certain time, a device is no longer discoverable from others, so you need to restart the Discovery Phase on all devices <br/>
-3. Sometimes, the WiFi part of Android crashes and the only way to solve this annoying problem is a complete reboot of the device (this situation is recognizable when Android can't find other network in WiFi Setting's app).
+3. Sometimes, the WiFi part of Android crashes and the only way to solve this annoying problem is a complete reboot of the device (this situation is recognizable when Android can't find other network in Wi-Fi Setting's app).
 
 This shows that in some applications, in particular when you need to transfer files or real time applications, the Discovery Phase in Wi-Fi Direct is a very big problem.
 
@@ -42,7 +42,7 @@ You can:<br/>
 ## Usage
 
 ### General usage
-1. Activate WiFi on all devices
+1. Activate Wi-Fi on all devices
 2. Open this app on all devices
 3. Touch the "cardview" under the words "This Device" to choose the device name
 4. Wait until devices are discovered
@@ -51,7 +51,7 @@ You can:<br/>
 7. Disconnect from GO (obviously all clients will be disconnected) or from Client (only this client will be disconnected) touching the second button (disconnect button)
 
 ### Group with multiple peers usage
-1. Activate WiFi on all devices
+1. Activate Wi-Fi on all devices
 2. Open this app on all devices
 3. Touch the "cardview" under the words "This Device" to choose the device name
 4. Wait until devices are discovered
@@ -60,7 +60,7 @@ You can:<br/>
 5. Connect other Clients choosing always the same GO. In this way on the GO you will see his Client's list.
 
 ### PingPong usage
-1. Activate WiFi on all devices
+1. Activate Wi-Fi on all devices
 2. Open this app on all devices
 3. Touch the "cardview" under the words "This Device" to choose the device name
 4. Wait until devices are discovered
