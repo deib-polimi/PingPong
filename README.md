@@ -1,6 +1,6 @@
 # WiFiDirect PingPong
 
-![alt tag](http://www.ks89.it/image_tesi_github/pingpong_header_github.png)
+![alt tag](https://dl.dropboxusercontent.com/u/2336896/pingpong_header_github.png)
 
 
 ## Informations
