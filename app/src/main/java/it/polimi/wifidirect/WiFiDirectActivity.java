@@ -176,6 +176,8 @@ public class WiFiDirectActivity extends ActionBarActivity implements
 
 
         if (PingPongList.getInstance().isPingponging() && !PingPongList.getInstance().isConnecting()) {
+           
+            Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Peers found");
 
             //PINGPONG
             P2PDevice nextDeviceToConnect = PingPongList.getInstance().getNextDeviceToConnect();
@@ -192,13 +194,21 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             //now i verify if the device to use with Pingpong if available
             if (found) {
 
+                Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Device to connect pingpong AVAILABLE!");
+
                 PingPongList.getInstance().setConnecting(true);
 
-                Log.d(TAG, System.currentTimeMillis() + " - connect");
+                Log.d(TAG, "Timestamp: " + System.currentTimeMillis() + " - Connecting");
 
                 connect(new PingPongLogic(this).getConfigToReconnect());
                 this.showDetailFragment();
 
+                //***********
+                // NOW LOOK IN WiFiDirectBroadcastReceiver this text "activity.startNewPingPongCycle();"
+                //***********
+                
+            } else {
+                Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Device to connect pingpong NOT FOUND!");
             }
 
         }
@@ -293,6 +303,8 @@ public class WiFiDirectActivity extends ActionBarActivity implements
         Log.d(TAG, "Request connection");
 
         if (LocalP2PDevice.getInstance().isAutonomous_go()) {
+            //AUTONOMOUS IN THIS APP IS AN EXPERIMENTAL FEATURE!!!
+            Log.d(TAG, "Timestamp-autonomous: " + System.currentTimeMillis() + " - Creating autonomous group");
             manager.createGroup(channel, new CustomizableActionListener(
                     WiFiDirectActivity.this,
                     "create autonomous",
@@ -558,6 +570,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             @Override
             public void onFailure(int reasonCode) {
                 Log.e(TAG, "Disconnect failed. Reason :" + reasonCode);
+                Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Disconnect failed");
 
                 //disconnect failed (this happens when you click on disconnect
                 // button, but you aren't really connected). I must restore the listFragment.
@@ -567,7 +580,10 @@ public class WiFiDirectActivity extends ActionBarActivity implements
             @Override
             public void onSuccess() {
                 Log.d(TAG, "Disconnect success");
-                //now look in WiFiDirectBroadcastReceiver, line "if(LocalP2PDevice.getInstance().isPing_pong_mode()) {"
+                Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Disconnect success");
+                //*************************
+                //VERY IMPORTANT LOOK HERE:  WiFiDirectBroadcastReceiver, line "if(LocalP2PDevice.getInstance().isPing_pong_mode()) {"
+                //*************************
             }
         });
     }
@@ -577,7 +593,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
      * Method to restart discovery after a disconnect.
      */
     public void restartDiscoveryPingpongAfterDisconnect() {
-        Log.d(TAG, System.currentTimeMillis() + " - Preparing to discovery");
+        Log.d(TAG, "Timestamp: " + System.currentTimeMillis() + " - Preparing to discovery - Timer activated");
 
         new SleepAsyncTask(this).execute();
 
@@ -585,11 +601,15 @@ public class WiFiDirectActivity extends ActionBarActivity implements
     }
 
     public void sleepCompleted() {
-        Log.d(TAG, System.currentTimeMillis() + " - Discovery started");
+        Log.d(TAG, "Timestamp: " + System.currentTimeMillis() + " - Timer stopped - Starting discovery");
 
         PingPongList.getInstance().setConnecting(false);
 
         this.discoveryPingPong();
+
+        Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Discovery started");
+
+        //NOW LOOK IN onPeersAvailable
     }
 
     /**
@@ -611,7 +631,7 @@ public class WiFiDirectActivity extends ActionBarActivity implements
      * Method used by ping pong to start a new pingpong cycle.
      */
     public void startNewPingPongCycle() {
-        Log.d(TAG, System.currentTimeMillis() + " - Reconnected, pingpong cycle completed, but i'm starting a new cycle.");
+        Log.d(TAG, "Timestamp: " + System.currentTimeMillis() + " - CONNECTED!!! Pingpong cycle completed - Starting a new cycle.");
         new PingPongLogic(this).execute();
     }
 

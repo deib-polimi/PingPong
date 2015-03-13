@@ -30,7 +30,7 @@ class PingPongLogic extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
 
-        Log.d(TAG , System.currentTimeMillis() + " - Before delay");
+        Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Before delay");
 
         try {
             Thread.sleep(5000); //if you have problems use 5000 here
@@ -38,7 +38,7 @@ class PingPongLogic extends AsyncTask<Void, Void, Void> {
             Log.e(TAG, "Pingponglogic-doinbackground" , e);
         }
 
-        Log.d(TAG , System.currentTimeMillis() + " - After delay");
+        Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - After delay");
 
         P2PDevice pingDevice = PingPongList.getInstance().getPingDevice();
         P2PDevice pongDevice = PingPongList.getInstance().getPongDevice();
@@ -53,12 +53,12 @@ class PingPongLogic extends AsyncTask<Void, Void, Void> {
             //attention if you call chooseGroupOwner 2 times you'll get the same config element
             //WifiP2pConfig config = this.chooseGroupOwner(pingDevice, pongDevice);
 
-            Log.d(TAG , System.currentTimeMillis() + " - disconnect");
+            Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Before to call disconnect");
 
             activity.runOnUiThread(new Runnable() {
                 public void run() {
                     Log.d(TAG, "I am the UI thread");
-                    Log.d(TAG , System.currentTimeMillis() + " - After delay");
+                    Log.d(TAG , "Timestamp: " + System.currentTimeMillis() + " - Disconnecting...");
                     ((WiFiDirectActivity) activity).disconnectPingPong();
                 }
             });

@@ -121,7 +121,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     //if the Pingpong mode is enabled, restarts the discovery
                     Log.d(TAG, "Check Ping pong state: " + LocalP2PDevice.getInstance().isPing_pong_mode());
                     if(LocalP2PDevice.getInstance().isPing_pong_mode()) {
-//                        activity.discoveryPingPong();
+                        activity.discoveryPingPong();
                     } else {
 
                         if (PingPongList.getInstance().isPingponging()) {
