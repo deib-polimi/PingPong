@@ -1,6 +1,6 @@
 # PingPong
 
-![alt tag](http://ks89.it/Github_repositories_images/PingPong/pingpong_header_github.png)
+![alt tag](http://www.stefanocappa.it/publicfiles/Github_repositories_images/PingPong/pingpong_header_github.png)
 
 
 ## Informations
@@ -13,7 +13,7 @@ PingPong requires Android 4.4 KitKat (API 19) or higher. This choice is related 
 It's important to remember that this is a demo application, so features like the management of screen's rotation, standby device, wifi not available and so on, are not managed as a commercial product.
 
 ## Results
-VIDEO YOUTUBE 
+VIDEO YOUTUBE
 
 As you can see, PingPong works with poor performances.<br/>
 The main problems are the "Discovery Phase" of this protocol and the Wi-Fi Direct's implementation in Android, in fact:<br/>
@@ -43,13 +43,13 @@ You can:<br/>
 
 ## Images
 <br/>
-![alt tag](http://ks89.it/Github_repositories_images/PingPong/discovered-connecting-connected.png)
+![alt tag](http://www.stefanocappa.it/publicfiles/Github_repositories_images/PingPong/discovered-connecting-connected.png)
 <br/>
-![alt tag](http://ks89.it/Github_repositories_images/PingPong/round_button_completo.png)
+![alt tag](http://www.stefanocappa.it/publicfiles/Github_repositories_images/PingPong/round_button_completo.png)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![alt tag](http://ks89.it/Github_repositories_images/PingPong/toolbar_icon.png)
+![alt tag](http://www.stefanocappa.it/publicfiles/Github_repositories_images/PingPong/toolbar_icon.png)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![alt tag](http://ks89.it/Github_repositories_images/PingPong/change_device_name.png)
+![alt tag](http://www.stefanocappa.it/publicfiles/Github_repositories_images/PingPong/change_device_name.png)
 <br/>
 
 ## Usage
@@ -88,9 +88,9 @@ This app contains an abstraction of Android's p2p object, that i called: P2PDevi
 I created the logic to obtain IP Addresses in Pigeon Messenger extending these classes.
 
 Moreover, there are some lists that use Singleton's pattern:
-* the Client list of a GO
-* the discovered devices
-* the device list used by Ping Pong functionality
+- the Client list of a GO
+- the discovered devices
+- the device list used by Ping Pong functionality
 
 ## License
 
