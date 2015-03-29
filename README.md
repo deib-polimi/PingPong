@@ -13,7 +13,7 @@ PingPong requires Android 4.4 KitKat (API 19) or higher. This choice is related 
 It's important to remember that this is a demo application, so features like the management of screen's rotation, standby device, wifi not available and so on, are not managed as a commercial product.
 
 ## Results
-[VIDEO YOUTUBE](www.youtube.com/watch?v=qsFmHGitniw)
+[VIDEO YOUTUBE](https://www.youtube.com/watch?v=qsFmHGitniw)
 
 As you can see, PingPong works with poor performances.<br/>
 The main problems are the "Discovery Phase" of this protocol and the Wi-Fi Direct's implementation in Android, in fact:<br/>
