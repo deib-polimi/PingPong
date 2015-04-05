@@ -2,6 +2,8 @@
 
 ![alt tag](http://www.stefanocappa.it/publicfiles/Github_repositories_images/PingPong/pingpong_header_github.png)
 
+<br>
+This is a mirror of the official page https://github.com/deib-polimi/PingPong
 
 ## Informations
 Wi-Fi Direct PingPong (aka PingPong) is a demo Android's application that try to overcome some Wi-Fi Direct's limitations.
