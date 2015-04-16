@@ -96,7 +96,7 @@ Moreover, there are some lists that use Singleton's pattern:
 
 ## License
 
-Copyright 2015 Politecnico di Milano
+Copyright 2015 Stefano Cappa, Politecnico di Milano
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
