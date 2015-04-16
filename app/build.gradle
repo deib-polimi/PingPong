@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 22
+    buildToolsVersion "22"
 
     defaultConfig {
         applicationId "it.polimi.wifidirect"
         minSdkVersion 19
-        targetSdkVersion 21
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
@@ -26,68 +26,15 @@ android {
 task wrapper(type: Wrapper) {
     gradleVersion = "2.3"
 }
-//
-//def srcJava = 'src/main/java'
-//def srcDelomboked = 'build/src-delomboked/main/java'
-//
-//task delombok {
-//    inputs.files file(srcJava)
-//    outputs.dir file(srcDelomboked)
-//
-//    doLast {
-//        FileCollection collection = files(configurations.compile)
-//        FileCollection sumTree = collection + fileTree(dir: 'bin')
-//
-//        ant.taskdef(name: 'delombok', classname: 'lombok.delombok.ant.DelombokTask', classpath: 'libs/lombok.jar')
-//        ant.delombok(from:srcJava, to:srcDelomboked, classpath: sumTree.asPath)
-//    }
-//}
-
-
-//android.applicationVariants.all { variant ->
-//    task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
-//        description "Generates Javadoc for $variant.name."
-//        setDependsOn(['delombok'])
-//        source = srcDelomboked
-//        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-//        classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
-//        options.links("http://docs.oracle.com/javase/7/docs/api/");
-//        options.links("http://d.android.com/reference/");
-//
-//        // exclude generated files
-//        exclude '**/BuildConfig.java'
-//        exclude '**/R.java'
-//
-//        // exclude any internal packages
-//        exclude '**/com/acme/sdk/api/**'
-//    }
-//}
-
-
-//android.applicationVariants.all { variant ->
-//
-//    task("generate${variant.name}Javadoc", type: Javadoc) {
-//        title = "$name $version API"
-//        description "Generates Javadoc for $variant.name."
-//        source = variant.javaCompile.source
-//        ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-//        classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
-//        exclude '**/BuildConfig.java'
-//        exclude '**/R.java'
-//    }
-//
-//}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     provided 'org.projectlombok:lombok:1.14.8'
 
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.android.support:support-v4:21.0.3'
-
-    compile 'com.android.support:recyclerview-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:22.0.0'
+    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:recyclerview-v7:22.0.0'
     compile 'com.android.support:cardview-v7:21.0.3'
-
     compile 'com.jpardogo.materialtabstrip:library:1.0.6'
 }
