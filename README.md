@@ -3,7 +3,6 @@
 ![alt tag](http://www.stefanocappa.it/publicfiles/Github_repositories_images/PingPong/pingpong_header_github.png)
 
 <br>
-**This is a mirror of the official page https://github.com/deib-polimi/PingPong**
 
 ## Informations
 Wi-Fi Direct PingPong (aka PingPong) is a demo Android's application that try to overcome some Wi-Fi Direct's limitations.
@@ -13,6 +12,12 @@ It's possible to achieve this with synchronized connections and disconnections b
 PingPong requires Android 4.4 KitKat (API 19) or higher. This choice is related to to the fact that in previous versions, this protocol was unstable and unreliable.
 
 It's important to remember that this is a demo application, so features like the management of screen's rotation, standby device, wifi not available and so on, are not managed as a commercial product.
+
+
+## Requirenments
+- AndroidStudio
+- **Lombok (automatically downloaded as gradle dependency) + Lombok plugin for IntelliJ / AndroidStudio [Available here](https://plugins.jetbrains.com/plugin/6317)**
+
 
 ## Results
 
